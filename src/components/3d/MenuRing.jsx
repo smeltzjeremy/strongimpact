@@ -14,19 +14,17 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
 
-  // Math-calculated stable layout positions on the circle path
   const x = radius * Math.cos(angle);
   const z = radius * Math.sin(angle);
 
   useFrame((state) => {
     if (meshRef.current) {
-      // Smooth hovering floating animation
+      // Smooth floating animation
       meshRef.current.position.y = hovered 
         ? Math.sin(state.clock.getElapsedTime() * 5) * 0.08 
         : 0;
 
-      // Absolute Correction Matrix:
-      // Dynamically angles the panel to face the camera center perfectly
+      // Absolute Correction Matrix to face camera perfectly
       const totalAngle = angle + currentRingRotation;
       meshRef.current.rotation.y = -totalAngle + Math.PI / 2;
     }
@@ -34,43 +32,41 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
 
   return (
     <group position={[x, 0, z]}>
-      {/* 3D Physical Glass Card Asset */}
+      {/* Premium Translucent Frosted Glass Plate */}
       <mesh
         ref={meshRef}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
         onPointerOut={() => setHovered(false)}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        {/* Adjusted dimensions (1.0 width) for a sleek, beautifully fitted mobile presence */}
-        <boxGeometry args={[1.0, 0.6, 0.04]} />
+        <boxGeometry args={[1.0, 0.6, 0.03]} />
         <meshPhysicalMaterial 
           color={hovered ? item.color : '#ffffff'} 
-          transmission={0.85}       /* High transmission for pristine star visibility */
-          roughness={0.22}          /* Frosted finish scatters harsh highlights into a premium glow */
-          metalness={0.02}
-          thickness={0.5}           /* Fine edge thickness */
-          clearcoat={0.4}           /* Subdued glossy outer layer to prevent unpolished smearing */
-          clearcoatRoughness={0.1} 
+          transmission={0.9}        /* High transmission so red stars glide beautifully through the panel body */
+          roughness={0.15}          /* Balanced roughness: frost appearance without losing glass sheen */
+          metalness={0.0}
+          thickness={0.3}
+          clearcoat={0.8}           /* Brings back a high-end glossy polished lacquer shine */
+          clearcoatRoughness={0.05}
           transparent={true}
-          opacity={hovered ? 0.9 : 0.35} 
+          opacity={hovered ? 0.95 : 0.25} /* Deep transparency to make it look lightweight and premium */
         />
       </mesh>
 
-      {/* Frosted Backdrop HTML Element */}
+      {/* Crisp Overlay Label - Removed 'occlude' to instantly fix header text blackout bug */}
       <Html
-        position={[0, 0, 0.03]}
+        position={[0, 0, 0.02]}
         center
         distanceFactor={3}
-        occlude={[meshRef]}
         className="glass-panel-label"
         style={{
-          background: hovered ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.01)',
+          background: hovered ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.01)',
           padding: '12px 24px',
           borderRadius: '8px',
           border: hovered ? `1px solid ${item.color}` : '1px solid rgba(255, 255, 255, 0.08)',
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
-          boxShadow: hovered ? `0 8px 24px 0 rgba(0, 0, 0, 0.2)` : '0 4px 16px 0 rgba(0, 0, 0, 0.3)',
+          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
           transition: 'all 0.3s ease',
           pointerEvents: 'none'
         }}
@@ -78,11 +74,11 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
         <span style={{ 
           color: hovered ? item.color : '#ffffff', 
           transition: 'color 0.3s ease',
-          fontSize: '12px',
+          fontSize: '11px',
           fontWeight: '900',
           letterSpacing: '0.15em',
           display: 'block',
-          textShadow: hovered ? `0 0 10px ${item.color}` : '0 2px 4px rgba(0,0,0,0.5)'
+          textShadow: hovered ? `0 0 10px ${item.color}` : '0 2px 4px rgba(0,0,0,0.6)'
         }}>
           {item.label}
         </span>
@@ -97,7 +93,7 @@ export default function MenuRing() {
 
   useFrame((state, delta) => {
     if (ringRef.current) {
-      ringRef.current.rotation.y += delta * 0.08; // Elegant, slow-rolling pacing
+      ringRef.current.rotation.y += delta * 0.07;
       rotationRef.current = ringRef.current.rotation.y;
     }
   });
@@ -111,7 +107,7 @@ export default function MenuRing() {
             key={`${item.id}-${index}`} 
             item={item} 
             angle={angle} 
-            radius={2.6} /* Pushed radius out to give mobile viewports breathing room */
+            radius={2.6} 
             currentRingRotation={rotationRef.current}
           />
         );
