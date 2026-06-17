@@ -14,64 +14,64 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
 
-  // Calculate the static position on the circle radius
+  // Math-calculated stable layout positions on the circle path
   const x = radius * Math.cos(angle);
   const z = radius * Math.sin(angle);
 
   useFrame((state) => {
     if (meshRef.current) {
-      // 1. Smooth hovering float physics
+      // Smooth hovering floating animation
       meshRef.current.position.y = hovered 
         ? Math.sin(state.clock.getElapsedTime() * 5) * 0.08 
         : 0;
 
-      // 2. Continuous Mathematical Alignment Matrix
-      // To prevent HTML clipping errors, we manually compute the exact counter-angle 
-      // required to keep the panel's front face pointing perfectly at the viewport lens.
-      const totalAbsoluteAngle = angle + currentRingRotation;
-      meshRef.current.rotation.y = -totalAbsoluteAngle - Math.PI / 2;
+      // Absolute Correction Matrix:
+      // This forces the panel to match the ring's rotation and look inward at the center camera
+      const totalAngle = angle + currentRingRotation;
+      meshRef.current.rotation.y = -totalAngle + Math.PI / 2;
     }
   });
 
   return (
     <group position={[x, 0, z]}>
-      {/* Premium 3D Physical Glass Plate */}
+      {/* 3D Physical Glass Card Asset */}
       <mesh
         ref={meshRef}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
         onPointerOut={() => setHovered(false)}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        <boxGeometry args={[1.4, 0.7, 0.06]} />
+        {/* Slightly scaled down dimensions for a cleaner fit on desktop and mobile */}
+        <boxGeometry args={[1.2, 0.6, 0.04]} />
         <meshPhysicalMaterial 
-          color={hovered ? item.color : '#111622'} 
-          transmission={0.85}       /* Highly translucent obsidian glass pass */
-          roughness={0.05}          /* Ultra polished, mirror-like finish */
+          color={hovered ? item.color : '#ffffff'} 
+          transmission={0.8}        /* Clear glass core properties */
+          roughness={0.05}          /* High-gloss polished finish */
           metalness={0.1}
-          thickness={1.2}           /* Thick edge depth for dramatic light refraction */
-          clearcoat={1.0}           /* Adds a highly reflective glossy outer lacquer shell */
-          clearcoatRoughness={0.02} /* Sharp glares from the environment skybox map */
+          thickness={0.6}           
+          clearcoat={1.0}           /* Maximizes bright studio light streaks */
+          clearcoatRoughness={0.05} 
           transparent={true}
-          opacity={hovered ? 0.95 : 0.6} 
+          opacity={hovered ? 0.9 : 0.4} 
         />
       </mesh>
 
       {/* Frosted Backdrop HTML Element */}
       <Html
-        position={[0, 0, 0.04]}
+        position={[0, 0, 0.03]}
         center
         distanceFactor={3}
         occlude={[meshRef]}
         className="glass-panel-label"
         style={{
           background: hovered ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.02)',
-          padding: '16px 32px',
+          padding: '14px 28px',
           borderRadius: '8px',
-          border: hovered ? `1px solid ${item.color}` : '1px solid rgba(255, 255, 255, 0.08)',
+          border: hovered ? `1px solid ${item.color}` : '1px solid rgba(255, 255, 255, 0.1)',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
           boxShadow: hovered 
-            ? `0 8px 32px 0 rgba(0, 255, 204, 0.15), inset 0 0 8px ${item.color}` 
+            ? `0 8px 32px 0 rgba(0, 255, 204, 0.15)` 
             : '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
           transition: 'all 0.3s ease',
           pointerEvents: 'none'
@@ -80,7 +80,7 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
         <span style={{ 
           color: hovered ? item.color : '#ffffff', 
           transition: 'color 0.3s ease',
-          fontSize: '14px',
+          fontSize: '13px',
           fontWeight: '900',
           letterSpacing: '0.15em',
           display: 'block',
@@ -99,8 +99,7 @@ export default function MenuRing() {
 
   useFrame((state, delta) => {
     if (ringRef.current) {
-      const increment = delta * 0.08; // Smooth, premium cinematic spin speed
-      ringRef.current.rotation.y += increment;
+      ringRef.current.rotation.y += delta * 0.10; // Controlled cinematic rotation pacing
       rotationRef.current = ringRef.current.rotation.y;
     }
   });
@@ -114,7 +113,7 @@ export default function MenuRing() {
             key={`${item.id}-${index}`} 
             item={item} 
             angle={angle} 
-            radius={2.5}
+            radius={2.4}
             currentRingRotation={rotationRef.current}
           />
         );

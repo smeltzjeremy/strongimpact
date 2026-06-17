@@ -12,7 +12,7 @@ export default function SceneContainer() {
       top: 0, 
       left: 0,
       zIndex: 1,
-      background: 'radial-gradient(circle at center, #111622 0%, #07090e 100%)'
+      background: 'radial-gradient(circle at center, #0d131f 0%, #05070a 100%)'
     }}>
       <Canvas
         camera={{ position: [0, 0, 4.2], fov: 60 }}
@@ -22,18 +22,26 @@ export default function SceneContainer() {
           powerPreference: "high-performance" 
         }}
       >
-        {/* Elite Photographic Lighting Environment Map Map - Simulates a real glass photo studio booth background */}
-        <Environment preset="city" />
+        {/* Swapped "city" for "studio" to get pure high-end light reflections instead of background scenery objects */}
+        <Environment preset="studio" />
 
-        {/* Studio Ambient and Directional Lights */}
-        <ambientLight intensity={0.4} color="#1d293d" />
-        <directionalLight position={[5, 8, 5]} intensity={1.5} color="#ffffff" />
-        <pointLight position={[-5, -3, 2]} intensity={1.0} color="#00ffcc" />
+        {/* Adjusted Core Lights to Let Stars Shine */}
+        <ambientLight intensity={0.2} color="#1d293d" />
+        <directionalLight position={[5, 8, 5]} intensity={2.0} color="#ffffff" />
+        <pointLight position={[-5, -3, 2]} intensity={1.2} color="#00ffcc" />
 
-        {/* Ambient Space Elements */}
-        <Stars radius={100} depth={50} count={2000} factor={4} saturation={0.4} fade speed={0.8} />
+        {/* Vibrant Cosmic Starfield Layer */}
+        <Stars 
+          radius={100} 
+          depth={50} 
+          count={3000} 
+          factor={7} 
+          saturation={1.0} 
+          fade 
+          speed={0.6} 
+        />
 
-        {/* Interactive Menu Ring */}
+        {/* Carousel Aligned Glass Menu Ring */}
         <MenuRing />
 
         <OrbitControls 
