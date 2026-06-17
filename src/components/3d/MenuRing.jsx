@@ -1,12 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { Html } from '@react-three/drei';
 
 const MENU_ITEMS = [
-  { id: 1, color: '#00ffcc' },
-  { id: 2, color: '#3399ff' },
-  { id: 3, color: '#ff3366' },
-  { id: 4, color: '#ffcc00' },
-  { id: 5, color: '#b833ff' }
+  { id: 1, label: 'GRAPHICS', color: '#00ffcc' },
+  { id: 2, label: 'PIPELINE', color: '#3399ff' },
+  { id: 3, label: 'DATABASE', color: '#ff3366' },
+  { id: 4, label: 'SECURITY', color: '#ffcc00' },
+  { id: 5, label: 'NETWORKS', color: '#b833ff' }
 ];
 
 function MenuPanel({ item, angle, radius }) {
@@ -26,20 +27,34 @@ function MenuPanel({ item, angle, radius }) {
 
   return (
     <group position={[x, 0, z]} rotation={[0, -angle - Math.PI / 2, 0]}>
-      {/* Absolute raw geometry baseline - No text, no canvas textures */}
+      {/* Semi-transparent digital glass panels */}
       <mesh
         ref={meshRef}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
         onPointerOut={() => setHovered(false)}
-        onClick={() => alert(`Clicked Panel ${item.id}`)}
+        onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        <boxGeometry args={[1.2, 0.7, 0.05]} />
+        <boxGeometry args={[1.3, 0.7, 0.04]} />
         <meshStandardMaterial 
-          color={hovered ? item.color : '#22283a'} 
-          roughness={0.5}
-          metalness={0.2}
+          color={hovered ? item.color : '#1e2533'} 
+          roughness={0.2}
+          metalness={0.8}
+          transparent={true}
+          opacity={0.65}
         />
       </mesh>
+
+      {/* Bulletproof 3D UI Projection Layer */}
+      <Html
+        position={[0, 0, 0.021]}
+        center
+        distanceFactor={4}
+        className="glass-panel-label"
+      >
+        <span style={{ color: hovered ? item.color : '#ffffff', transition: 'color 0.2s ease' }}>
+          {item.label}
+        </span>
+      </Html>
     </group>
   );
 }
@@ -49,7 +64,7 @@ export default function MenuRing() {
 
   useFrame((state, delta) => {
     if (ringRef.current) {
-      ringRef.current.rotation.y += delta * 0.15;
+      ringRef.current.rotation.y += delta * 0.12;
     }
   });
 
@@ -62,7 +77,7 @@ export default function MenuRing() {
             key={item.id} 
             item={item} 
             angle={angle} 
-            radius={2.2} 
+            radius={2.3} 
           />
         );
       })}

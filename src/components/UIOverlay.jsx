@@ -4,61 +4,69 @@ export default function UIOverlay() {
   return (
     <>
       <style>{`
-        /* 1. Send the luxury studio backdrop to the absolute bottom layer */
+        /* Force the studio gradient across absolutely the entire viewport */
         body, html {
           margin: 0;
           padding: 0;
-          width: 100%;
-          height: 100%;
+          width: 100vw !important;
+          height: 100vh !important;
           overflow: hidden;
-          background: radial-gradient(circle at center, #141923 0%, #06080c 100%) !important;
+          background: radial-gradient(circle at center, #1a2230 0%, #080b11 100%) !important;
         }
 
-        /* 2. Strip the background color off the UI layer so it's transparent */
+        /* Fully transparent UI layer sitting squarely on top */
         .ui-container {
-          position: absolute;
+          position: fixed;
           top: 0;
           left: 0;
           width: 100vw;
           height: 100vh;
-          z-index: 10;          /* Keeps text and buttons clickable on top */
-          pointer-events: none; /* Allows mouse/touch events to pass through to the 3D canvas */
-          font-family: system-ui, sans-serif;
+          z-index: 10;          
+          pointer-events: none; 
+          font-family: system-ui, -apple-system, sans-serif;
           color: #ffffff;
           box-sizing: border-box;
           padding: 40px;
-          background: transparent !important; 
+          background: transparent !important;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
         }
 
         .header-section {
           text-align: center;
-          margin-bottom: 20px;
+          margin-top: 20px;
         }
 
         .main-title {
           font-size: 2.5rem;
-          font-weight: 800;
+          font-weight: 900;
           letter-spacing: -0.05em;
           text-transform: uppercase;
           margin: 0;
+          text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
         .subtitle {
           font-size: 1rem;
           color: #00ffcc;
-          font-weight: 500;
-          margin: 5px 0 0 0;
+          font-weight: 600;
+          margin: 8px 0 0 0;
+          letter-spacing: 0.05em;
         }
 
         .description-box {
           max-width: 480px;
-          margin: 40px auto;
           text-align: center;
-          background: rgba(0, 0, 0, 0.4);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(6, 8, 12, 0.6);
+          border: 1px solid rgba(255, 255, 255, 0.08);
           padding: 20px;
-          border-radius: 8px;
-          backdrop-filter: blur(10px);
+          border-radius: 12px;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          margin-bottom: auto;
+          margin-top: 30px;
         }
 
         .description-text {
@@ -69,41 +77,54 @@ export default function UIOverlay() {
         }
 
         .footer-controls {
-          position: absolute;
-          bottom: 40px;
-          left: 50%;
-          transform: translateX(-50%);
           display: flex;
           gap: 15px;
+          margin-bottom: 20px;
         }
 
-        /* Ensure buttons regain clickability on the top layer */
         .action-btn {
           pointer-events: auto;
-          background: transparent;
-          border: 2px solid #ffffff;
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255, 255, 255, 0.3);
           color: #ffffff;
-          padding: 12px 24px;
+          padding: 14px 28px;
           font-weight: 600;
-          border-radius: 6px;
+          border-radius: 8px;
           cursor: pointer;
           transition: all 0.2s ease;
+          backdrop-filter: blur(5px);
         }
 
         .action-btn:hover {
           background: #ffffff;
           color: #06080c;
+          transform: translateY(-1px);
         }
 
         .action-btn.primary {
           background: #00ffcc;
           border-color: #00ffcc;
           color: #06080c;
+          box-shadow: 0 4px 14px rgba(0, 255, 204, 0.3);
         }
 
         .action-btn.primary:hover {
           background: #00ccaa;
           border-color: #00ccaa;
+          box-shadow: 0 6px 20px rgba(0, 255, 204, 0.4);
+        }
+
+        /* 3D Glass DOM Labels Style Injection */
+        .glass-panel-label {
+          color: #ffffff;
+          font-family: system-ui, sans-serif;
+          font-weight: 800;
+          font-size: 14px;
+          letter-spacing: 0.1em;
+          text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+          white-space: nowrap;
+          user-select: none;
+          pointer-events: none;
         }
       `}</style>
 
@@ -116,7 +137,7 @@ export default function UIOverlay() {
         <section className="description-box">
           <p className="description-text">
             A high-performance WebGL canvas environment built piece by piece. 
-            Interact directly with the rotating menu system layout below.
+            Click and drag to rotate space, or select any orbiting panel module.
           </p>
         </section>
 
