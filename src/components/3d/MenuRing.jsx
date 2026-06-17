@@ -19,7 +19,7 @@ function MenuPanel({ item, angle, radius }) {
 
   useFrame((state) => {
     if (meshRef.current) {
-      // Elegant hovering bounce effect
+      // Smooth hovering floating animation
       meshRef.current.position.y = hovered 
         ? Math.sin(state.clock.getElapsedTime() * 5) * 0.08 
         : 0;
@@ -28,7 +28,7 @@ function MenuPanel({ item, angle, radius }) {
 
   return (
     <group position={[x, 0, z]}>
-      {/* High-Performance Physical Glass Panel */}
+      {/* Premium 3D Physical Glass Plate */}
       <mesh
         ref={meshRef}
         rotation={[0, -angle - Math.PI / 2, 0]}
@@ -36,41 +36,52 @@ function MenuPanel({ item, angle, radius }) {
         onPointerOut={() => setHovered(false)}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        <boxGeometry args={[1.4, 0.7, 0.04]} />
+        <boxGeometry args={[1.4, 0.7, 0.06]} /> {/* Increased thickness to 0.06 to give it defined physical edges */}
         <meshPhysicalMaterial 
           color={hovered ? item.color : '#ffffff'} 
-          transmission={0.7}        /* High transmission for clean glass transparency */
-          roughness={0.2}           /* Slight frost surface to catch studio light glares */
-          metalness={0.1}
-          thickness={0.4}           /* Gives the panel physical edge-refraction depth */
-          clearcoat={1.0}           /* Super glossy outer shell layer */
-          clearcoatRoughness={0.1}
+          transmission={0.6}        /* Allows background stars to slide behind it */
+          roughness={0.1}           /* Low roughness makes it look polished and shiny */
+          metalness={0.05}
+          thickness={0.8}           /* High thickness creates beautiful 3D edge refraction */
+          clearcoat={1.0}           /* Adds a highly reflective glossy lacquer shell */
+          clearcoatRoughness={0.05} /* Mirrors studio lights cleanly across the surface */
           transparent={true}
-          opacity={0.9}
+          opacity={hovered ? 0.85 : 0.45} /* Deeper contrast between resting and hovered states */
         />
       </mesh>
 
-      {/* Sharp DOM Typography Overlay */}
+      {/* Frosted Backdrop Glassmorphism Overlay */}
       <Html
-        position={[0, 0, 0.05]}
+        position={[0, 0, 0.035]}
         center
         distanceFactor={3}
         occlude={[meshRef]}
         className="glass-panel-label"
+        style={{
+          /* Injects a high-end frosted glass styling right onto the card body container */
+          background: hovered ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.03)',
+          padding: '20px 40px',
+          borderRadius: '12px',
+          border: hovered ? `1px solid ${item.color}` : '1px solid rgba(255, 255, 255, 0.12)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          boxShadow: hovered 
+            ? `0 8px 32px 0 rgba(0, 255, 204, 0.2), inset 0 0 12px ${item.color}` 
+            : '0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 0 6px rgba(255,255,255,0.05)',
+          transition: 'all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)',
+          pointerEvents: 'none'
+        }}
       >
         <span style={{ 
           color: hovered ? item.color : '#ffffff', 
-          transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+          transition: 'color 0.3s ease',
           fontSize: '15px',
           fontWeight: '900',
-          letterSpacing: '0.12em',
-          userSelect: 'none',
-          pointerEvents: 'none',
+          letterSpacing: '0.15em',
           display: 'block',
-          transform: hovered ? 'scale(1.15)' : 'scale(1.0)',
           textShadow: hovered 
-            ? `0 0 10px ${item.color}, 0 2px 4px rgba(0,0,0,0.8)` 
-            : '0 2px 5px rgba(0,0,0,0.9)'
+            ? `0 0 12px ${item.color}` 
+            : '0 2px 4px rgba(0,0,0,0.6)'
         }}>
           {item.label}
         </span>
@@ -84,7 +95,7 @@ export default function MenuRing() {
 
   useFrame((state, delta) => {
     if (ringRef.current) {
-      ringRef.current.rotation.y += delta * 0.12;
+      ringRef.current.rotation.y += delta * 0.10; // Slightly slower rotation for a more cinematic feel
     }
   });
 
@@ -97,7 +108,7 @@ export default function MenuRing() {
             key={`${item.id}-${index}`} 
             item={item} 
             angle={angle} 
-            radius={2.4} 
+            radius={2.5} /* Slightly wider radius to expand the 3D depth field */
           />
         );
       })}
