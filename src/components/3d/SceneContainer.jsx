@@ -1,5 +1,6 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 import Lights from './Lights';
 import CustomObject from './CustomObject';
 
@@ -16,10 +17,13 @@ export default function SceneContainer() {
       >
         <color attach="background" args={['#0a0a0a']} />
         
+        {/* Enable mouse drag-to-rotate and scroll-to-zoom controls */}
+        <OrbitControls enableZoom={true} makeDefault />
+        
         {/* Studio lighting rig */}
         <Lights />
         
-        {/* Your shiny, light-reactive 3D object */}
+        {/* Shiny, light-reactive 3D object */}
         <CustomObject />
       </Canvas>
     </div>
