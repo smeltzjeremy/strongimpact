@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -20,12 +20,10 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
 
   useFrame((state) => {
     if (meshRef.current) {
-      // Enhanced floating glass hover
       meshRef.current.position.y = hovered 
         ? Math.sin(state.clock.getElapsedTime() * 4) * 0.12 + 0.05 
         : Math.sin(state.clock.getElapsedTime() * 1.5) * 0.02;
 
-      // Billboard alignment
       const absoluteAngle = angle + currentRingRotation;
       meshRef.current.rotation.y = -absoluteAngle + Math.PI / 2;
     }
@@ -33,7 +31,6 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
 
   return (
     <group position={[x, 0, z]}>
-      {/* 3D Glass Panel */}
       <mesh
         ref={meshRef}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
@@ -57,13 +54,7 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
         />
       </mesh>
 
-      {/* Glassmorphic HTML Label */}
-      <Html
-        position={[0, 0, 0.05]}
-        center
-        distanceFactor={3}
-        pointerEvents="none"
-      >
+      <Html position={[0, 0, 0.05]} center distanceFactor={3} pointerEvents="none">
         <span style={{ 
           color: hovered ? item.color : '#ffffff',
           fontSize: '15px',
@@ -79,9 +70,7 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
           transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
           whiteSpace: 'nowrap',
           userSelect: 'none',
-          textShadow: hovered 
-            ? `0 0 15px ${item.color}` 
-            : '0 2px 6px rgba(0,0,0,0.9)'
+          textShadow: hovered ? `0 0 15px ${item.color}` : '0 2px 6px rgba(0,0,0,0.9)'
         }}>
           {item.label}
         </span>
@@ -93,6 +82,18 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
 export default function MenuRing() {
   const ringRef = useRef();
   const rotationRef = useRef(0);
+  
+  // Track window width state for reactive 3D rendering updates
+  const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1020);
+
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Tip 1: Responsive 3D orbit bounds based on your exact layout parameters
+  const activeRadius = width < 768 ? 2.1 : 2.8;
 
   useFrame((state, delta) => {
     if (ringRef.current) {
@@ -110,7 +111,7 @@ export default function MenuRing() {
             key={`${item.id}-${index}`} 
             item={item} 
             angle={angle} 
-            radius={2.8} 
+            radius={activeRadius} 
             currentRingRotation={rotationRef.current}
           />
         );
