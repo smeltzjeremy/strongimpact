@@ -1,10 +1,17 @@
 import React from 'react';
 import SceneContainer from './components/3d/SceneContainer';
+import UIOverlay from './components/UIOverlay';
 
-export default function App() {
+function App() {
   return (
-    <main style={{ width: '100vw', height: '100vh', margin: 0, padding: 0, overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100vw', height: '100vh', background: '#0a0a0a', overflow: 'hidden' }}>
+      {/* Background Layer: High-performance 3D graphics scene */}
       <SceneContainer />
-    </main>
+
+      {/* Foreground Layer: Clean, interactive HTML layout text and buttons */}
+      <UIOverlay />
+    </div>
   );
 }
+
+export default App;
