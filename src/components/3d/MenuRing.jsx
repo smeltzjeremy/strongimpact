@@ -13,13 +13,13 @@ function MenuPanel({ item, angle, radius }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
 
-  // Calculate coordinates on the circle perimeter
+  // Position coordinates calculated around the perimeter circle
   const x = radius * Math.cos(angle);
   const z = radius * Math.sin(angle);
 
   useFrame((state) => {
     if (meshRef.current) {
-      // Subtle float animation for hovered items
+      // Subtle float animation for interactive items
       meshRef.current.position.y = hovered 
         ? Math.sin(state.clock.getElapsedTime() * 5) * 0.08 
         : 0;
@@ -34,14 +34,21 @@ function MenuPanel({ item, angle, radius }) {
         onPointerOut={() => setHovered(false)}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        {/* Sleek, futuristic panel geometry */}
+        {/* Futuristic floating panel layout geometry */}
         <boxGeometry args={[1.2, 0.7, 0.05]} />
-        <meshStandardMaterial 
-          color={hovered ? item.color : '#1a1a1a'} 
-          roughness={0.3}
-          metalness={0.7}
-          transparent
-          opacity={0.85}
+        
+        {/* High-End Frosted Glassmorphism Physical Material */}
+        <meshPhysicalMaterial 
+          color={hovered ? item.color : '#ffffff'} 
+          transmission={0.6}       /* High transparency to let background light pass through */
+          opacity={1}              /* Full material opacity so transmission works perfectly */
+          transparent={true}
+          roughness={0.25}         /* Micro-surface texture to create the frosted blur effect */
+          metalness={0.1}          /* Low metalness to maintain glass refraction properties */
+          thickness={0.5}          /* Simulates internal glass thickness to refract background stars */
+          ior={1.5}                /* Index of Refraction for standard window/tempered glass */
+          clearcoat={1.0}          /* Added ultra-smooth glossy reflection coat on top of frost */
+          clearcoatRoughness={0.1}
         />
       </mesh>
     </group>
@@ -54,7 +61,7 @@ export default function MenuRing() {
 
   useFrame((state, delta) => {
     if (ringRef.current) {
-      ringRef.current.rotation.y += delta * 0.15; // Smooth rotational drift
+      ringRef.current.rotation.y += delta * 0.15; // Continuous smooth orbital rotation
     }
   });
 
