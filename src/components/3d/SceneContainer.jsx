@@ -1,6 +1,7 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import Lights from './Lights';
+import CustomObject from './CustomObject';
 
 export default function SceneContainer() {
   return (
@@ -15,14 +16,11 @@ export default function SceneContainer() {
       >
         <color attach="background" args={['#0a0a0a']} />
         
-        {/* Our new custom studio lights */}
+        {/* Studio lighting rig */}
         <Lights />
         
-        {/* Placeholder mesh to verify render chain */}
-        <mesh>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshBasicMaterial color="#00ffcc" wireframe />
-        </mesh>
+        {/* Your shiny, light-reactive 3D object */}
+        <CustomObject />
       </Canvas>
     </div>
   );
