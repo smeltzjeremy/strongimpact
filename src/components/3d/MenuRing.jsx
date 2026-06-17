@@ -1,5 +1,6 @@
 import React, { useRef, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
 const MENU_ITEMS = [
@@ -10,14 +11,12 @@ const MENU_ITEMS = [
   { id: 5, label: 'NETWORKS', color: '#b833ff' }
 ];
 
-// Helper function to procedurally draw block-style text paths entirely locally
+// Procedurally generates a clean local canvas texture map for typography
 function createLocalTextMesh(text) {
   const canvas = document.createElement('canvas');
   canvas.width = 256;
   canvas.height = 64;
   const ctx = canvas.getContext('2d');
-  
-  // Create a crisp, high-contrast text map texture locally
   ctx.fillStyle = 'rgba(0,0,0,0)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.font = 'bold 32px sans-serif';
@@ -25,19 +24,14 @@ function createLocalTextMesh(text) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-  
-  const texture = new THREE.CanvasTexture(canvas);
-  return texture;
+  return new THREE.CanvasTexture(canvas);
 }
 
-function MenuPanel({ item, angle, radius }) {
+function MenuPanel({ item, angle, radius, envMap }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
-
-  // Generate the text texture locally once per component mounting
   const textTexture = useMemo(() => createLocalTextMesh(item.label), [item.label]);
 
-  // Position coordinates calculated around the perimeter circle
   const x = radius * Math.cos(angle);
   const z = radius * Math.sin(angle);
 
@@ -51,7 +45,7 @@ function MenuPanel({ item, angle, radius }) {
 
   return (
     <group position={[x, 0, z]} rotation={[0, -angle - Math.PI / 2, 0]}>
-      {/* The Glass Panel */}
+      {/* Premium Glass Physical Geometry */}
       <mesh
         ref={meshRef}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
@@ -61,26 +55,28 @@ function MenuPanel({ item, angle, radius }) {
         <boxGeometry args={[1.2, 0.7, 0.05]} />
         <meshPhysicalMaterial 
           color={hovered ? item.color : '#ffffff'} 
-          transmission={0.6}
-          opacity={1}
+          envMap={envMap}            /* Feeds studio reflections directly onto the glossy layer */
+          envMapIntensity={2.5}      /* Highlights the edges of the panels */
+          transmission={0.85}        /* High transmission allows background stars to distort through */
+          opacity={1.0}
           transparent={true}
-          roughness={0.25}
-          metalness={0.1}
-          thickness={0.5}
-          ior={1.5}
-          clearcoat={1.0}
-          clearcoatRoughness={0.1}
+          roughness={0.15}           /* Perfect frosted gloss texture balance */
+          metalness={0.0}
+          thickness={0.4}            /* Physically bends light objects passing behind it */
+          ior={1.45}                 /* Real-world Index of Refraction for premium glass sheets */
+          clearcoat={1.0}            /* Crisp, high-gloss surface clearcoat reflection */
+          clearcoatRoughness={0.05}
         />
       </mesh>
 
-      {/* The Localized Label Floating Slightly in Front */}
+      {/* Local Text Overlay Layer */}
       <mesh position={[0, 0, 0.031]} pointerEvents="none">
         <planeGeometry args={[1.0, 0.25]} />
         <meshBasicMaterial 
           map={textTexture} 
           transparent={true} 
+          opacity={0.85} 
           blending={THREE.AdditiveBlending}
-          opacity={0.9}
         />
       </mesh>
     </group>
@@ -89,7 +85,23 @@ function MenuPanel({ item, angle, radius }) {
 
 export default function MenuRing() {
   const ringRef = useRef();
-  const radius = 2.2;
+  
+  // Generates a local, real-time procedural lighting environment texture map
+  const generatedEnvMap = useMemo(() => {
+    const size = 128;
+    const data = new Uint8Array(size * size * 3);
+    for (let i = 0; i < size * size; i++) {
+      const stride = i * 3;
+      // Procedural space-neon grid values to cast light maps onto the glass surfaces
+      data[stride] = 15;   // R
+      data[stride + 1] = 25; // G
+      data[stride + 2] = 40; // B
+    }
+    const texture = new THREE.DataTexture(data, size, size, THREE.RGBFormat);
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+    texture.needsUpdate = true;
+    return texture;
+  }, []);
 
   useFrame((state, delta) => {
     if (ringRef.current) {
@@ -106,7 +118,8 @@ export default function MenuRing() {
             key={item.id} 
             item={item} 
             angle={angle} 
-            radius={radius} 
+            radius={2.2} 
+            envMap={generatedEnvMap}
           />
         );
       })}
