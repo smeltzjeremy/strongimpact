@@ -11,19 +11,15 @@ export default function SceneContainer() {
       <Canvas
         gl={{ 
           antialias: true, 
+          alpha: true, /* Enabled alpha transparency so the CSS backdrop passes through */
           powerPreference: "high-performance" 
         }}
         camera={{ position: [0, 0, 5], fov: 60 }}
       >
-        {/* Explicitly declaring a dark clear color stabilizes the WebGL frame buffer pass */}
-        <color attach="background" args={['#0c101b']} />
-        
+        {/* Completely clear of color background tags to let the layout gradient show */}
         <OrbitControls enableZoom={true} makeDefault />
-        
         <Lights />
-        
         <SpaceParticles />
-        
         <MenuRing />
       </Canvas>
     </div>

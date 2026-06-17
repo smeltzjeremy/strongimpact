@@ -3,140 +3,127 @@ import React from 'react';
 export default function UIOverlay() {
   return (
     <>
-      {/* Dynamic Responsive Styles injected into the page header */}
       <style>{`
+        /* 1. Send the luxury studio backdrop to the absolute bottom layer */
+        body, html {
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          background: radial-gradient(circle at center, #141923 0%, #06080c 100%) !important;
+        }
+
+        /* 2. Strip the background color off the UI layer so it's transparent */
         .ui-container {
           position: absolute;
           top: 0;
           left: 0;
           width: 100vw;
           height: 100vh;
-          z-index: 10;
-          pointer-events: none;
+          z-index: 10;          /* Keeps text and buttons clickable on top */
+          pointer-events: none; /* Allows mouse/touch events to pass through to the 3D canvas */
           font-family: system-ui, sans-serif;
           color: #ffffff;
           box-sizing: border-box;
           padding: 40px;
-          /* Luxury Dark Studio Radial Gradient to give glass real reflective depth */
-          background: radial-gradient(circle at center, #141923 0%, #06080c 100%);
-        }
-        .header-block {
-          position: absolute;
-          top: 40px;
-          left: 40px;
-          text-align: left;
-          pointer-events: auto;
-        }
-        .text-block {
-          position: absolute;
-          top: 180px;
-          left: 40px;
-          max-width: 400px;
-          text-align: left;
-          pointer-events: auto;
-        }
-        .button-block {
-          position: absolute;
-          bottom: 40px;
-          left: 40px;
-          display: flex;
-          gap: 15px;
-          pointer-events: auto;
+          background: transparent !important; 
         }
 
-        /* Mobile Viewport Optimizations (Screens smaller than 768px wide) */
-        @media (max-width: 768px) {
-          .ui-container {
-            padding: 20px;
-          }
-          .header-block {
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            text-align: center;
-          }
-          .header-block h1 {
-            font-size: 1.8rem !important;
-          }
-          .text-block {
-            top: 110px;
-            left: 20px;
-            right: 20px;
-            max-width: 100%;
-            text-align: center;
-            background: rgba(10, 10, 10, 0.6);
-            padding: 12px;
-            border-radius: 8px;
-            backdrop-filter: blur(4px);
-          }
-          .text-block p {
-            font-size: 0.95rem !important;
-          }
-          .button-block {
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            justify-content: center;
-            gap: 10px;
-          }
-          .button-block button {
-            padding: 10px 16px !important;
-            font-size: 0.85rem !important;
-          }
+        .header-section {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+
+        .main-title {
+          font-size: 2.5rem;
+          font-weight: 800;
+          letter-spacing: -0.05em;
+          text-transform: uppercase;
+          margin: 0;
+        }
+
+        .subtitle {
+          font-size: 1rem;
+          color: #00ffcc;
+          font-weight: 500;
+          margin: 5px 0 0 0;
+        }
+
+        .description-box {
+          max-width: 480px;
+          margin: 40px auto;
+          text-align: center;
+          background: rgba(0, 0, 0, 0.4);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          padding: 20px;
+          border-radius: 8px;
+          backdrop-filter: blur(10px);
+        }
+
+        .description-text {
+          font-size: 0.95rem;
+          line-height: 1.6;
+          color: #a0aec0;
+          margin: 0;
+        }
+
+        .footer-controls {
+          position: absolute;
+          bottom: 40px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          gap: 15px;
+        }
+
+        /* Ensure buttons regain clickability on the top layer */
+        .action-btn {
+          pointer-events: auto;
+          background: transparent;
+          border: 2px solid #ffffff;
+          color: #ffffff;
+          padding: 12px 24px;
+          font-weight: 600;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+          background: #ffffff;
+          color: #06080c;
+        }
+
+        .action-btn.primary {
+          background: #00ffcc;
+          border-color: #00ffcc;
+          color: #06080c;
+        }
+
+        .action-btn.primary:hover {
+          background: #00ccaa;
+          border-color: #00ccaa;
         }
       `}</style>
 
       <div className="ui-container">
-        {/* Top Branding Section */}
-        <div className="header-block">
-          <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: '800', letterSpacing: '-0.05em', color: '#ffffff' }}>
-            STRONG IMPACT
-          </h1>
-          <p style={{ margin: '5px 0 0 0', color: '#00ffcc', fontWeight: '500' }}>
-            Interactive 3D Engine Pipeline v1.0
-          </p>
-        </div>
+        <header className="header-section">
+          <h1 className="main-title">Strong Impact</h1>
+          <p className="subtitle">Interactive 3D Engine Pipeline v1.0</p>
+        </header>
 
-        {/* Informational Context Description */}
-        <div className="text-block">
-          <p style={{ fontSize: '1.1rem', lineHeight: '1.6', color: '#a0a0a0', margin: 0 }}>
-            A high-performance WebGL canvas environment built piece by piece. Click and drag the metallic torus knot to interact with the studio lighting rig.
+        <section className="description-box">
+          <p className="description-text">
+            A high-performance WebGL canvas environment built piece by piece. 
+            Interact directly with the rotating menu system layout below.
           </p>
-        </div>
+        </section>
 
-        {/* Global Control Layout Action Buttons */}
-        <div className="button-block">
-          <button 
-            onClick={() => alert('System Initialized!')}
-            style={{
-              background: '#00ffcc',
-              color: '#0a0a0a',
-              border: 'none',
-              padding: '12px 24px',
-              borderRadius: '6px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-          >
-            Initialize Project
-          </button>
-          <button 
-            onClick={() => window.open('https://github.com/smeltzjeremy/strongimpact', '_blank')}
-            style={{
-              background: 'transparent',
-              color: '#ffffff',
-              border: '2px solid #ffffff',
-              padding: '10px 22px',
-              borderRadius: '6px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-          >
-            View Source
-          </button>
-        </div>
+        <footer className="footer-controls">
+          <button className="action-btn primary">Initialize Project</button>
+          <button className="action-btn" onClick={() => window.open('https://github.com', '_blank')}>View Source</button>
+        </footer>
       </div>
     </>
   );
