@@ -17,6 +17,8 @@ export default function UIOverlay() {
           color: #ffffff;
           box-sizing: border-box;
           padding: 40px;
+          /* Luxury Dark Studio Radial Gradient to give glass real reflective depth */
+          background: radial-gradient(circle at center, #141923 0%, #06080c 100%);
         }
         .header-block {
           position: absolute;
@@ -62,10 +64,10 @@ export default function UIOverlay() {
             right: 20px;
             max-width: 100%;
             text-align: center;
-            background: rgba(10, 10, 10, 0.6); /* Semi-transparent dark backing for legibility */
+            background: rgba(10, 10, 10, 0.6);
             padding: 12px;
             border-radius: 8px;
-            backdrop-filter: blur(4px); /* Soft blur background */
+            backdrop-filter: blur(4px);
           }
           .text-block p {
             font-size: 0.95rem !important;

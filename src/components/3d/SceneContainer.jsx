@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import Lights from './Lights';
 import SpaceParticles from './SpaceParticles';
-import MenuRing from './MenuRing'; // <-- 1. Swap the import to MenuRing
+import MenuRing from './MenuRing';
 
 export default function SceneContainer() {
   return (
@@ -16,7 +16,7 @@ export default function SceneContainer() {
         }}
         camera={{ position: [0, 0, 5], fov: 60 }}
       >
-        <color attach="background" args={['#0a0a0a']} />
+        {/* We removed the flat solid black color tag to let our CSS space gradient shine through */}
         
         {/* Enable mouse drag-to-rotate and scroll-to-zoom controls */}
         <OrbitControls enableZoom={true} makeDefault />
@@ -27,8 +27,8 @@ export default function SceneContainer() {
         {/* Dynamic, slowly drifting background starfield */}
         <SpaceParticles />
         
-        {/* Multi-element interactive 3D menu array */}
-        <MenuRing /> {/* <-- 2. Render the rotating panel ring */}
+        {/* Multi-element interactive 3D menu array with glassmorphism */}
+        <MenuRing />
       </Canvas>
     </div>
   );
