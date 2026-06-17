@@ -14,71 +14,67 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
 
+  // Compute fixed layout coordinate spacing around the ring perimeter
   const x = radius * Math.cos(angle);
   const z = radius * Math.sin(angle);
 
   useFrame((state) => {
     if (meshRef.current) {
-      // Smooth floating animation
+      // Smooth interactive hover bounce height adjustments
       meshRef.current.position.y = hovered 
-        ? Math.sin(state.clock.getElapsedTime() * 5) * 0.08 
+        ? Math.sin(state.clock.getElapsedTime() * 5) * 0.06 
         : 0;
 
-      // Absolute Correction Matrix to face camera perfectly
-      const totalAngle = angle + currentRingRotation;
-      meshRef.current.rotation.y = -totalAngle + Math.PI / 2;
+      // Rule 3: Strict Billboard Alignment Math
+      // Manually offsets the panel's local frame against the parents rotation vector,
+      // forcing the flat face to remain precisely parallel to the camera view axis.
+      const absoluteAngle = angle + currentRingRotation;
+      meshRef.current.rotation.y = -absoluteAngle + Math.PI / 2;
     }
   });
 
   return (
     <group position={[x, 0, z]}>
-      {/* Premium Translucent Frosted Glass Plate */}
+      {/* Rule 1 & 2: Main 3D Physical Glass Screen Asset */}
       <mesh
         ref={meshRef}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
         onPointerOut={() => setHovered(false)}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        <boxGeometry args={[1.0, 0.6, 0.03]} />
+        <boxGeometry args={[1.6, 0.9, 0.06]} />
         <meshPhysicalMaterial 
           color={hovered ? item.color : '#ffffff'} 
-          transmission={0.9}        /* High transmission so red stars glide beautifully through the panel body */
-          roughness={0.15}          /* Balanced roughness: frost appearance without losing glass sheen */
+          transmission={0.65}
+          roughness={0.15}
           metalness={0.0}
-          thickness={0.3}
-          clearcoat={0.8}           /* Brings back a high-end glossy polished lacquer shine */
+          thickness={0.6}
+          clearcoat={1.0}
           clearcoatRoughness={0.05}
           transparent={true}
-          opacity={hovered ? 0.95 : 0.25} /* Deep transparency to make it look lightweight and premium */
+          opacity={hovered ? 0.90 : 0.35}
         />
       </mesh>
 
-      {/* Crisp Overlay Label - Removed 'occlude' to instantly fix header text blackout bug */}
+      {/* Rule 4: Clean HTML Fluid Overlay Text Integration */}
       <Html
-        position={[0, 0, 0.02]}
+        position={[0, 0, 0.04]}
         center
         distanceFactor={3}
-        className="glass-panel-label"
-        style={{
-          background: hovered ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.01)',
-          padding: '12px 24px',
-          borderRadius: '8px',
-          border: hovered ? `1px solid ${item.color}` : '1px solid rgba(255, 255, 255, 0.08)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
-          transition: 'all 0.3s ease',
-          pointerEvents: 'none'
-        }}
+        pointerEvents="none"
       >
         <span style={{ 
           color: hovered ? item.color : '#ffffff', 
-          transition: 'color 0.3s ease',
-          fontSize: '11px',
+          transition: 'color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+          fontSize: '14px',
           fontWeight: '900',
-          letterSpacing: '0.15em',
+          letterSpacing: '0.18em',
+          userSelect: 'none',
           display: 'block',
-          textShadow: hovered ? `0 0 10px ${item.color}` : '0 2px 4px rgba(0,0,0,0.6)'
+          whiteSpace: 'nowrap',
+          textShadow: hovered 
+            ? `0 0 12px ${item.color}, 0 2px 4px rgba(0,0,0,0.8)` 
+            : '0 2px 5px rgba(0,0,0,0.9)'
         }}>
           {item.label}
         </span>
@@ -93,7 +89,7 @@ export default function MenuRing() {
 
   useFrame((state, delta) => {
     if (ringRef.current) {
-      ringRef.current.rotation.y += delta * 0.07;
+      ringRef.current.rotation.y += delta * 0.08;
       rotationRef.current = ringRef.current.rotation.y;
     }
   });
@@ -107,7 +103,7 @@ export default function MenuRing() {
             key={`${item.id}-${index}`} 
             item={item} 
             angle={angle} 
-            radius={2.6} 
+            radius={2.5} 
             currentRingRotation={rotationRef.current}
           />
         );
