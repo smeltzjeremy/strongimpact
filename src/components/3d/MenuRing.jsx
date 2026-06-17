@@ -7,7 +7,7 @@ const MENU_ITEMS = [
   { id: 2, label: 'PIPELINE', color: '#3399ff' },
   { id: 3, label: 'DATABASE', color: '#ff3366' },
   { id: 4, label: 'SECURITY', color: '#ffcc00' },
-  { id: 4, label: 'NETWORKS', color: '#b833ff' }
+  { id: 5, label: 'NETWORKS', color: '#b833ff' }
 ];
 
 function MenuPanel({ item, angle, radius }) {
@@ -26,10 +26,11 @@ function MenuPanel({ item, angle, radius }) {
   });
 
   return (
-    <group position={[x, 0, z]} rotation={[0, -angle - Math.PI / 2, 0]}>
-      {/* Semi-transparent digital glass panels */}
+    <group position={[x, 0, z]}>
+      {/* Semi-transparent glass panels rotated to face the center ring anchor */}
       <mesh
         ref={meshRef}
+        rotation={[0, -angle - Math.PI / 2, 0]}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
         onPointerOut={() => setHovered(false)}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
@@ -44,22 +45,27 @@ function MenuPanel({ item, angle, radius }) {
         />
       </mesh>
 
-      {/* 3D Projected DOM Sticker Layer */}
+      {/* Upgraded 3D DOM Typography Layer:
+        - Removed 'transform' to make labels billboard face forward (no mirror flip)
+        - Added 'occlude' array to drop opacity to zero when passing behind foreground meshes
+      */}
       <Html
-        position={[0, 0, 0.025]}
+        position={[0, 0, 0.05]}
         center
-        transform /* Glues the text flat onto the panel face in true 3D perspective */
-        distanceFactor={2.5}
+        distanceFactor={3}
+        occlude={[meshRef]}
         className="glass-panel-label"
       >
         <span style={{ 
           color: hovered ? item.color : '#ffffff', 
-          transition: 'color 0.2s ease',
-          fontSize: '18px',
-          fontWeight: 'bold',
-          letterSpacing: '0.05em',
+          transition: 'color 0.2s ease, transform 0.2s ease',
+          fontSize: '16px',
+          fontWeight: '800',
+          letterSpacing: '0.08em',
           userSelect: 'none',
-          pointerEvents: 'none'
+          pointerEvents: 'none',
+          display: 'block',
+          transform: hovered ? 'scale(1.1)' : 'scale(1.0)'
         }}>
           {item.label}
         </span>
