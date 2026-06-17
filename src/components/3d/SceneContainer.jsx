@@ -2,8 +2,8 @@ import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import Lights from './Lights';
-import CustomObject from './CustomObject';
-import SpaceParticles from './SpaceParticles'; // <-- 1. The crucial import
+import SpaceParticles from './SpaceParticles';
+import MenuRing from './MenuRing'; // <-- 1. Swap the import to MenuRing
 
 export default function SceneContainer() {
   return (
@@ -25,10 +25,10 @@ export default function SceneContainer() {
         <Lights />
         
         {/* Dynamic, slowly drifting background starfield */}
-        <SpaceParticles /> {/* <-- 2. Dropped right inside the canvas */}
+        <SpaceParticles />
         
-        {/* Shiny, light-reactive 3D object */}
-        <CustomObject />
+        {/* Multi-element interactive 3D menu array */}
+        <MenuRing /> {/* <-- 2. Render the rotating panel ring */}
       </Canvas>
     </div>
   );
