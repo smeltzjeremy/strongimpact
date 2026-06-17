@@ -26,7 +26,7 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
         : 0;
 
       // Absolute Correction Matrix:
-      // This forces the panel to match the ring's rotation and look inward at the center camera
+      // Dynamically angles the panel to face the camera center perfectly
       const totalAngle = angle + currentRingRotation;
       meshRef.current.rotation.y = -totalAngle + Math.PI / 2;
     }
@@ -41,18 +41,18 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
         onPointerOut={() => setHovered(false)}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        {/* Slightly scaled down dimensions for a cleaner fit on desktop and mobile */}
-        <boxGeometry args={[1.2, 0.6, 0.04]} />
+        {/* Adjusted dimensions (1.0 width) for a sleek, beautifully fitted mobile presence */}
+        <boxGeometry args={[1.0, 0.6, 0.04]} />
         <meshPhysicalMaterial 
           color={hovered ? item.color : '#ffffff'} 
-          transmission={0.8}        /* Clear glass core properties */
-          roughness={0.05}          /* High-gloss polished finish */
-          metalness={0.1}
-          thickness={0.6}           
-          clearcoat={1.0}           /* Maximizes bright studio light streaks */
-          clearcoatRoughness={0.05} 
+          transmission={0.85}       /* High transmission for pristine star visibility */
+          roughness={0.22}          /* Frosted finish scatters harsh highlights into a premium glow */
+          metalness={0.02}
+          thickness={0.5}           /* Fine edge thickness */
+          clearcoat={0.4}           /* Subdued glossy outer layer to prevent unpolished smearing */
+          clearcoatRoughness={0.1} 
           transparent={true}
-          opacity={hovered ? 0.9 : 0.4} 
+          opacity={hovered ? 0.9 : 0.35} 
         />
       </mesh>
 
@@ -64,15 +64,13 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
         occlude={[meshRef]}
         className="glass-panel-label"
         style={{
-          background: hovered ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.02)',
-          padding: '14px 28px',
+          background: hovered ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.01)',
+          padding: '12px 24px',
           borderRadius: '8px',
-          border: hovered ? `1px solid ${item.color}` : '1px solid rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
-          boxShadow: hovered 
-            ? `0 8px 32px 0 rgba(0, 255, 204, 0.15)` 
-            : '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
+          border: hovered ? `1px solid ${item.color}` : '1px solid rgba(255, 255, 255, 0.08)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          boxShadow: hovered ? `0 8px 24px 0 rgba(0, 0, 0, 0.2)` : '0 4px 16px 0 rgba(0, 0, 0, 0.3)',
           transition: 'all 0.3s ease',
           pointerEvents: 'none'
         }}
@@ -80,7 +78,7 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
         <span style={{ 
           color: hovered ? item.color : '#ffffff', 
           transition: 'color 0.3s ease',
-          fontSize: '13px',
+          fontSize: '12px',
           fontWeight: '900',
           letterSpacing: '0.15em',
           display: 'block',
@@ -99,7 +97,7 @@ export default function MenuRing() {
 
   useFrame((state, delta) => {
     if (ringRef.current) {
-      ringRef.current.rotation.y += delta * 0.10; // Controlled cinematic rotation pacing
+      ringRef.current.rotation.y += delta * 0.08; // Elegant, slow-rolling pacing
       rotationRef.current = ringRef.current.rotation.y;
     }
   });
@@ -113,7 +111,7 @@ export default function MenuRing() {
             key={`${item.id}-${index}`} 
             item={item} 
             angle={angle} 
-            radius={2.4}
+            radius={2.6} /* Pushed radius out to give mobile viewports breathing room */
             currentRingRotation={rotationRef.current}
           />
         );
