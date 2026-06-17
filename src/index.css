@@ -109,3 +109,39 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+/* Premium Glassmorphic Layout Background Elements */
+.background-frost {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: 
+    radial-gradient(circle at 50% 20%, rgba(80, 160, 255, 0.12) 0%, transparent 50%),
+    #0a0a1a;
+  overflow: hidden;
+}
+
+.background-frost::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.background-frost::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.03) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(255,255,255,0.02) 100
+  );
+  backdrop-filter: blur(8px);
+  z-index: 1;
+}
