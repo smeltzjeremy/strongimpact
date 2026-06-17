@@ -11,42 +11,52 @@ const MENU_ITEMS = [
 ];
 
 function MenuPanel({ item, angle, radius }) {
+  const groupRef = useRef();
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
 
+  // Calculate base layout positions along the circle radius
   const x = radius * Math.cos(angle);
   const z = radius * Math.sin(angle);
 
   useFrame((state) => {
+    // 1. Smooth hovering float physics
     if (meshRef.current) {
-      // Smooth hovering floating animation
       meshRef.current.position.y = hovered 
         ? Math.sin(state.clock.getElapsedTime() * 5) * 0.08 
         : 0;
     }
+
+    // 2. Continuous Camera Look-At Vector Alignment
+    // This dynamically tracks the camera's real-time position matrix 
+    // and twists the panel's rotation axis so it always squarely faces your eyes.
+    if (groupRef.current) {
+      groupRef.current.lookAt(state.camera.position);
+    }
   });
 
   return (
-    <group position={[x, 0, z]}>
-      {/* Premium 3D Physical Glass Plate */}
+    // We bind the position and the lookAt target calculation directly to the local group anchor
+    <group ref={groupRef} position={[x, 0, z]}>
+      
+      {/* Dynamic 3D Physical Glass Plate */}
       <mesh
         ref={meshRef}
-        rotation={[0, -angle - Math.PI / 2, 0]}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
         onPointerOut={() => setHovered(false)}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        <boxGeometry args={[1.4, 0.7, 0.06]} /> {/* Increased thickness to 0.06 to give it defined physical edges */}
+        <boxGeometry args={[1.4, 0.7, 0.06]} />
         <meshPhysicalMaterial 
           color={hovered ? item.color : '#ffffff'} 
-          transmission={0.6}        /* Allows background stars to slide behind it */
-          roughness={0.1}           /* Low roughness makes it look polished and shiny */
+          transmission={0.6}        
+          roughness={0.1}           
           metalness={0.05}
-          thickness={0.8}           /* High thickness creates beautiful 3D edge refraction */
-          clearcoat={1.0}           /* Adds a highly reflective glossy lacquer shell */
-          clearcoatRoughness={0.05} /* Mirrors studio lights cleanly across the surface */
+          thickness={0.8}           
+          clearcoat={1.0}           
+          clearcoatRoughness={0.05} 
           transparent={true}
-          opacity={hovered ? 0.85 : 0.45} /* Deeper contrast between resting and hovered states */
+          opacity={hovered ? 0.85 : 0.45} 
         />
       </mesh>
 
@@ -58,7 +68,6 @@ function MenuPanel({ item, angle, radius }) {
         occlude={[meshRef]}
         className="glass-panel-label"
         style={{
-          /* Injects a high-end frosted glass styling right onto the card body container */
           background: hovered ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.03)',
           padding: '20px 40px',
           borderRadius: '12px',
@@ -95,7 +104,7 @@ export default function MenuRing() {
 
   useFrame((state, delta) => {
     if (ringRef.current) {
-      ringRef.current.rotation.y += delta * 0.10; // Slightly slower rotation for a more cinematic feel
+      ringRef.current.rotation.y += delta * 0.10; // Cinematic pacing rotation
     }
   });
 
@@ -108,7 +117,7 @@ export default function MenuRing() {
             key={`${item.id}-${index}`} 
             item={item} 
             angle={angle} 
-            radius={2.5} /* Slightly wider radius to expand the 3D depth field */
+            radius={2.5} 
           />
         );
       })}
