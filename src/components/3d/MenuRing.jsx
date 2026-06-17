@@ -7,7 +7,7 @@ const MENU_ITEMS = [
   { id: 2, label: 'PIPELINE', color: '#3399ff' },
   { id: 3, label: 'DATABASE', color: '#ff3366' },
   { id: 4, label: 'SECURITY', color: '#ffcc00' },
-  { id: 5, label: 'NETWORKS', color: '#b833ff' }
+  { id: 4, label: 'NETWORKS', color: '#b833ff' }
 ];
 
 function MenuPanel({ item, angle, radius }) {
@@ -34,24 +34,33 @@ function MenuPanel({ item, angle, radius }) {
         onPointerOut={() => setHovered(false)}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        <boxGeometry args={[1.3, 0.7, 0.04]} />
+        <boxGeometry args={[1.4, 0.7, 0.04]} />
         <meshStandardMaterial 
-          color={hovered ? item.color : '#1e2533'} 
-          roughness={0.2}
-          metalness={0.8}
+          color={hovered ? item.color : '#161c28'} 
+          roughness={0.3}
+          metalness={0.7}
           transparent={true}
-          opacity={0.65}
+          opacity={0.75}
         />
       </mesh>
 
-      {/* Bulletproof 3D UI Projection Layer */}
+      {/* 3D Projected DOM Sticker Layer */}
       <Html
-        position={[0, 0, 0.021]}
+        position={[0, 0, 0.025]}
         center
-        distanceFactor={4}
+        transform /* Glues the text flat onto the panel face in true 3D perspective */
+        distanceFactor={2.5}
         className="glass-panel-label"
       >
-        <span style={{ color: hovered ? item.color : '#ffffff', transition: 'color 0.2s ease' }}>
+        <span style={{ 
+          color: hovered ? item.color : '#ffffff', 
+          transition: 'color 0.2s ease',
+          fontSize: '18px',
+          fontWeight: 'bold',
+          letterSpacing: '0.05em',
+          userSelect: 'none',
+          pointerEvents: 'none'
+        }}>
           {item.label}
         </span>
       </Html>
@@ -74,10 +83,10 @@ export default function MenuRing() {
         const angle = (index / MENU_ITEMS.length) * Math.PI * 2;
         return (
           <MenuPanel 
-            key={item.id} 
+            key={`${item.id}-${index}`} 
             item={item} 
             angle={angle} 
-            radius={2.3} 
+            radius={2.4} 
           />
         );
       })}
