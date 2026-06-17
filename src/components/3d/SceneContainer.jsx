@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import Lights from './Lights';
 import CustomObject from './CustomObject';
-import SpaceParticles from './SpaceParticles';
+import SpaceParticles from './SpaceParticles'; // <-- 1. The crucial import
 
 export default function SceneContainer() {
   return (
@@ -25,7 +25,7 @@ export default function SceneContainer() {
         <Lights />
         
         {/* Dynamic, slowly drifting background starfield */}
-        <SpaceParticles />
+        <SpaceParticles /> {/* <-- 2. Dropped right inside the canvas */}
         
         {/* Shiny, light-reactive 3D object */}
         <CustomObject />
