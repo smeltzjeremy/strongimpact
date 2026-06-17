@@ -6,35 +6,37 @@ export default function UIOverlay() {
       position: 'absolute',
       top: 0,
       left: 0,
-      width: '100%',
-      height: '100%',
+      width: '100vw',
+      height: '100vh',
       zIndex: 10,
       pointerEvents: 'none',
       fontFamily: 'system-ui, sans-serif',
       color: '#ffffff',
       boxSizing: 'border-box'
     }}>
-      {/* Top Left Corner: Header Block */}
-      <header style={{ 
+      {/* Top Left Corner */}
+      <div style={{ 
         position: 'absolute', 
         top: '40px', 
         left: '40px', 
+        textAlign: 'left',
         pointerEvents: 'auto' 
       }}>
-        <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: '800', letterSpacing: '-0.05em' }}>
+        <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: '800', letterSpacing: '-0.05em', color: '#ffffff' }}>
           STRONG IMPACT
         </h1>
         <p style={{ margin: '5px 0 0 0', color: '#00ffcc', fontWeight: '500' }}>
           Interactive 3D Engine Pipeline v1.0
         </p>
-      </header>
+      </div>
 
-      {/* Middle Left: Main Content Area */}
+      {/* Middle Left Content */}
       <div style={{ 
         position: 'absolute', 
         top: '180px', 
         left: '40px', 
         maxWidth: '400px', 
+        textAlign: 'left',
         pointerEvents: 'auto' 
       }}>
         <p style={{ fontSize: '1.1rem', lineHeight: '1.6', color: '#a0a0a0', margin: 0 }}>
@@ -42,8 +44,8 @@ export default function UIOverlay() {
         </p>
       </div>
 
-      {/* Bottom Left Corner: Interactive Buttons */}
-      <footer style={{ 
+      {/* Bottom Left Buttons */}
+      <div style={{ 
         position: 'absolute', 
         bottom: '40px', 
         left: '40px', 
@@ -79,7 +81,7 @@ export default function UIOverlay() {
         >
           View Source
         </button>
-      </footer>
+      </div>
     </div>
   );
 }
