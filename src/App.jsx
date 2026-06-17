@@ -4,153 +4,121 @@ import SceneContainer from './components/3d/SceneContainer';
 function App() {
   return (
     <div style={{
+      position: 'relative',
+      width: '100vw',
       minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
       background: '#05050f',
       color: '#ffffff',
-      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
-      position: 'relative',
-      overflowX: 'hidden',
-      boxSizing: 'border-box'
+      fontFamily: "'Inter', system-ui, sans-serif",
+      overflow: 'hidden',
+      margin: 0,
+      padding: 0,
     }}>
-      
-      {/* GLOBAL RESPONSIVE REFLOW OVERRIDES */}
-      <style>{`
-        /* Dynamic fluid font handling for the title heading */
-        .title-heading {
-          font-size: clamp(2.5rem, 7vw, 4.5rem) !important;
-          font-weight: 900;
-          letter-spacing: 0.08em;
-          margin: 0;
-          text-shadow: 0 0 40px rgba(0, 255, 200, 0.4);
-        }
-        
-        /* Media query matching your strict layout parameters */
-        @media (max-width: 768px) {
-          .glass-desc-box {
-            margin: 1.5rem 0.5rem !important;
-            padding: 1.5rem !important;
-            max-width: 90% !important;
-          }
-          .3d-canvas-wrapper {
-            height: 42vh !important; /* Locks down 3D bounds to stop vertical stacking bugs */
-            min-height: 320px !important;
-          }
-          .action-btn-row {
-            margin-bottom: 4vh !important;
-            gap: 1rem !important;
-          }
-        }
-      `}</style>
-
-      {/* 1. Header / Title Section */}
-      <header style={{
-        textAlign: 'center',
-        marginTop: '6vh',
-        zIndex: 20
+      {/* 3D Layer - Full Screen */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 1,
       }}>
-        <h1 className="title-heading">STRONG IMPACT</h1>
-        <p style={{
-          fontSize: 'clamp(1.1rem, 2.5vw, 1.35rem)',
-          color: '#00ffcc',
-          marginTop: '0.5rem',
-          fontWeight: '700',
-          letterSpacing: '0.05em',
-          textShadow: '0 2px 10px rgba(0,0,0,0.8)'
-        }}>
-          Interactive 3D Engine Pipeline v1.0
-        </p>
-      </header>
-
-      {/* 2. Glass Description Module */}
-      <div 
-        className="glass-desc-box"
-        style={{
-          maxWidth: '520px',
-          margin: '2rem 1rem',
-          padding: '1.8rem 2rem',
-          background: 'rgba(15, 23, 42, 0.65)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-          borderRadius: '20px',
-          border: '1px solid rgba(255, 255, 255, 0.18)',
-          textAlign: 'center',
-          lineHeight: '1.55',
-          fontSize: '14px',
-          color: 'rgba(255, 255, 255, 0.85)',
-          zIndex: 30,
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.15)'
-        }}
-      >
-        A high-performance WebGL canvas environment built piece by piece. 
-        Click and drag to rotate space, or select any orbiting panel module.
-      </div>
-
-      {/* 3. Responsive 3D Canvas wrapper */}
-      <div 
-        className="3d-canvas-wrapper"
-        style={{
-          flex: '1 1 auto',
-          width: '100%',
-          maxWidth: '1200px',
-          margin: '1rem 0',
-          position: 'relative',
-          zIndex: 10,
-          minHeight: '400px'
-        }}
-      >
         <SceneContainer />
       </div>
 
-      {/* 4. Action Buttons Footer Row */}
-      <div 
-        className="action-btn-row"
-        style={{
+      {/* UI Overlay Layer */}
+      <div style={{
+        position: 'relative',
+        zIndex: 10,
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '6vh 20px 8vh',
+        pointerEvents: 'none',
+        boxSizing: 'border-box',
+      }}>
+        {/* Header */}
+        <header style={{ textAlign: 'center', pointerEvents: 'auto' }}>
+          <h1 style={{
+            fontSize: 'clamp(2.8rem, 8vw, 5rem)',
+            fontWeight: 900,
+            letterSpacing: '0.06em',
+            margin: 0,
+            textShadow: '0 0 40px rgba(0, 255, 200, 0.5)',
+            color: '#ffffff'
+          }}>
+            STRONG IMPACT
+          </h1>
+          <p style={{
+            fontSize: 'clamp(1.1rem, 3vw, 1.4rem)',
+            color: '#00ffcc',
+            marginTop: '0.5rem',
+            fontWeight: 700,
+            letterSpacing: '0.08em'
+          }}>
+            Interactive 3D Engine Pipeline v1.0
+          </p>
+        </header>
+
+        {/* Glass Description */}
+        <div style={{
+          width: 'min(520px, 92%)',
+          padding: '2rem 2.4rem',
+          background: 'rgba(15, 23, 42, 0.68)',
+          backdropFilter: 'blur(28px)',
+          WebkitBackdropFilter: 'blur(28px)',
+          borderRadius: '20px',
+          border: '1px solid rgba(255,255,255,0.2)',
+          textAlign: 'center',
+          lineHeight: 1.6,
+          fontSize: '15px',
+          boxShadow: '0 25px 60px -15px rgba(0,0,0,0.7)',
+          pointerEvents: 'auto',
+          margin: '1rem 0'
+        }}>
+          A high-performance WebGL canvas environment built piece by piece. 
+          Click and drag to rotate space, or select any orbiting panel module.
+        </div>
+
+        {/* Buttons */}
+        <div style={{
           display: 'flex',
           gap: '1.5rem',
-          marginBottom: '6vh',
-          zIndex: 30
-        }}
-      >
-        <button 
-          onClick={() => alert("Initializing Engine Project Core...")}
-          style={{
-            padding: '14px 32px',
-            fontSize: '1.05rem',
-            fontWeight: '700',
-            borderRadius: '9999px',
-            background: 'linear-gradient(90deg, #00ffcc, #00ccaa)',
-            color: '#05050f',
-            border: 'none',
-            cursor: 'pointer',
-            boxShadow: '0 10px 30px rgba(0, 255, 200, 0.35)',
-            transition: 'all 0.2s ease'
-          }}
-        >
-          Initialize Project
-        </button>
-        <button 
-          onClick={() => window.open('https://github.com', '_blank')}
-          style={{
-            padding: '14px 32px',
-            fontSize: '1.05rem',
-            fontWeight: '700',
-            borderRadius: '9999px',
-            background: 'rgba(255,255,255,0.08)',
-            color: '#ffffff',
-            border: '1px solid rgba(255,255,255,0.25)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease'
-          }}
-        >
-          View Source
-        </button>
+          pointerEvents: 'auto'
+        }}>
+          <button 
+            onClick={() => alert("Initializing Engine Project Core...")}
+            style={{
+              padding: '16px 36px',
+              fontSize: '1.1rem',
+              fontWeight: 700,
+              borderRadius: '9999px',
+              background: 'linear-gradient(90deg, #00ffcc, #00ccaa)',
+              color: '#05050f',
+              border: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 10px 30px rgba(0, 255, 200, 0.4)',
+            }}
+          >
+            Initialize Project
+          </button>
+          <button 
+            onClick={() => window.open('https://github.com/smeltzjeremy/strongimpact', '_blank')}
+            style={{
+              padding: '16px 36px',
+              fontSize: '1.1rem',
+              fontWeight: 700,
+              borderRadius: '9999px',
+              background: 'rgba(255,255,255,0.1)',
+              color: '#fff',
+              border: '1px solid rgba(255,255,255,0.3)',
+              backdropFilter: 'blur(12px)',
+              cursor: 'pointer',
+            }}
+          >
+            View Source
+          </button>
+        </div>
       </div>
-
     </div>
   );
 }
