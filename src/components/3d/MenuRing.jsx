@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Text } from '@react-three/drei';
 
 const MENU_ITEMS = [
   { id: 1, label: 'GRAPHICS', color: '#00ffcc' },
@@ -14,15 +13,15 @@ function MenuPanel({ item, angle, radius }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
 
-  // Calculate fixed circle layout coordinates
+  // Calculate coordinates on the circle perimeter
   const x = radius * Math.cos(angle);
   const z = radius * Math.sin(angle);
 
-  // Add subtle float animation to hovered panel
   useFrame((state) => {
     if (meshRef.current) {
+      // Subtle float animation for hovered items
       meshRef.current.position.y = hovered 
-        ? Math.sin(state.clock.getElapsedTime() * 5) * 0.1 
+        ? Math.sin(state.clock.getElapsedTime() * 5) * 0.08 
         : 0;
     }
   });
@@ -32,43 +31,30 @@ function MenuPanel({ item, angle, radius }) {
       <mesh
         ref={meshRef}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
-        onPointerOut={(e) => setHovered(false)}
+        onPointerOut={() => setHovered(false)}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        {/* Sleek semi-translucent futuristic screen panel */}
+        {/* Sleek, futuristic panel geometry */}
         <boxGeometry args={[1.2, 0.7, 0.05]} />
         <meshStandardMaterial 
           color={hovered ? item.color : '#1a1a1a'} 
-          roughness={0.2}
-          metalness={0.8}
+          roughness={0.3}
+          metalness={0.7}
           transparent
           opacity={0.85}
         />
       </mesh>
-      
-      {/* Crisp typography floated slightly in front of the panel */}
-      <Text
-        position={[0, 0, 0.04]}
-        fontSize={0.12}
-        color="#ffffff"
-        font="https://fonts.gstatic.com/s/manrope/v14/xn7_YHEm1n6pf1XnWdhJXs6E.woff"
-        anchorX="center"
-        anchorY="middle"
-      >
-        {item.label}
-      </Text>
     </group>
   );
 }
 
 export default function MenuRing() {
   const ringRef = useRef();
-  const radius = 2.5;
+  const radius = 2.2;
 
-  // Slowly rotate the entire selection ring system over time
   useFrame((state, delta) => {
     if (ringRef.current) {
-      ringRef.current.rotation.y += delta * 0.05;
+      ringRef.current.rotation.y += delta * 0.15; // Smooth rotational drift
     }
   });
 
