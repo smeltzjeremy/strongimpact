@@ -1,5 +1,6 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
+import Lights from './Lights';
 
 export default function SceneContainer() {
   return (
@@ -14,8 +15,8 @@ export default function SceneContainer() {
       >
         <color attach="background" args={['#0a0a0a']} />
         
-        {/* Baseline ambient fill */}
-        <ambientLight intensity={0.5} />
+        {/* Our new custom studio lights */}
+        <Lights />
         
         {/* Placeholder mesh to verify render chain */}
         <mesh>
