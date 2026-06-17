@@ -11,23 +11,19 @@ export default function SceneContainer() {
       <Canvas
         gl={{ 
           antialias: true, 
-          alpha: false, 
           powerPreference: "high-performance" 
         }}
         camera={{ position: [0, 0, 5], fov: 60 }}
       >
-        {/* We removed the flat solid black color tag to let our CSS space gradient shine through */}
+        {/* Explicitly declaring a dark clear color stabilizes the WebGL frame buffer pass */}
+        <color attach="background" args={['#0c101b']} />
         
-        {/* Enable mouse drag-to-rotate and scroll-to-zoom controls */}
         <OrbitControls enableZoom={true} makeDefault />
         
-        {/* Studio lighting rig */}
         <Lights />
         
-        {/* Dynamic, slowly drifting background starfield */}
         <SpaceParticles />
         
-        {/* Multi-element interactive 3D menu array with glassmorphism */}
         <MenuRing />
       </Canvas>
     </div>
