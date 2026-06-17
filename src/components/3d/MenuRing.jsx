@@ -19,6 +19,7 @@ function MenuPanel({ item, angle, radius }) {
 
   useFrame((state) => {
     if (meshRef.current) {
+      // Elegant hovering bounce effect
       meshRef.current.position.y = hovered 
         ? Math.sin(state.clock.getElapsedTime() * 5) * 0.08 
         : 0;
@@ -27,7 +28,7 @@ function MenuPanel({ item, angle, radius }) {
 
   return (
     <group position={[x, 0, z]}>
-      {/* Semi-transparent glass panels rotated to face the center ring anchor */}
+      {/* High-Performance Physical Glass Panel */}
       <mesh
         ref={meshRef}
         rotation={[0, -angle - Math.PI / 2, 0]}
@@ -36,19 +37,20 @@ function MenuPanel({ item, angle, radius }) {
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
         <boxGeometry args={[1.4, 0.7, 0.04]} />
-        <meshStandardMaterial 
-          color={hovered ? item.color : '#161c28'} 
-          roughness={0.3}
-          metalness={0.7}
+        <meshPhysicalMaterial 
+          color={hovered ? item.color : '#ffffff'} 
+          transmission={0.7}        /* High transmission for clean glass transparency */
+          roughness={0.2}           /* Slight frost surface to catch studio light glares */
+          metalness={0.1}
+          thickness={0.4}           /* Gives the panel physical edge-refraction depth */
+          clearcoat={1.0}           /* Super glossy outer shell layer */
+          clearcoatRoughness={0.1}
           transparent={true}
-          opacity={0.75}
+          opacity={0.9}
         />
       </mesh>
 
-      {/* Upgraded 3D DOM Typography Layer:
-        - Removed 'transform' to make labels billboard face forward (no mirror flip)
-        - Added 'occlude' array to drop opacity to zero when passing behind foreground meshes
-      */}
+      {/* Sharp DOM Typography Overlay */}
       <Html
         position={[0, 0, 0.05]}
         center
@@ -58,14 +60,17 @@ function MenuPanel({ item, angle, radius }) {
       >
         <span style={{ 
           color: hovered ? item.color : '#ffffff', 
-          transition: 'color 0.2s ease, transform 0.2s ease',
-          fontSize: '16px',
-          fontWeight: '800',
-          letterSpacing: '0.08em',
+          transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+          fontSize: '15px',
+          fontWeight: '900',
+          letterSpacing: '0.12em',
           userSelect: 'none',
           pointerEvents: 'none',
           display: 'block',
-          transform: hovered ? 'scale(1.1)' : 'scale(1.0)'
+          transform: hovered ? 'scale(1.15)' : 'scale(1.0)',
+          textShadow: hovered 
+            ? `0 0 10px ${item.color}, 0 2px 4px rgba(0,0,0,0.8)` 
+            : '0 2px 5px rgba(0,0,0,0.9)'
         }}>
           {item.label}
         </span>
