@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
+import * as THREE from 'three';
 
 const MENU_ITEMS = [
   { id: 1, label: 'GRAPHICS', color: '#00ffcc' },
@@ -14,20 +15,17 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
 
-  // Compute fixed layout coordinate spacing around the ring perimeter
   const x = radius * Math.cos(angle);
   const z = radius * Math.sin(angle);
 
   useFrame((state) => {
     if (meshRef.current) {
-      // Smooth interactive hover bounce height adjustments
+      // Enhanced floating glass hover
       meshRef.current.position.y = hovered 
-        ? Math.sin(state.clock.getElapsedTime() * 5) * 0.06 
-        : 0;
+        ? Math.sin(state.clock.getElapsedTime() * 4) * 0.12 + 0.05 
+        : Math.sin(state.clock.getElapsedTime() * 1.5) * 0.02;
 
-      // Rule 3: Strict Billboard Alignment Math
-      // Manually offsets the panel's local frame against the parents rotation vector,
-      // forcing the flat face to remain precisely parallel to the camera view axis.
+      // Billboard alignment
       const absoluteAngle = angle + currentRingRotation;
       meshRef.current.rotation.y = -absoluteAngle + Math.PI / 2;
     }
@@ -35,46 +33,55 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
 
   return (
     <group position={[x, 0, z]}>
-      {/* Rule 1 & 2: Main 3D Physical Glass Screen Asset */}
+      {/* 3D Glass Panel */}
       <mesh
         ref={meshRef}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
         onPointerOut={() => setHovered(false)}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        <boxGeometry args={[1.6, 0.9, 0.06]} />
+        <boxGeometry args={[1.8, 1.0, 0.08]} />
         <meshPhysicalMaterial 
-          color={hovered ? item.color : '#ffffff'} 
-          transmission={0.65}
-          roughness={0.15}
-          metalness={0.0}
-          thickness={0.6}
+          color="#ffffff"
+          transmission={0.85}
+          roughness={0.1}
+          metalness={0.05}
+          thickness={0.8}
+          ior={1.5}
           clearcoat={1.0}
-          clearcoatRoughness={0.05}
+          clearcoatRoughness={0.0}
+          envMapIntensity={0.6}
           transparent={true}
-          opacity={hovered ? 0.90 : 0.35}
+          opacity={hovered ? 0.95 : 0.75}
+          side={THREE.DoubleSide}
         />
       </mesh>
 
-      {/* Rule 4: Clean HTML Fluid Overlay Text Integration */}
+      {/* Glassmorphic HTML Label */}
       <Html
-        position={[0, 0, 0.04]}
+        position={[0, 0, 0.05]}
         center
         distanceFactor={3}
         pointerEvents="none"
       >
         <span style={{ 
-          color: hovered ? item.color : '#ffffff', 
-          transition: 'color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
-          fontSize: '14px',
-          fontWeight: '900',
-          letterSpacing: '0.18em',
-          userSelect: 'none',
-          display: 'block',
+          color: hovered ? item.color : '#ffffff',
+          fontSize: '15px',
+          fontWeight: '800',
+          letterSpacing: '0.15em',
+          textTransform: 'uppercase',
+          padding: '10px 28px',
+          background: 'rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(12px)',
+          borderRadius: '9999px',
+          border: '1px solid rgba(255,255,255,0.2)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+          transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
           whiteSpace: 'nowrap',
+          userSelect: 'none',
           textShadow: hovered 
-            ? `0 0 12px ${item.color}, 0 2px 4px rgba(0,0,0,0.8)` 
-            : '0 2px 5px rgba(0,0,0,0.9)'
+            ? `0 0 15px ${item.color}` 
+            : '0 2px 6px rgba(0,0,0,0.9)'
         }}>
           {item.label}
         </span>
@@ -103,7 +110,7 @@ export default function MenuRing() {
             key={`${item.id}-${index}`} 
             item={item} 
             angle={angle} 
-            radius={2.5} 
+            radius={2.8} 
             currentRingRotation={rotationRef.current}
           />
         );
