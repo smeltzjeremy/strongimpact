@@ -1,5 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 
 const MENU_ITEMS = [
   { id: 1, label: 'GRAPHICS', color: '#00ffcc' },
@@ -9,9 +10,32 @@ const MENU_ITEMS = [
   { id: 5, label: 'NETWORKS', color: '#b833ff' }
 ];
 
+// Helper function to procedurally draw block-style text paths entirely locally
+function createLocalTextMesh(text) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  
+  // Create a crisp, high-contrast text map texture locally
+  ctx.fillStyle = 'rgba(0,0,0,0)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.font = 'bold 32px sans-serif';
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  return texture;
+}
+
 function MenuPanel({ item, angle, radius }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
+
+  // Generate the text texture locally once per component mounting
+  const textTexture = useMemo(() => createLocalTextMesh(item.label), [item.label]);
 
   // Position coordinates calculated around the perimeter circle
   const x = radius * Math.cos(angle);
@@ -19,7 +43,6 @@ function MenuPanel({ item, angle, radius }) {
 
   useFrame((state) => {
     if (meshRef.current) {
-      // Subtle float animation for interactive items
       meshRef.current.position.y = hovered 
         ? Math.sin(state.clock.getElapsedTime() * 5) * 0.08 
         : 0;
@@ -28,27 +51,36 @@ function MenuPanel({ item, angle, radius }) {
 
   return (
     <group position={[x, 0, z]} rotation={[0, -angle - Math.PI / 2, 0]}>
+      {/* The Glass Panel */}
       <mesh
         ref={meshRef}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
         onPointerOut={() => setHovered(false)}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        {/* Futuristic floating panel layout geometry */}
         <boxGeometry args={[1.2, 0.7, 0.05]} />
-        
-        {/* High-End Frosted Glassmorphism Physical Material */}
         <meshPhysicalMaterial 
           color={hovered ? item.color : '#ffffff'} 
-          transmission={0.6}       /* High transparency to let background light pass through */
-          opacity={1}              /* Full material opacity so transmission works perfectly */
+          transmission={0.6}
+          opacity={1}
           transparent={true}
-          roughness={0.25}         /* Micro-surface texture to create the frosted blur effect */
-          metalness={0.1}          /* Low metalness to maintain glass refraction properties */
-          thickness={0.5}          /* Simulates internal glass thickness to refract background stars */
-          ior={1.5}                /* Index of Refraction for standard window/tempered glass */
-          clearcoat={1.0}          /* Added ultra-smooth glossy reflection coat on top of frost */
+          roughness={0.25}
+          metalness={0.1}
+          thickness={0.5}
+          ior={1.5}
+          clearcoat={1.0}
           clearcoatRoughness={0.1}
+        />
+      </mesh>
+
+      {/* The Localized Label Floating Slightly in Front */}
+      <mesh position={[0, 0, 0.031]} pointerEvents="none">
+        <planeGeometry args={[1.0, 0.25]} />
+        <meshBasicMaterial 
+          map={textTexture} 
+          transparent={true} 
+          blending={THREE.AdditiveBlending}
+          opacity={0.9}
         />
       </mesh>
     </group>
@@ -61,7 +93,7 @@ export default function MenuRing() {
 
   useFrame((state, delta) => {
     if (ringRef.current) {
-      ringRef.current.rotation.y += delta * 0.15; // Continuous smooth orbital rotation
+      ringRef.current.rotation.y += delta * 0.15;
     }
   });
 
