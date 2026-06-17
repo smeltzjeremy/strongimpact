@@ -1,6 +1,6 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Stars, Environment } from '@react-three/drei';
+import { OrbitControls, Stars } from '@react-three/drei';
 import MenuRing from './MenuRing';
 
 export default function SceneContainer() {
@@ -12,7 +12,8 @@ export default function SceneContainer() {
       top: 0, 
       left: 0,
       zIndex: 1,
-      background: 'radial-gradient(circle at center, #0d131f 0%, #05070a 100%)'
+      /* Clear, deep background gradient for crisp contrast */
+      background: 'radial-gradient(circle at center, #0f131c 0%, #05070a 100%)'
     }}>
       <Canvas
         camera={{ position: [0, 0, 4.2], fov: 60 }}
@@ -22,26 +23,43 @@ export default function SceneContainer() {
           powerPreference: "high-performance" 
         }}
       >
-        {/* Swapped "city" for "studio" to get pure high-end light reflections instead of background scenery objects */}
-        <Environment preset="studio" />
+        {/* ================================================================= */}
+        {/* PURE-CODE HIGH-CONTRAST LIGHTING RIG                              */}
+        {/* ================================================================= */}
+        
+        {/* Minimal ambient light to keep the cosmic background dark and deep */}
+        <ambientLight intensity={0.05} color="#ffffff" />
 
-        {/* Adjusted Core Lights to Let Stars Shine */}
-        <ambientLight intensity={0.2} color="#1d293d" />
-        <directionalLight position={[5, 8, 5]} intensity={2.0} color="#ffffff" />
-        <pointLight position={[-5, -3, 2]} intensity={1.2} color="#00ffcc" />
+        {/* Primary Key Light: Sharp overhead white studio light.
+            This creates the clean, bright glare streaks across the polished glass edges. */}
+        <directionalLight 
+          position={[5, 10, 3]} 
+          intensity={2.5} 
+          color="#ffffff" 
+        />
 
-        {/* Vibrant Cosmic Starfield Layer */}
+        {/* Fill Light: A softer white light from the opposite side 
+            to define the physical 3D thickness of the panels as they turn. */}
+        <directionalLight 
+          position={[-5, -5, 2]} 
+          intensity={1.2} 
+          color="#ffffff" 
+        />
+
+        {/* ================================================================= */}
+
+        {/* Bright, Crisp White Starfield */}
         <Stars 
           radius={100} 
           depth={50} 
-          count={3000} 
-          factor={7} 
-          saturation={1.0} 
+          count={3500} 
+          factor={6} 
+          saturation={0.0} /* Strips out any color to keep stars purely white */
           fade 
-          speed={0.6} 
+          speed={0.5} 
         />
 
-        {/* Carousel Aligned Glass Menu Ring */}
+        {/* Carousel Aligned Menu Ring */}
         <MenuRing />
 
         <OrbitControls 
