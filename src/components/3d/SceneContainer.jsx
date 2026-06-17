@@ -1,6 +1,6 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Stars } from '@react-three/drei';
+import { OrbitControls, Stars, Environment } from '@react-three/drei';
 import MenuRing from './MenuRing';
 
 export default function SceneContainer() {
@@ -12,56 +12,35 @@ export default function SceneContainer() {
       top: 0, 
       left: 0,
       zIndex: 1,
-      /* Creates a deep CSS backdrop vignette to layer behind the transparent WebGL canvas */
-      background: 'radial-gradient(circle at center, #1a2333 0%, #080b11 100%)'
+      background: 'radial-gradient(circle at center, #111622 0%, #07090e 100%)'
     }}>
       <Canvas
         camera={{ position: [0, 0, 4.2], fov: 60 }}
         gl={{ 
           antialias: true, 
-          alpha: true,                  /* Allows our rich backdrop gradient to show through */
+          alpha: true,                  
           powerPreference: "high-performance" 
         }}
       >
-        {/* Dynamic Studio Lighting Rig for Glass Reflections */}
-        {/* Ambient light fills the scene shadows with a sleek deep blue tone */}
-        <ambientLight intensity={0.6} color="#1d293d" />
-        
-        {/* Primary key light to create sharp glossy glints on the glass clearcoat */}
-        <directionalLight 
-          position={[5, 5, 4]} 
-          intensity={1.5} 
-          color="#ffffff" 
-          castShadow={false}
-        />
+        {/* Elite Photographic Lighting Environment Map Map - Simulates a real glass photo studio booth background */}
+        <Environment preset="city" />
 
-        {/* Secondary fill light casting a subtle colored edge tint across the ring */}
-        <pointLight 
-          position={[-4, -3, 2]} 
-          intensity={1.2} 
-          color="#00ffcc" 
-        />
+        {/* Studio Ambient and Directional Lights */}
+        <ambientLight intensity={0.4} color="#1d293d" />
+        <directionalLight position={[5, 8, 5]} intensity={1.5} color="#ffffff" />
+        <pointLight position={[-5, -3, 2]} intensity={1.0} color="#00ffcc" />
 
-        {/* Ambient space star dust layer */}
-        <Stars 
-          radius={100} 
-          depth={50} 
-          count={2500} 
-          factor={4} 
-          saturation={0.5} 
-          fade 
-          speed={1} 
-        />
+        {/* Ambient Space Elements */}
+        <Stars radius={100} depth={50} count={2000} factor={4} saturation={0.4} fade speed={0.8} />
 
-        {/* Interactive Glass Menu Ring */}
+        {/* Interactive Menu Ring */}
         <MenuRing />
 
-        {/* Viewport controls */}
         <OrbitControls 
           enableZoom={false} 
           enablePan={false}
-          minPolarAngle={Math.PI / 2.3}
-          maxPolarAngle={Math.PI / 1.7}
+          minPolarAngle={Math.PI / 2.2}
+          maxPolarAngle={Math.PI / 1.8}
         />
       </Canvas>
     </div>
