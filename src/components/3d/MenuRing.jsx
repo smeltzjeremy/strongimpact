@@ -10,7 +10,7 @@ const MENU_ITEMS = [
   { id: 5, label: 'NETWORKS', color: '#b833ff' }
 ];
 
-// Procedurally generates a clean local canvas texture map for typography
+// Simple fallback procedural canvas texture map for typography
 function createLocalTextMesh(text) {
   const canvas = document.createElement('canvas');
   canvas.width = 256;
@@ -26,7 +26,7 @@ function createLocalTextMesh(text) {
   return new THREE.CanvasTexture(canvas);
 }
 
-function MenuPanel({ item, angle, radius, envMap }) {
+function MenuPanel({ item, angle, radius }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
   const textTexture = useMemo(() => createLocalTextMesh(item.label), [item.label]);
@@ -44,7 +44,7 @@ function MenuPanel({ item, angle, radius, envMap }) {
 
   return (
     <group position={[x, 0, z]} rotation={[0, -angle - Math.PI / 2, 0]}>
-      {/* Premium Glass Physical Geometry */}
+      {/* Stripped-down Solid Core Mesh Panel */}
       <mesh
         ref={meshRef}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
@@ -52,19 +52,12 @@ function MenuPanel({ item, angle, radius, envMap }) {
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
         <boxGeometry args={[1.2, 0.7, 0.05]} />
-        <meshPhysicalMaterial 
-          color={hovered ? item.color : '#ffffff'} 
-          envMap={envMap}            /* Feeds studio reflections directly onto the glossy layer */
-          envMapIntensity={3.5}      /* Enhances the shiny highlights */
-          transmission={0.85}        /* Transparency value for frosted glassmorphism refraction */
+        <meshStandardMaterial 
+          color={hovered ? item.color : '#22283a'} 
+          roughness={0.5}
+          metalness={0.2}
+          transparent={false} /* Turned off transparency to eliminate blending issues */
           opacity={1.0}
-          transparent={true}
-          roughness={0.15}           /* Frosted gloss texture balance */
-          metalness={0.0}
-          thickness={0.4}            /* Depth simulation for passing objects */
-          ior={1.45}                 /* Real-world Index of Refraction for premium glass sheets */
-          clearcoat={1.0}            /* Glossy clearcoat reflection layer */
-          clearcoatRoughness={0.05}
         />
       </mesh>
 
@@ -74,8 +67,7 @@ function MenuPanel({ item, angle, radius, envMap }) {
         <meshBasicMaterial 
           map={textTexture} 
           transparent={true} 
-          opacity={0.85} 
-          blending={THREE.AdditiveBlending}
+          opacity={0.9} 
         />
       </mesh>
     </group>
@@ -84,23 +76,6 @@ function MenuPanel({ item, angle, radius, envMap }) {
 
 export default function MenuRing() {
   const ringRef = useRef();
-  
-  // Generates an updated 4-channel (RGBAFormat) lighting texture compliant with modern engines
-  const generatedEnvMap = useMemo(() => {
-    const size = 128;
-    const data = new Uint8Array(size * size * 4); // Altered channel length from 3 to 4
-    for (let i = 0; i < size * size; i++) {
-      const stride = i * 4;
-      data[stride] = 30;     // R
-      data[stride + 1] = 50; // G
-      data[stride + 2] = 80; // B
-      data[stride + 3] = 255;// Alpha channel padding for modern WebGL pipelines
-    }
-    const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
-    texture.mapping = THREE.EquirectangularReflectionMapping;
-    texture.needsUpdate = true;
-    return texture;
-  }, []);
 
   useFrame((state, delta) => {
     if (ringRef.current) {
@@ -118,7 +93,6 @@ export default function MenuRing() {
             item={item} 
             angle={angle} 
             radius={2.2} 
-            envMap={generatedEnvMap}
           />
         );
       })}
