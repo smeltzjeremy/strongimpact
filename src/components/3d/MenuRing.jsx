@@ -1,6 +1,5 @@
 import React, { useRef, useState, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
 const MENU_ITEMS = [
@@ -56,15 +55,15 @@ function MenuPanel({ item, angle, radius, envMap }) {
         <meshPhysicalMaterial 
           color={hovered ? item.color : '#ffffff'} 
           envMap={envMap}            /* Feeds studio reflections directly onto the glossy layer */
-          envMapIntensity={2.5}      /* Highlights the edges of the panels */
-          transmission={0.85}        /* High transmission allows background stars to distort through */
+          envMapIntensity={3.5}      /* Enhances the shiny highlights */
+          transmission={0.85}        /* Transparency value for frosted glassmorphism refraction */
           opacity={1.0}
           transparent={true}
-          roughness={0.15}           /* Perfect frosted gloss texture balance */
+          roughness={0.15}           /* Frosted gloss texture balance */
           metalness={0.0}
-          thickness={0.4}            /* Physically bends light objects passing behind it */
+          thickness={0.4}            /* Depth simulation for passing objects */
           ior={1.45}                 /* Real-world Index of Refraction for premium glass sheets */
-          clearcoat={1.0}            /* Crisp, high-gloss surface clearcoat reflection */
+          clearcoat={1.0}            /* Glossy clearcoat reflection layer */
           clearcoatRoughness={0.05}
         />
       </mesh>
@@ -86,18 +85,18 @@ function MenuPanel({ item, angle, radius, envMap }) {
 export default function MenuRing() {
   const ringRef = useRef();
   
-  // Generates a local, real-time procedural lighting environment texture map
+  // Generates an updated 4-channel (RGBAFormat) lighting texture compliant with modern engines
   const generatedEnvMap = useMemo(() => {
     const size = 128;
-    const data = new Uint8Array(size * size * 3);
+    const data = new Uint8Array(size * size * 4); // Altered channel length from 3 to 4
     for (let i = 0; i < size * size; i++) {
-      const stride = i * 3;
-      // Procedural space-neon grid values to cast light maps onto the glass surfaces
-      data[stride] = 15;   // R
-      data[stride + 1] = 25; // G
-      data[stride + 2] = 40; // B
+      const stride = i * 4;
+      data[stride] = 30;     // R
+      data[stride + 1] = 50; // G
+      data[stride + 2] = 80; // B
+      data[stride + 3] = 255;// Alpha channel padding for modern WebGL pipelines
     }
-    const texture = new THREE.DataTexture(data, size, size, THREE.RGBFormat);
+    const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
     texture.mapping = THREE.EquirectangularReflectionMapping;
     texture.needsUpdate = true;
     return texture;
