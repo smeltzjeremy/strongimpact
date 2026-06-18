@@ -20,8 +20,8 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
 
   useFrame((state) => {
     if (meshRef.current) {
-      meshRef.current.position.y = hovered 
-        ? Math.sin(state.clock.getElapsedTime() * 4) * 0.12 + 0.05 
+      meshRef.current.position.y = hovered
+        ? Math.sin(state.clock.getElapsedTime() * 4) * 0.12 + 0.05
         : Math.sin(state.clock.getElapsedTime() * 1.5) * 0.02;
 
       const absoluteAngle = angle + currentRingRotation;
@@ -37,39 +37,37 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
         onPointerOut={() => setHovered(false)}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        {/* Increased box geometry dimensions for bigger boxes */}
-        <boxGeometry args={[2.2, 1.3, 0.08]} />
-        <meshPhysicalMaterial 
+        <boxGeometry args={[1.8, 1.0, 0.04]} />
+        <meshPhysicalMaterial
           color="#ffffff"
-          transmission={0.85}
-          roughness={0.15}
+          transmission={0.95}
+          roughness={0.14}
           metalness={0.05}
-          thickness={0.8}
-          ior={1.5}
+          thickness={0.45}
+          ior={1.52}
           clearcoat={1.0}
-          clearcoatRoughness={0.0}
-          envMapIntensity={0.6}
+          clearcoatRoughness={0.03}
+          envMapIntensity={1.4}
           transparent={true}
-          opacity={hovered ? 0.95 : 0.75}
+          opacity={hovered ? 0.96 : 0.75}
           side={THREE.DoubleSide}
         />
       </mesh>
 
-      <Html position={[0, 0, 0.06]} center distanceFactor={3} pointerEvents="none">
-        <span style={{ 
+      <Html position={[0, 0, 0.05]} center distanceFactor={3} pointerEvents="none">
+        <span style={{
           color: hovered ? item.color : '#ffffff',
           fontSize: '14px',
           fontWeight: '800',
           letterSpacing: '0.15em',
           textTransform: 'uppercase',
-          padding: '10px 24px',
-          background: 'rgba(10, 15, 30, 0.45)',
+          padding: '10px 26px',
+          background: 'rgba(10, 15, 30, 0.5)',
           backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
           borderRadius: '9999px',
-          border: hovered ? `1px solid ${item.color}` : '1px solid rgba(255,255,255,0.18)',
+          border: hovered ? `1px solid ${item.color}` : '1px solid rgba(255,255,255,0.2)',
           boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
-          transition: 'all 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
+          transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
           whiteSpace: 'nowrap',
           userSelect: 'none',
           textShadow: hovered ? `0 0 12px ${item.color}` : '0 2px 6px rgba(0,0,0,0.8)'
@@ -84,6 +82,7 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
 export default function MenuRing() {
   const ringRef = useRef();
   const rotationRef = useRef(0);
+
   const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
 
   useEffect(() => {
@@ -92,7 +91,7 @@ export default function MenuRing() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const activeRadius = width < 768 ? 2.3 : 2.9;
+  const activeRadius = width < 768 ? 2.15 : 2.75;
 
   useFrame((state, delta) => {
     if (ringRef.current) {
@@ -103,14 +102,38 @@ export default function MenuRing() {
 
   return (
     <group ref={ringRef}>
+      {/* Strong Rim Lighting for Edge Glow */}
+      <directionalLight
+        position={[0, 8, -14]}
+        intensity={6.5}
+        color="#a0f0ff"
+      />
+
+      {/* Secondary Moving Flare Light */}
+      <pointLight
+        position={[6, 5, -6]}
+        intensity={4.2}
+        color="#67ffcc"
+        distance={28}
+      />
+
+      {/* Soft Front Fill */}
+      <directionalLight
+        position={[0, 3, 10]}
+        intensity={1.1}
+        color="#ffffff"
+      />
+
+      <ambientLight intensity={0.2} color="#0a1530" />
+
       {MENU_ITEMS.map((item, index) => {
         const angle = (index / MENU_ITEMS.length) * Math.PI * 2;
         return (
-          <MenuPanel 
-            key={`${item.id}-${index}`} 
-            item={item} 
-            angle={angle} 
-            radius={activeRadius} 
+          <MenuPanel
+            key={`${item.id}-${index}`}
+            item={item}
+            angle={angle}
+            radius={activeRadius}
             currentRingRotation={rotationRef.current}
           />
         );
