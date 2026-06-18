@@ -4,27 +4,46 @@ import SceneContainer from './components/3d/SceneContainer';
 function App() {
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
-      {/* Enhanced Multi-Layer Glass Background */}
+      
+      {/* 1. Base Depth Gradient */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(circle at 50% 30%, rgba(100, 180, 255, 0.16) 0%, #05050f 70%)',
+        background: 'radial-gradient(circle at 50% 45%, #0a0a14 0%, #020208 78%)',
         zIndex: 0,
-      }} />
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)',
-        backgroundSize: '55px 55px',
-        opacity: 0.8,
-        zIndex: 0,
-        pointerEvents: 'none',
       }} />
 
-      {/* 3D Canvas - Full Screen */}
+      {/* 2. 3D Canvas */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 1 }}>
         <SceneContainer />
       </div>
+
+      {/* 3. Premium Frosted Glass Layer (Tint + Blur + Subtle Texture) */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(15, 25, 55, 0.065)',
+        backgroundImage: 'radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px)',
+        backgroundSize: '5px 5px',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        zIndex: 2,
+        pointerEvents: 'none',
+      }} />
+
+      {/* 4. Edge Reflections + Vignette */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        background: `
+          linear-gradient(to bottom, rgba(255,255,255,0.085) 0%, transparent 5%),
+          linear-gradient(to right, rgba(255,255,255,0.045) 0%, transparent 4%),
+          linear-gradient(to left, rgba(255,255,255,0.045) 0%, transparent 4%),
+          radial-gradient(circle at 50% 50%, transparent 42%, rgba(2,2,8,0.82) 100%)
+        `,
+        zIndex: 3,
+        pointerEvents: 'none',
+      }} />
 
       {/* UI Overlay */}
       <div style={{
@@ -35,44 +54,35 @@ function App() {
         flexDirection: 'column',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '4vh 20px 6vh',
+        padding: '5vh 20px 7vh',
         pointerEvents: 'none',
         boxSizing: 'border-box',
       }}>
-        {/* Top Header Block */}
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center', 
-          textAlign: 'center',
-          width: '100%'
-        }}>
-          <header style={{ pointerEvents: 'auto' }}>
-            <h1 style={{
-              fontSize: 'clamp(2.8rem, 8.5vw, 5.5rem)',
-              fontWeight: 900,
-              letterSpacing: '0.04em',
-              margin: 0,
-              color: '#ffffff',
-              textShadow: '0 0 45px rgba(0, 255, 204, 0.75)',
-            }}>
-              STRONG IMPACT
-            </h1>
-            <p style={{
-              fontSize: 'clamp(1.1rem, 3.2vw, 1.45rem)',
-              color: '#67ffcc',
-              marginTop: '0.4rem',
-              fontWeight: 700,
-              letterSpacing: '0.1em',
-              margin: 0
-            }}>
-              Interactive 3D Engine Pipeline v1.0
-            </p>
-          </header>
+        {/* Title */}
+        <div style={{ textAlign: 'center', pointerEvents: 'auto' }}>
+          <h1 style={{
+            fontSize: 'clamp(2.8rem, 8.5vw, 5.5rem)',
+            fontWeight: 900,
+            letterSpacing: '0.04em',
+            margin: 0,
+            color: '#ffffff',
+            textShadow: '0 0 45px rgba(0, 255, 204, 0.75)',
+          }}>
+            STRONG IMPACT
+          </h1>
+          <p style={{
+            fontSize: 'clamp(1.1rem, 3.2vw, 1.45rem)',
+            color: '#67ffcc',
+            marginTop: '0.5rem',
+            fontWeight: 700,
+            letterSpacing: '0.1em'
+          }}>
+            Interactive 3D Engine Pipeline v1.0
+          </p>
         </div>
 
-        {/* Buttons at Bottom */}
-        <div style={{ display: 'flex', gap: '1.6rem', pointerEvents: 'auto', marginTop: 'auto' }}>
+        {/* Buttons */}
+        <div style={{ display: 'flex', gap: '1.6rem', pointerEvents: 'auto' }}>
           <button style={{
             padding: '16px 38px',
             fontSize: '1.1rem',
