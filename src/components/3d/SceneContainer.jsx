@@ -27,12 +27,12 @@ export default function SceneContainer() {
           powerPreference: "high-performance" 
         }}
       >
-        {/* REMOVED: <color attach="background" /> to ensure full canvas transparency */}
-        
         <Environment preset="night" />
         <ambientLight intensity={0.35} />
         <directionalLight position={[5, 12, 5]} intensity={1.6} color="#e0f0ff" />
-        <Stars radius={100} depth={50} count={2500} factor={6} saturation={0} fade speed={0.5} />
+        
+        {/* Calibrated Stars: Reduced density and factor to eliminate panel washout */}
+        <Stars radius={100} depth={50} count={700} factor={2.5} saturation={0} fade speed={0.5} />
 
         <group position={[0, verticalOffset, 0]}>
           <MenuRing />

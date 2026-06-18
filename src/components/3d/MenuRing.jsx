@@ -39,17 +39,17 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
       >
         <boxGeometry args={[1.8, 1.0, 0.03]} />
         <meshPhysicalMaterial
-          color="#d2d6e0"               // Slightly greyed base to drink in reflections rather than blooming out
-          transmission={0.93}           // Balanced transmission to ensure structural glass visibility
-          roughness={0.14}              
-          metalness={0.08}              
+          color="#22242a"               // Smoked charcoal base color to create a dark refraction core
+          transmission={0.91}           // Slightly adjusted down to retain dark body contrast
+          roughness={0.12}              // Smoother satin floor for sharper reflections
+          metalness={0.10}              // Micro-bumped metalness to harden specular shine
           thickness={0.15}              
-          ior={1.54}                    // Slightly elevated refractive index for heavier crystal bending
+          ior={1.54}                    
           clearcoat={1.0}               
-          clearcoatRoughness={0.01}     // Razor-sharp surface lacquer coat for mirror look
-          envMapIntensity={2.3}         // Forcefully pulls the environment lights back onto the surface
+          clearcoatRoughness={0.01}     
+          envMapIntensity={2.5}         // Enhanced reflection response to pop against the dark backdrop
           transparent={true}
-          opacity={hovered ? 0.95 : 0.70}
+          opacity={hovered ? 0.95 : 0.75}
           side={THREE.DoubleSide}
         />
       </mesh>
@@ -102,7 +102,7 @@ export default function MenuRing() {
 
   return (
     <group>
-      {/* High-intensity back lighting rig outside rotation for clean edge lines */}
+      {/* Retained rim and back-lighting profile to keep edge layouts sharp */}
       <directionalLight
         position={[0, 9, -15]}
         intensity={6.8}                
@@ -123,7 +123,6 @@ export default function MenuRing() {
         distance={30}
       />
 
-      {/* Front soft fill balance */}
       <directionalLight
         position={[0, 4, 12]}
         intensity={1.0}
@@ -132,7 +131,6 @@ export default function MenuRing() {
 
       <ambientLight intensity={0.12} color="#0a1530" />
 
-      {/* Rotating Ring Cluster */}
       <group ref={ringRef}>
         {MENU_ITEMS.map((item, index) => {
           const angle = (index / MENU_ITEMS.length) * Math.PI * 2;
