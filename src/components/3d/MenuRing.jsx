@@ -15,18 +15,15 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
 
-  // Position calculation based on the dynamic radius passed from the parent ring
   const x = radius * Math.cos(angle);
   const z = radius * Math.sin(angle);
 
   useFrame((state) => {
     if (meshRef.current) {
-      // Smooth idle floating animation on the Y axis
       meshRef.current.position.y = hovered 
         ? Math.sin(state.clock.getElapsedTime() * 4) * 0.12 + 0.05 
         : Math.sin(state.clock.getElapsedTime() * 1.5) * 0.02;
 
-      // Ensure the panel face always looks directly at the camera position as the ring rotates
       const absoluteAngle = angle + currentRingRotation;
       meshRef.current.rotation.y = -absoluteAngle + Math.PI / 2;
     }
@@ -40,7 +37,8 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
         onPointerOut={() => setHovered(false)}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        <boxGeometry args={[1.8, 1.0, 0.08]} />
+        {/* Increased box geometry dimensions for bigger boxes */}
+        <boxGeometry args={[2.2, 1.3, 0.08]} />
         <meshPhysicalMaterial 
           color="#ffffff"
           transmission={0.85}
@@ -57,7 +55,6 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
         />
       </mesh>
 
-      {/* Floating UI Text Tag Label anchored inside the 3D space */}
       <Html position={[0, 0, 0.06]} center distanceFactor={3} pointerEvents="none">
         <span style={{ 
           color: hovered ? item.color : '#ffffff',
@@ -87,8 +84,6 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
 export default function MenuRing() {
   const ringRef = useRef();
   const rotationRef = useRef(0);
-  
-  // Dynamic tracking for window scale context adjustments
   const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
 
   useEffect(() => {
@@ -97,12 +92,10 @@ export default function MenuRing() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Sets your optimized dynamic layout radius bounds 
-  const activeRadius = width < 768 ? 2.2 : 2.8;
+  const activeRadius = width < 768 ? 2.3 : 2.9;
 
   useFrame((state, delta) => {
     if (ringRef.current) {
-      // Smooth automatic ring rotation loop speed coefficients
       ringRef.current.rotation.y += delta * 0.08;
       rotationRef.current = ringRef.current.rotation.y;
     }
