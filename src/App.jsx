@@ -3,7 +3,7 @@ import SceneContainer from './components/3d/SceneContainer';
 
 function App() {
   return (
-    <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden', background: '#020208' }}>
       
       {/* 1. Base Depth Gradient - Curved Black Void */}
       <div style={{
@@ -13,29 +13,29 @@ function App() {
         zIndex: 0,
       }} />
 
-      {/* 2. 3D Canvas */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: 1 }}>
-        <SceneContainer />
-      </div>
-
-      {/* 3. Premium Frosted Glass Layer (Stronger Frost + Cool Tint) */}
+      {/* 2. Premium Frosted Glass Layer (Tuned Down Blur + Tint Opacity) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(12, 22, 48, 0.085)',
-        backdropFilter: 'blur(26px)',
-        WebkitBackdropFilter: 'blur(26px)',
-        zIndex: 2,
+        background: 'rgba(12, 22, 48, 0.045)', // Reduced to your precise 4.5% target sweet-spot
+        backdropFilter: 'blur(20px)',          // Lowered to 20px to let the 3D ring pop sharply
+        WebkitBackdropFilter: 'blur(20px)',
+        zIndex: 1,
         pointerEvents: 'none',
       }} />
 
-      {/* 4. Micro-Texture (Subtle Grain for Tactile Glass Feel) */}
+      {/* 3. 3D Canvas (Clean line of sight above the background frost) */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 2 }}>
+        <SceneContainer />
+      </div>
+
+      {/* 4. Micro-Texture (Refined to a faint, tactile grain layer) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        backgroundImage: 'radial-gradient(rgba(255,255,255,0.14) 1px, transparent 1px)',
+        backgroundImage: 'radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px)',
         backgroundSize: '5px 5px',
-        opacity: 0.07,
+        opacity: 0.05, // Dialed back to 5% to keep it clean and elegant over the panels
         zIndex: 3,
         pointerEvents: 'none',
       }} />
@@ -45,10 +45,10 @@ function App() {
         position: 'fixed',
         inset: 0,
         background: `
-          linear-gradient(to bottom, rgba(255,255,255,0.09) 0%, transparent 5%),
-          linear-gradient(to right, rgba(255,255,255,0.05) 0%, transparent 4%),
-          linear-gradient(to left, rgba(255,255,255,0.05) 0%, transparent 4%),
-          radial-gradient(circle at 50% 50%, transparent 40%, rgba(2,2,8,0.88) 100%)
+          linear-gradient(to bottom, rgba(255,255,255,0.08) 0%, transparent 5%),
+          linear-gradient(to right, rgba(255,255,255,0.04) 0%, transparent 4%),
+          linear-gradient(to left, rgba(255,255,255,0.04) 0%, transparent 4%),
+          radial-gradient(circle at 50% 50%, transparent 45%, rgba(2,2,8,0.85) 100%)
         `,
         zIndex: 4,
         pointerEvents: 'none',
