@@ -29,19 +29,7 @@ function App() {
         <SceneContainer />
       </div>
 
-      {/* 4. Micro-Texture Layer (TEMPORARILY DISABLED FOR DIAGNOSTIC) */}
-      {/* <div style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundImage: 'radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px)',
-        backgroundSize: '4px 4px',
-        opacity: 0.06,
-        zIndex: 5, 
-        pointerEvents: 'none',
-      }} /> 
-      */}
-
-      {/* 5. Edge Reflections + Vignette */}
+      {/* 4. Edge Reflections + Vignette */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -52,6 +40,17 @@ function App() {
           radial-gradient(circle at 50% 50%, transparent 38%, rgba(2,2,8,0.92) 100%)
         `,
         zIndex: 4,
+        pointerEvents: 'none',
+      }} />
+
+      {/* 5. Micro-Texture Layer (Restored: Lower opacity, higher zIndex) */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundImage: 'radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px)',
+        backgroundSize: '4px 4px',
+        opacity: 0.06, 
+        zIndex: 6, 
         pointerEvents: 'none',
       }} />
 

@@ -39,7 +39,7 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
       >
         <boxGeometry args={[1.8, 1.0, 0.03]} />
         <meshPhysicalMaterial
-          color="#2a2f3a"               // Restored to dark frosted tone for premium contrast
+          color="#2a2f3a"               
           transmission={0.93}
           roughness={0.14}
           metalness={0.08}
@@ -47,7 +47,7 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
           ior={1.54}
           clearcoat={1.0}
           clearcoatRoughness={0.01}
-          envMapIntensity={2.3}         // Keeps the rim lights catching the edges
+          envMapIntensity={2.8}         // Boosted to dramatically increase environmental gloss
           transparent={true}
           opacity={hovered ? 0.95 : 0.70}
           side={THREE.DoubleSide}
@@ -102,37 +102,15 @@ export default function MenuRing() {
 
   return (
     <group>
-      {/* High-intensity back lighting rig outside rotation for clean edge lines */}
-      <directionalLight
-        position={[0, 9, -15]}
-        intensity={6.8}                
-        color="#b0f2ff"
-      />
+      <directionalLight position={[0, 9, -15]} intensity={6.8} color="#b0f2ff" />
 
-      <pointLight 
-        position={[-6, 7, -10]} 
-        intensity={4.0}                 
-        color="#67ffcc" 
-        distance={30}
-      />
+      {/* Boosted Rim Lights for premium edge shine */}
+      <pointLight position={[-6, 7, -10]} intensity={5.5} color="#67ffcc" distance={30} />
+      <pointLight position={[6, 7, -10]} intensity={5.5} color="#3399ff" distance={30} />
 
-      <pointLight 
-        position={[6, 7, -10]} 
-        intensity={4.0}                 
-        color="#3399ff" 
-        distance={30}
-      />
-
-      {/* Front soft fill balance */}
-      <directionalLight
-        position={[0, 4, 12]}
-        intensity={1.0}
-        color="#ffffff"
-      />
-
+      <directionalLight position={[0, 4, 12]} intensity={1.0} color="#ffffff" />
       <ambientLight intensity={0.12} color="#0a1530" />
 
-      {/* Rotating Ring Cluster */}
       <group ref={ringRef}>
         {MENU_ITEMS.map((item, index) => {
           const angle = (index / MENU_ITEMS.length) * Math.PI * 2;
