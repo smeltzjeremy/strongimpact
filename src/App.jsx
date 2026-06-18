@@ -13,6 +13,23 @@ function App() {
         zIndex: 0,
       }} />
 
+      {/* 1.5 NEW: Atmospheric Cyan/Blue Core Glow */}
+      <div style={{
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '80vw',
+        height: '80vw',
+        maxWidth: '900px',
+        maxHeight: '900px',
+        background: 'radial-gradient(circle, rgba(0, 255, 204, 0.08) 0%, rgba(51, 153, 255, 0.04) 40%, transparent 70%)',
+        filter: 'blur(90px)',
+        WebkitFilter: 'blur(90px)',
+        zIndex: 0,
+        pointerEvents: 'none',
+      }} />
+
       {/* 2. Frosted Glass Layer */}
       <div style={{
         position: 'fixed',
@@ -43,7 +60,7 @@ function App() {
         pointerEvents: 'none',
       }} />
 
-      {/* 5. Micro-Texture Layer (Restored: Lower opacity, higher zIndex) */}
+      {/* 5. Micro-Texture Layer */}
       <div style={{
         position: 'fixed',
         inset: 0,
