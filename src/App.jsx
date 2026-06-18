@@ -9,24 +9,24 @@ function App() {
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: '#040406',
+        background: '#030305',
         zIndex: 0,
       }} />
 
-      {/* 2. Curved Radial Chrome Pop (Offset for natural curvature) */}
+      {/* 2. Sharp Chrome Horizon Drop (Rapid transition for metallic edge) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(ellipse 160% 115% at 20% 25%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.05) 45%, transparent 78%)',
+        background: 'linear-gradient(to bottom, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.22) 6%, rgba(255,255,255,0.04) 18%, rgba(255,255,255,0.01) 32%, transparent 50%)',
         zIndex: 1,
         pointerEvents: 'none',
       }} />
 
-      {/* 3. Broad Volumetric Top Sheen (Lowered anchor for center coverage) */}
+      {/* 3. Subtle Bottom-Up Ambient Reflection (Secondary sheen for depth) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(ellipse 145% 105% at 50% 18%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 50%, transparent 80%)',
+        background: 'linear-gradient(to top, rgba(255,255,255,0.04) 0%, transparent 45%)',
         zIndex: 2,
         pointerEvents: 'none',
       }} />
@@ -47,11 +47,11 @@ function App() {
         pointerEvents: 'none',
       }} />
 
-      {/* 6. Softened Vignette (More breathing room in the center) */}
+      {/* 6. Clean Vignette */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(circle at 50% 50%, transparent 45%, rgba(0,0,0,0.96) 100%)',
+        background: 'radial-gradient(circle at 50% 50%, transparent 38%, rgba(0,0,0,0.96) 100%)',
         zIndex: 5,
         pointerEvents: 'none',
       }} />
