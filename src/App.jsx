@@ -5,56 +5,56 @@ function App() {
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
       
-      {/* 1. Base Deep Black Metal */}
+      {/* 1. Deep Polished Black Metal Base */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: '#040406',
+        background: 'linear-gradient(150deg, #0a0a0e 0%, #040406 45%, #000000 100%)',
         zIndex: 0,
       }} />
 
-      {/* 2. Broader Top Sheen (Calibrated volume) */}
+      {/* 2. Broad Polished Top Sheen (Volume & Depth) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(ellipse 140% 110% at 50% -10%, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.02) 45%, transparent 75%)',
-        zIndex: 1,
+        background: 'radial-gradient(ellipse 135% 105% at 50% -8%, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.03) 42%, transparent 75%)',
+        zIndex: 0,
         pointerEvents: 'none',
       }} />
 
-      {/* 3. Stronger Specular Highlight (0.25 chrome pop) */}
+      {/* 3. Medium Chrome Specular Highlight (The Main Shine) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.02) 37%, rgba(255,255,255,0.25) 45%, rgba(255,255,255,0.02) 53%, transparent 60%)',
+        background: 'linear-gradient(118deg, transparent 32%, rgba(255,255,255,0.03) 40%, rgba(255,255,255,0.23) 46%, rgba(255,255,255,0.04) 53%, transparent 62%)',
+        zIndex: 0,
+        pointerEvents: 'none',
+      }} />
+
+      {/* 4. 3D Canvas */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 1 }}>
+        <SceneContainer />
+      </div>
+
+      {/* 5. Very Light Micro-Texture */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundImage: 'radial-gradient(rgba(255,255,255,0.09) 1px, transparent 1px)',
+        backgroundSize: '5px 5px',
+        opacity: 0.04,
         zIndex: 2,
         pointerEvents: 'none',
       }} />
 
-      {/* 4. Very Light Micro-Texture (Moved underneath 3D canvas) */}
+      {/* 6. Clean Edge Vignette + Polish */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        backgroundImage: 'radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px)',
-        backgroundSize: '5px 5px',
-        opacity: 0.04,
+        background: 'radial-gradient(circle at 50% 48%, transparent 30%, rgba(0,0,0,0.95) 80%)',
         zIndex: 3,
         pointerEvents: 'none',
       }} />
-
-      {/* 5. Strong Clean Vignette (Moved underneath 3D canvas) */}
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'radial-gradient(circle at 50% 50%, transparent 35%, rgba(0,0,0,0.95) 100%)',
-        zIndex: 4,
-        pointerEvents: 'none',
-      }} />
-
-      {/* 6. 3D Canvas (Now sitting safely on top of all background treatments) */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: 5 }}>
-        <SceneContainer />
-      </div>
 
       {/* UI Overlay */}
       <div style={{
@@ -116,7 +116,7 @@ function App() {
             color: '#fff',
             border: '1px solid rgba(255,255,255,0.25)',
             backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)', // Explicit Safari hardware acceleration support
+            WebkitBackdropFilter: 'blur(16px)',
             cursor: 'pointer',
           }}>
             View Source
