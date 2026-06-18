@@ -37,24 +37,24 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
         onPointerOut={() => setHovered(false)}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        <boxGeometry args={[1.8, 1.0, 0.04]} />
+        <boxGeometry args={[1.8, 1.0, 0.03]} />
         <meshPhysicalMaterial
           color="#ffffff"
           transmission={0.95}
-          roughness={0.14}
-          metalness={0.05}
-          thickness={0.45}
+          roughness={0.14}              // 3. Calibrated to smoother satin window for future images
+          metalness={0.06}
+          thickness={0.15}
           ior={1.52}
           clearcoat={1.0}
-          clearcoatRoughness={0.03}
-          envMapIntensity={1.4}
+          clearcoatRoughness={0.015}    // 4. Set to your excellent sharp reflection threshold
+          envMapIntensity={1.7}         // 1. Tuned down to avoid washed-out over-shining
           transparent={true}
-          opacity={hovered ? 0.96 : 0.75}
+          opacity={hovered ? 0.95 : 0.70}
           side={THREE.DoubleSide}
         />
       </mesh>
 
-      <Html position={[0, 0, 0.05]} center distanceFactor={3} pointerEvents="none">
+      <Html position={[0, 0, 0.03]} center distanceFactor={3} pointerEvents="none">
         <span style={{
           color: hovered ? item.color : '#ffffff',
           fontSize: '14px',
@@ -101,43 +101,52 @@ export default function MenuRing() {
   });
 
   return (
-    <group ref={ringRef}>
-      {/* Strong Rim Lighting for Edge Glow */}
+    <group>
+      {/* 2. Rim Light Intensity — Controlled glare trace outside rotation */}
       <directionalLight
-        position={[0, 8, -14]}
-        intensity={6.5}
-        color="#a0f0ff"
+        position={[0, 9, -15]}
+        intensity={6.8}                // Positioned safely inside your 6.5–7.0 target range
+        color="#b0f2ff"
       />
 
-      {/* Secondary Moving Flare Light */}
-      <pointLight
-        position={[6, 5, -6]}
-        intensity={4.2}
-        color="#67ffcc"
-        distance={28}
+      <pointLight 
+        position={[-6, 7, -10]} 
+        intensity={4.0}                 
+        color="#67ffcc" 
+        distance={30}
       />
 
-      {/* Soft Front Fill */}
+      <pointLight 
+        position={[6, 7, -10]} 
+        intensity={4.0}                 
+        color="#3399ff" 
+        distance={30}
+      />
+
+      {/* Front soft fill balance */}
       <directionalLight
-        position={[0, 3, 10]}
-        intensity={1.1}
+        position={[0, 4, 12]}
+        intensity={1.0}
         color="#ffffff"
       />
 
-      <ambientLight intensity={0.2} color="#0a1530" />
+      <ambientLight intensity={0.12} color="#0a1530" />
 
-      {MENU_ITEMS.map((item, index) => {
-        const angle = (index / MENU_ITEMS.length) * Math.PI * 2;
-        return (
-          <MenuPanel
-            key={`${item.id}-${index}`}
-            item={item}
-            angle={angle}
-            radius={activeRadius}
-            currentRingRotation={rotationRef.current}
-          />
-        );
-      })}
+      {/* Rotating Ring Cluster */}
+      <group ref={ringRef}>
+        {MENU_ITEMS.map((item, index) => {
+          const angle = (index / MENU_ITEMS.length) * Math.PI * 2;
+          return (
+            <MenuPanel
+              key={`${item.id}-${index}`}
+              item={item}
+              angle={angle}
+              radius={activeRadius}
+              currentRingRotation={rotationRef.current}
+            />
+          );
+        })}
+      </group>
     </group>
   );
 }
