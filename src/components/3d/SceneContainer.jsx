@@ -27,7 +27,9 @@ export default function SceneContainer() {
           powerPreference: "high-performance" 
         }}
       >
-        <Environment preset="night" />
+        {/* Swapped to studio for clean, abstract soft-box lighting reflections */}
+        <Environment preset="studio" />
+        
         <ambientLight intensity={0.35} />
         <directionalLight position={[5, 12, 5]} intensity={1.6} color="#e0f0ff" />
 
