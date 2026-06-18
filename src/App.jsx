@@ -5,78 +5,54 @@ function App() {
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
       
-      {/* 1. Base Deep Background */}
+      {/* 1. Base Polished Black Mirror Gradient */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(circle at 50% 48%, #0a0a16 0%, #020208 85%)',
+        background: 'linear-gradient(145deg, #0f0f12 0%, #050507 45%, #000000 100%)',
         zIndex: 0,
       }} />
 
-      {/* 2. Ambient Colored Glows (for refraction depth) */}
+      {/* 2. Subtle Overhead Sheen / Soft Reflection */}
       <div style={{
         position: 'fixed',
-        top: '-10%',
-        left: '-10%',
-        width: '500px',
-        height: '500px',
-        borderRadius: '50%',
-        background: 'rgba(139, 92, 246, 0.12)',
-        filter: 'blur(120px)',
-        zIndex: 0,
-        pointerEvents: 'none',
-      }} />
-      <div style={{
-        position: 'fixed',
-        bottom: '-10%',
-        right: '-10%',
-        width: '500px',
-        height: '500px',
-        borderRadius: '50%',
-        background: 'rgba(103, 232, 249, 0.12)',
-        filter: 'blur(120px)',
+        top: '-20%',
+        left: '-15%',
+        width: '130%',
+        height: '60%',
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 65%)',
+        transform: 'skewY(-10deg)',
+        filter: 'blur(40px)',
         zIndex: 0,
         pointerEvents: 'none',
       }} />
 
-      {/* 3. Frosted Glass Layer */}
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(12, 22, 48, 0.095)',
-        backdropFilter: 'blur(22px)',
-        WebkitBackdropFilter: 'blur(22px)',
-        zIndex: 1,
-        pointerEvents: 'none',
-      }} />
-
-      {/* 4. 3D Canvas */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: 2 }}>
+      {/* 3. 3D Canvas (Must sit above background glass layers) */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 1 }}>
         <SceneContainer />
       </div>
 
-      {/* 5. Subtle Noise / Micro-Texture */}
+      {/* 4. Very Subtle Micro-Texture (Clean front glass surface) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        backgroundImage: 'radial-gradient(rgba(255,255,255,0.16) 1px, transparent 1px)',
-        backgroundSize: '4px 4px',
-        opacity: 0.065,
-        zIndex: 3,
+        backgroundImage: 'radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px)',
+        backgroundSize: '5px 5px',
+        opacity: 0.045,
+        zIndex: 2,
         pointerEvents: 'none',
       }} />
 
-      {/* 6. Edge Reflections + Vignette */}
+      {/* 5. Strong Vignette + Edge Highlights (Polished chrome framing) */}
       <div style={{
         position: 'fixed',
         inset: 0,
         background: `
-          linear-gradient(to bottom, rgba(255,255,255,0.12) 0%, transparent 6%),
-          linear-gradient(to right, rgba(255,255,255,0.06) 0%, transparent 4%),
-          linear-gradient(to left, rgba(255,255,255,0.06) 0%, transparent 4%),
-          radial-gradient(circle at 50% 50%, transparent 38%, rgba(2,2,8,0.92) 100%)
+          linear-gradient(to bottom, rgba(255,255,255,0.08) 0%, transparent 4%),
+          linear-gradient(to top, rgba(255,255,255,0.05) 0%, transparent 4%),
+          radial-gradient(circle at 50% 42%, transparent 28%, rgba(0,0,0,0.92) 82%)
         `,
-        zIndex: 4,
+        zIndex: 3,
         pointerEvents: 'none',
       }} />
 
@@ -89,7 +65,7 @@ function App() {
         flexDirection: 'column',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '5vh 20px 7vh',
+        padding: '6vh 24px 8vh',
         pointerEvents: 'none',
         boxSizing: 'border-box',
       }}>
@@ -98,48 +74,49 @@ function App() {
           <h1 style={{
             fontSize: 'clamp(2.8rem, 8.5vw, 5.5rem)',
             fontWeight: 900,
-            letterSpacing: '0.04em',
+            letterSpacing: '0.06em',
             margin: 0,
             color: '#ffffff',
-            textShadow: '0 0 45px rgba(0, 255, 204, 0.75)',
+            textShadow: '0 0 42px rgba(0, 255, 204, 0.55)',
           }}>
             STRONG IMPACT
           </h1>
           <p style={{
-            fontSize: 'clamp(1.1rem, 3.2vw, 1.45rem)',
+            fontSize: 'clamp(1.05rem, 3vw, 1.35rem)',
             color: '#67ffcc',
-            marginTop: '0.5rem',
+            marginTop: '0.6rem',
             fontWeight: 700,
-            letterSpacing: '0.1em'
+            letterSpacing: '0.12em'
           }}>
             Interactive 3D Engine Pipeline v1.0
           </p>
         </div>
 
         {/* Buttons */}
-        <div style={{ display: 'flex', gap: '1.6rem', pointerEvents: 'auto' }}>
+        <div style={{ display: 'flex', gap: '1.5rem', pointerEvents: 'auto' }}>
           <button style={{
-            padding: '16px 38px',
-            fontSize: '1.1rem',
+            padding: '16px 42px',
+            fontSize: '1.05rem',
             fontWeight: 700,
             borderRadius: '9999px',
             background: 'linear-gradient(90deg, #00ffcc, #00d4aa)',
-            color: '#0a0a1a',
+            color: '#05050a',
             border: 'none',
             cursor: 'pointer',
-            boxShadow: '0 10px 30px rgba(0, 255, 204, 0.4)',
+            boxShadow: '0 12px 35px rgba(0, 255, 204, 0.35)',
           }}>
             Initialize Project
           </button>
           <button style={{
-            padding: '16px 38px',
-            fontSize: '1.1rem',
+            padding: '16px 42px',
+            fontSize: '1.05rem',
             fontWeight: 700,
             borderRadius: '9999px',
-            background: 'rgba(255,255,255,0.08)',
+            background: 'rgba(255,255,255,0.04)',
             color: '#fff',
-            border: '1px solid rgba(255,255,255,0.3)',
-            backdropFilter: 'blur(14px)',
+            border: '1px solid rgba(255,255,255,0.25)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
             cursor: 'pointer',
           }}>
             View Source
