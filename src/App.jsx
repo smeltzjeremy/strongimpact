@@ -5,7 +5,7 @@ function App() {
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
       
-      {/* 1. Base Depth Gradient (Furthest Back) */}
+      {/* 1. Base Depth Gradient */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -13,20 +13,20 @@ function App() {
         zIndex: 0,
       }} />
 
-      {/* 2. Premium Frosted Glass Layer (Moved BEHIND the 3D Canvas) */}
+      {/* 2. Premium Frosted Glass Layer (Tuned Frost + Enhanced Micro Texture) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(15, 25, 55, 0.065)',
-        backgroundImage: 'radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px)',
-        backgroundSize: '5px 5px',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
-        zIndex: 1, // Pushed down
+        background: 'rgba(15, 25, 55, 0.08)', // Tuned cool tint opacity up slightly
+        backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px)', // Enhanced texture opacity
+        backgroundSize: '6px 6px', // Slightly larger pattern for better visibility on mobile
+        backdropFilter: 'blur(28px)', // Increased blur to 28px for stronger frost look
+        WebkitBackdropFilter: 'blur(28px)',
+        zIndex: 1,
         pointerEvents: 'none',
       }} />
 
-      {/* 3. Edge Reflections + Vignette (Moved BEHIND the 3D Canvas) */}
+      {/* 3. Edge Reflections + Darker Vignette Tuning */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -34,18 +34,18 @@ function App() {
           linear-gradient(to bottom, rgba(255,255,255,0.085) 0%, transparent 5%),
           linear-gradient(to right, rgba(255,255,255,0.045) 0%, transparent 4%),
           linear-gradient(to left, rgba(255,255,255,0.045) 0%, transparent 4%),
-          radial-gradient(circle at 50% 50%, transparent 42%, rgba(2,2,8,0.82) 100%)
-        `,
-        zIndex: 2, // Pushed down
+          radial-gradient(circle at 50% 50%, transparent 42%, rgba(2,2,8,0.85) 100%)
+        `, // Darkened vignette to 0.85 to lock focus onto the center ring
+        zIndex: 2,
         pointerEvents: 'none',
       }} />
 
-      {/* 4. 3D Canvas (Brought FORWARD so it renders razor-sharp) */}
+      {/* 4. 3D Canvas (Alpha transparency enabled via SceneContainer integration) */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 3 }}>
-        <SceneContainer />
+        <SceneContainer gl={{ alpha: true }} />
       </div>
 
-      {/* 5. UI Overlay (Absolute Front) */}
+      {/* UI Overlay */}
       <div style={{
         position: 'relative',
         zIndex: 10,
