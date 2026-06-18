@@ -3,53 +3,53 @@ import SceneContainer from './components/3d/SceneContainer';
 
 function App() {
   return (
-    <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden', background: '#020208' }}>
+    <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
       
-      {/* 1. Subtle Curved Depth (Base void gradient) */}
+      {/* 1. Base Depth Gradient - Curved Black Void */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(circle at 50% 50%, #0c0c1a 0%, #020206 80%)',
+        background: 'radial-gradient(circle at 50% 45%, #0a0a16 0%, #020208 80%)',
         zIndex: 0,
       }} />
 
-      {/* 2. Main Frosted Glass Layer (Optimized blur behind the 3D Canvas) */}
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(15, 22, 45, 0.07)', 
-        backdropFilter: 'blur(24px)',          // Tuned to 24px for pristine 3D panel clarity
-        WebkitBackdropFilter: 'blur(24px)',
-        zIndex: 1,
-        pointerEvents: 'none',
-      }} />
+      {/* 2. 3D Canvas */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 1 }}>
+        <SceneContainer />
+      </div>
 
-      {/* 3. Edge Reflections + Vignette */}
+      {/* 3. Premium Frosted Glass Layer (Stronger Frost + Cool Tint) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: `
-          linear-gradient(to bottom, rgba(255,255,255,0.09) 0%, transparent 4%),
-          linear-gradient(to right, rgba(255,255,255,0.04) 0%, transparent 3%),
-          linear-gradient(to left, rgba(255,255,255,0.04) 0%, transparent 3%),
-          radial-gradient(circle at 50% 50%, transparent 40%, rgba(1,1,4,0.85) 100%)
-        `, 
+        background: 'rgba(12, 22, 48, 0.085)',
+        backdropFilter: 'blur(26px)',
+        WebkitBackdropFilter: 'blur(26px)',
         zIndex: 2,
         pointerEvents: 'none',
       }} />
 
-      {/* 4. 3D Canvas Layer */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: 3 }}>
-        <SceneContainer />
-      </div>
-
-      {/* 5. Front Viewport Micro-Texture (Tuned to 0.05 for distinct mobile visibility) */}
+      {/* 4. Micro-Texture (Subtle Grain for Tactile Glass Feel) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)',
-        backgroundSize: '4px 4px',
-        opacity: 0.05, // Upgraded to your target value to make the viewport tactile
+        backgroundImage: 'radial-gradient(rgba(255,255,255,0.14) 1px, transparent 1px)',
+        backgroundSize: '5px 5px',
+        opacity: 0.07,
+        zIndex: 3,
+        pointerEvents: 'none',
+      }} />
+
+      {/* 5. Edge Reflections + Strong Vignette */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        background: `
+          linear-gradient(to bottom, rgba(255,255,255,0.09) 0%, transparent 5%),
+          linear-gradient(to right, rgba(255,255,255,0.05) 0%, transparent 4%),
+          linear-gradient(to left, rgba(255,255,255,0.05) 0%, transparent 4%),
+          radial-gradient(circle at 50% 50%, transparent 40%, rgba(2,2,8,0.88) 100%)
+        `,
         zIndex: 4,
         pointerEvents: 'none',
       }} />
