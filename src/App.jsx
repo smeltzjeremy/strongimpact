@@ -5,24 +5,24 @@ function App() {
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
       
-      {/* 1. Base Polished Black Mirror */}
+      {/* 1. Deep Dark Base */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'linear-gradient(145deg, #0f0f12 0%, #050507 45%, #000000 100%)',
+        background: 'linear-gradient(150deg, #0d0d11 0%, #050507 45%, #000000 100%)',
         zIndex: 0,
       }} />
 
-      {/* 2. Strong Overhead Sheen + Reflection (Key for depth) */}
+      {/* 2. Controlled Chrome Top Shine (The reflection you want) */}
       <div style={{
         position: 'fixed',
-        top: '-18%',
-        left: '-12%',
-        width: '124%',
-        height: '55%',
-        background: 'linear-gradient(138deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.015) 55%, transparent 80%)',
-        transform: 'skewY(-11deg)',
-        filter: 'blur(32px)',
+        top: '-10%',
+        left: '-6%',
+        width: '112%',
+        height: '48%',
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.025) 50%, transparent 78%)',
+        transform: 'skewY(-8deg)',
+        filter: 'blur(26px)',
         zIndex: 0,
         pointerEvents: 'none',
       }} />
@@ -32,25 +32,25 @@ function App() {
         <SceneContainer />
       </div>
 
-      {/* 4. Very Subtle Micro-Texture */}
+      {/* 4. Very Light Micro-Texture */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        backgroundImage: 'radial-gradient(rgba(255,255,255,0.11) 1px, transparent 1px)',
+        backgroundImage: 'radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)',
         backgroundSize: '5px 5px',
-        opacity: 0.04,
+        opacity: 0.035,
         zIndex: 2,
         pointerEvents: 'none',
       }} />
 
-      {/* 5. Strong Vignette + Polish Highlights */}
+      {/* 5. Strong but Clean Vignette + Edge Polish */}
       <div style={{
         position: 'fixed',
         inset: 0,
         background: `
-          linear-gradient(to bottom, rgba(255,255,255,0.09) 0%, transparent 5%),
-          linear-gradient(to top, rgba(255,255,255,0.055) 0%, transparent 5%),
-          radial-gradient(circle at 50% 38%, transparent 26%, rgba(0,0,0,0.94) 80%)
+          linear-gradient(to bottom, rgba(255,255,255,0.08) 0%, transparent 5%),
+          linear-gradient(to top, rgba(255,255,255,0.05) 0%, transparent 5%),
+          radial-gradient(circle at 50% 36%, transparent 24%, rgba(0,0,0,0.95) 78%)
         `,
         zIndex: 3,
         pointerEvents: 'none',
