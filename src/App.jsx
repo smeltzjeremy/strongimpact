@@ -4,43 +4,58 @@ import SceneContainer from './components/3d/SceneContainer';
 function App() {
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
-      {/* Enhanced Frosted Background */}
-      <div className="premium-bg" />
+      {/* Strong Glassmorphic Background */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'radial-gradient(circle at 50% 25%, rgba(80, 160, 255, 0.18) 0%, #05050f 65%)',
+        zIndex: 0,
+      }} />
+
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)',
+        backgroundSize: '50px 50px',
+        zIndex: 0,
+        pointerEvents: 'none',
+      }} />
 
       {/* 3D Canvas */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 1 }}>
         <SceneContainer />
       </div>
 
-      {/* UI Overlay */}
+      {/* UI Overlay - Improved Responsive Layout */}
       <div style={{
         position: 'relative',
         zIndex: 10,
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         alignItems: 'center',
-        padding: '5vh 20px 7vh',
+        padding: '5vh 20px 6vh',
         pointerEvents: 'none',
         boxSizing: 'border-box',
       }}>
-        {/* Top Section */}
+        {/* Top Content */}
         <div style={{ 
           display: 'flex', 
           flexDirection: 'column', 
           alignItems: 'center', 
           textAlign: 'center',
-          width: '100%'
+          width: '100%',
+          marginBottom: 'auto'   // Pushes buttons to bottom
         }}>
-          <header style={{ pointerEvents: 'auto', marginBottom: '1.5rem' }}>
+          <header style={{ pointerEvents: 'auto', marginBottom: '1.2rem' }}>
             <h1 style={{
-              fontSize: 'clamp(2.8rem, 8.5vw, 5.4rem)',
+              fontSize: 'clamp(2.8rem, 8.5vw, 5.5rem)',
               fontWeight: 900,
               letterSpacing: '0.04em',
               margin: 0,
               color: '#ffffff',
-              textShadow: '0 0 40px rgba(0, 255, 204, 0.6)',
+              textShadow: '0 0 45px rgba(0, 255, 204, 0.7)',
             }}>
               STRONG IMPACT
             </h1>
@@ -55,26 +70,28 @@ function App() {
             </p>
           </header>
 
-          {/* Glass Description - Better mobile spacing */}
-          <div 
-            className="glass-card-premium"
-            style={{
-              width: 'min(540px, 92%)',
-              padding: '1.8rem 2.2rem',
-              borderRadius: '22px',
-              lineHeight: 1.65,
-              fontSize: '14.8px',
-              color: '#e0f0ff',
-              pointerEvents: 'auto',
-              marginBottom: '1rem'
-            }}
-          >
+          {/* Smaller, Higher Glass Description on Mobile */}
+          <div style={{
+            width: 'min(540px, 92%)',
+            padding: '1.6rem 2rem',
+            background: 'rgba(12, 18, 35, 0.68)',
+            backdropFilter: 'blur(32px)',
+            WebkitBackdropFilter: 'blur(32px)',
+            borderRadius: '22px',
+            border: '1px solid rgba(255,255,255,0.22)',
+            boxShadow: '0 25px 65px -15px rgba(0,0,0,0.8)',
+            lineHeight: 1.65,
+            fontSize: '14.5px',
+            color: '#e0f0ff',
+            pointerEvents: 'auto',
+            marginBottom: '2rem'
+          }}>
             A high-performance WebGL canvas environment built piece by piece. 
             Click and drag to rotate space, or select any orbiting panel module.
           </div>
         </div>
 
-        {/* Buttons */}
+        {/* Buttons at Bottom */}
         <div style={{ display: 'flex', gap: '1.6rem', pointerEvents: 'auto' }}>
           <button style={{
             padding: '16px 38px',

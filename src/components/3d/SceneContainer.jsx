@@ -7,24 +7,28 @@ export default function SceneContainer() {
   return (
     <div style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}>
       <Canvas
-        /* Shifting Y to 1.2 and pulling frame back to 8.5 pushes the 3D horizon into the lower dark open space */
-        camera={{ position: [0, 1.2, 8.5], fov: 50 }}
+        camera={{ position: [0, 1.4, 9.2], fov: 48 }}
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
       >
         <color attach="background" args={['#05050f']} />
         <Environment preset="night" />
 
-        <ambientLight intensity={0.3} />
-        <directionalLight position={[5, 10, 4]} intensity={1.5} color="#e0f0ff" />
+        <ambientLight intensity={0.35} />
+        <directionalLight position={[5, 12, 5]} intensity={1.6} color="#e0f0ff" />
 
         <Stars radius={100} depth={50} count={2500} factor={6} saturation={0} fade speed={0.5} />
-        <MenuRing />
+        
+        {/* Physically lowers the 3D ring to sit below your description box */}
+        <group position={[0, -0.7, 0]}>
+          <MenuRing />
+        </group>
 
         <OrbitControls 
           enableZoom={true} 
           enablePan={false}
-          minDistance={5.5}
-          maxDistance={11.0}
+          minDistance={6.0}
+          maxDistance={12.0}
+          target={[0, -0.7, 0]}
           minPolarAngle={Math.PI / 2.3}
           maxPolarAngle={Math.PI / 1.7}
         />
