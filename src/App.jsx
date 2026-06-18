@@ -13,12 +13,12 @@ function App() {
         zIndex: 0,
       }} />
 
-      {/* 2. Frosted Glass Layer - Enhanced Tint Opacity */}
+      {/* 2. Frosted Glass Layer (Behind 3D Canvas) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(12, 22, 48, 0.095)', // Upgraded to 9.5% for deeper obsidian tinting
-        backdropFilter: 'blur(21px)',           // Maintained sharp blur definition
+        background: 'rgba(12, 22, 48, 0.095)',
+        backdropFilter: 'blur(21px)',
         WebkitBackdropFilter: 'blur(21px)',
         zIndex: 1,
         pointerEvents: 'none',
@@ -29,18 +29,18 @@ function App() {
         <SceneContainer />
       </div>
 
-      {/* 4. Micro-Texture Layer - Hardened Front Window Presence */}
+      {/* 4. Micro-Texture Layer (Lifted to zIndex 3 to sit evenly over canvas) */}
       <div style={{
         position: 'fixed',
         inset: 0,
         backgroundImage: 'radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px)',
         backgroundSize: '4px 4px',
-        opacity: 0.11, // Bumped to 11% to separate the front screen from the 3D void
-        zIndex: 3,
+        opacity: 0.11,
+        zIndex: 3, 
         pointerEvents: 'none',
       }} />
 
-      {/* 5. Edge Reflections + Vignette */}
+      {/* 5. Edge Reflections + Vignette (Restored to zIndex 4 for clean, sharp glass framing) */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -48,7 +48,7 @@ function App() {
           linear-gradient(to bottom, rgba(255,255,255,0.12) 0%, transparent 6%),
           linear-gradient(to right, rgba(255,255,255,0.06) 0%, transparent 4%),
           linear-gradient(to left, rgba(255,255,255,0.06) 0%, transparent 4%),
-          radial-gradient(circle at 50% 50%, transparent 38%, rgba(2,2,8,0.92) 100%) // Nudged falloff slightly
+          radial-gradient(circle at 50% 50%, transparent 38%, rgba(2,2,8,0.92) 100%)
         `,
         zIndex: 4,
         pointerEvents: 'none',
