@@ -4,29 +4,29 @@ import SceneContainer from './components/3d/SceneContainer';
 function App() {
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
-      {/* Strong Glassmorphic Background */}
+      {/* Enhanced Multi-Layer Glass Background */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(circle at 50% 25%, rgba(80, 160, 255, 0.18) 0%, #05050f 65%)',
+        background: 'radial-gradient(circle at 50% 30%, rgba(100, 180, 255, 0.16) 0%, #05050f 70%)',
         zIndex: 0,
       }} />
-
       <div style={{
         position: 'fixed',
         inset: 0,
-        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)',
-        backgroundSize: '50px 50px',
+        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)',
+        backgroundSize: '55px 55px',
+        opacity: 0.8,
         zIndex: 0,
         pointerEvents: 'none',
       }} />
 
-      {/* 3D Canvas */}
+      {/* 3D Canvas - Full Screen */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 1 }}>
         <SceneContainer />
       </div>
 
-      {/* UI Overlay - Improved Responsive Layout */}
+      {/* UI Overlay */}
       <div style={{
         position: 'relative',
         zIndex: 10,
@@ -39,60 +39,59 @@ function App() {
         pointerEvents: 'none',
         boxSizing: 'border-box',
       }}>
-        {/* Top Content */}
+        {/* Top Header & Description Content Cluster */}
         <div style={{ 
           display: 'flex', 
           flexDirection: 'column', 
           alignItems: 'center', 
           textAlign: 'center',
           width: '100%',
-          marginBottom: 'auto'   // Pushes buttons to bottom
+          marginBottom: 'auto' /* Crucial: Keeps both text boxes locked to the top, freeing the bottom half */
         }}>
           <header style={{ pointerEvents: 'auto', marginBottom: '1.2rem' }}>
             <h1 style={{
               fontSize: 'clamp(2.8rem, 8.5vw, 5.5rem)',
               fontWeight: 900,
               letterSpacing: '0.04em',
-              margin: 0,
+              margin: '0 0 0.5rem 0',
               color: '#ffffff',
-              textShadow: '0 0 45px rgba(0, 255, 204, 0.7)',
+              textShadow: '0 0 45px rgba(0, 255, 204, 0.75)',
             }}>
               STRONG IMPACT
             </h1>
             <p style={{
               fontSize: 'clamp(1.1rem, 3.2vw, 1.45rem)',
               color: '#67ffcc',
-              marginTop: '0.4rem',
               fontWeight: 700,
-              letterSpacing: '0.1em'
+              letterSpacing: '0.1em',
+              margin: 0
             }}>
               Interactive 3D Engine Pipeline v1.0
             </p>
           </header>
 
-          {/* Smaller, Higher Glass Description on Mobile */}
+          {/* Premium Glass Description */}
           <div style={{
             width: 'min(540px, 92%)',
             padding: '1.6rem 2rem',
-            background: 'rgba(12, 18, 35, 0.68)',
+            background: 'rgba(12, 18, 35, 0.7)',
             backdropFilter: 'blur(32px)',
             WebkitBackdropFilter: 'blur(32px)',
-            borderRadius: '22px',
-            border: '1px solid rgba(255,255,255,0.22)',
-            boxShadow: '0 25px 65px -15px rgba(0,0,0,0.8)',
+            borderRadius: '24px',
+            border: '1px solid rgba(255,255,255,0.25)',
+            boxShadow: '0 30px 70px -20px rgba(0,0,0,0.8)',
             lineHeight: 1.65,
             fontSize: '14.5px',
             color: '#e0f0ff',
-            pointerEvents: 'auto',
-            marginBottom: '2rem'
+            pointerEvents: 'auto'
           }}>
             A high-performance WebGL canvas environment built piece by piece. 
             Click and drag to rotate space, or select any orbiting panel module.
           </div>
         </div>
 
-        {/* Buttons at Bottom */}
-        <div style={{ display: 'flex', gap: '1.6rem', pointerEvents: 'auto' }}>
+        {/* Buttons - Firmly anchored to the bottom */}
+        <div style={{ display: 'flex', gap: '1.6rem', pointerEvents: 'auto', marginTop: '2rem' }}>
           <button style={{
             padding: '16px 38px',
             fontSize: '1.1rem',

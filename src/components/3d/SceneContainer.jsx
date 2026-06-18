@@ -7,7 +7,7 @@ export default function SceneContainer() {
   return (
     <div style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}>
       <Canvas
-        camera={{ position: [0, 1.4, 9.2], fov: 48 }}
+        camera={{ position: [0, 1.6, 9.5], fov: 48 }}
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
       >
         <color attach="background" args={['#05050f']} />
@@ -18,8 +18,8 @@ export default function SceneContainer() {
 
         <Stars radius={100} depth={50} count={2500} factor={6} saturation={0} fade speed={0.5} />
         
-        {/* Physically lowers the 3D ring to sit below your description box */}
-        <group position={[0, -0.7, 0]}>
+        {/* Pulls the center of the ring down below the top cards cleanly */}
+        <group position={[0, -1.3, 0]}>
           <MenuRing />
         </group>
 
@@ -28,7 +28,7 @@ export default function SceneContainer() {
           enablePan={false}
           minDistance={6.0}
           maxDistance={12.0}
-          target={[0, -0.7, 0]}
+          target={[0, -1.3, 0]}
           minPolarAngle={Math.PI / 2.3}
           maxPolarAngle={Math.PI / 1.7}
         />
