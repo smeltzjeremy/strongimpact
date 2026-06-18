@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Stars, Environment } from '@react-three/drei';
+import { OrbitControls, Environment } from '@react-three/drei';
 import MenuRing from './MenuRing';
 
 export default function SceneContainer() {
@@ -30,9 +30,6 @@ export default function SceneContainer() {
         <Environment preset="night" />
         <ambientLight intensity={0.35} />
         <directionalLight position={[5, 12, 5]} intensity={1.6} color="#e0f0ff" />
-        
-        {/* Calibrated Stars: Reduced density and factor to eliminate panel washout */}
-        <Stars radius={100} depth={50} count={700} factor={2.5} saturation={0} fade speed={0.5} />
 
         <group position={[0, verticalOffset, 0]}>
           <MenuRing />

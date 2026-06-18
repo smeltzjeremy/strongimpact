@@ -39,17 +39,17 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
       >
         <boxGeometry args={[1.8, 1.0, 0.03]} />
         <meshPhysicalMaterial
-          color="#22242a"               // Smoked charcoal base color to create a dark refraction core
-          transmission={0.91}           // Slightly adjusted down to retain dark body contrast
-          roughness={0.12}              // Smoother satin floor for sharper reflections
-          metalness={0.10}              // Micro-bumped metalness to harden specular shine
-          thickness={0.15}              
-          ior={1.54}                    
-          clearcoat={1.0}               
-          clearcoatRoughness={0.01}     
-          envMapIntensity={2.5}         // Enhanced reflection response to pop against the dark backdrop
+          color="#b4b9c4"               // Frosted silver for better glass look
+          transmission={0.93}
+          roughness={0.14}
+          metalness={0.08}
+          thickness={0.15}
+          ior={1.54}
+          clearcoat={1.0}
+          clearcoatRoughness={0.01}
+          envMapIntensity={2.3}
           transparent={true}
-          opacity={hovered ? 0.95 : 0.75}
+          opacity={hovered ? 0.95 : 0.70}
           side={THREE.DoubleSide}
         />
       </mesh>
@@ -102,7 +102,7 @@ export default function MenuRing() {
 
   return (
     <group>
-      {/* Retained rim and back-lighting profile to keep edge layouts sharp */}
+      {/* High-intensity back lighting rig outside rotation for clean edge lines */}
       <directionalLight
         position={[0, 9, -15]}
         intensity={6.8}                
@@ -123,6 +123,7 @@ export default function MenuRing() {
         distance={30}
       />
 
+      {/* Front soft fill balance */}
       <directionalLight
         position={[0, 4, 12]}
         intensity={1.0}
@@ -131,6 +132,7 @@ export default function MenuRing() {
 
       <ambientLight intensity={0.12} color="#0a1530" />
 
+      {/* Rotating Ring Cluster */}
       <group ref={ringRef}>
         {MENU_ITEMS.map((item, index) => {
           const angle = (index / MENU_ITEMS.length) * Math.PI * 2;
