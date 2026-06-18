@@ -33,65 +33,55 @@ function App() {
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
         padding: '5vh 20px 6vh',
         pointerEvents: 'none',
         boxSizing: 'border-box',
       }}>
-        {/* Top Header & Description Content Cluster */}
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center', 
-          textAlign: 'center',
-          width: '100%',
-          marginBottom: 'auto' /* Crucial: Keeps both text boxes locked to the top, freeing the bottom half */
-        }}>
-          <header style={{ pointerEvents: 'auto', marginBottom: '1.2rem' }}>
-            <h1 style={{
-              fontSize: 'clamp(2.8rem, 8.5vw, 5.5rem)',
-              fontWeight: 900,
-              letterSpacing: '0.04em',
-              margin: '0 0 0.5rem 0',
-              color: '#ffffff',
-              textShadow: '0 0 45px rgba(0, 255, 204, 0.75)',
-            }}>
-              STRONG IMPACT
-            </h1>
-            <p style={{
-              fontSize: 'clamp(1.1rem, 3.2vw, 1.45rem)',
-              color: '#67ffcc',
-              fontWeight: 700,
-              letterSpacing: '0.1em',
-              margin: 0
-            }}>
-              Interactive 3D Engine Pipeline v1.0
-            </p>
-          </header>
-
-          {/* Premium Glass Description */}
-          <div style={{
-            width: 'min(540px, 92%)',
-            padding: '1.6rem 2rem',
-            background: 'rgba(12, 18, 35, 0.7)',
-            backdropFilter: 'blur(32px)',
-            WebkitBackdropFilter: 'blur(32px)',
-            borderRadius: '24px',
-            border: '1px solid rgba(255,255,255,0.25)',
-            boxShadow: '0 30px 70px -20px rgba(0,0,0,0.8)',
-            lineHeight: 1.65,
-            fontSize: '14.5px',
-            color: '#e0f0ff',
-            pointerEvents: 'auto'
+        {/* Title */}
+        <div style={{ textAlign: 'center', pointerEvents: 'auto', marginBottom: 'auto' }}>
+          <h1 style={{
+            fontSize: 'clamp(2.8rem, 8.5vw, 5.5rem)',
+            fontWeight: 900,
+            letterSpacing: '0.04em',
+            margin: '0 0 0.5rem 0',
+            color: '#ffffff',
+            textShadow: '0 0 45px rgba(0, 255, 204, 0.75)',
           }}>
-            A high-performance WebGL canvas environment built piece by piece. 
-            Click and drag to rotate space, or select any orbiting panel module.
-          </div>
+            STRONG IMPACT
+          </h1>
+          <p style={{
+            fontSize: 'clamp(1.1rem, 3.2vw, 1.45rem)',
+            color: '#67ffcc',
+            fontWeight: 700,
+            letterSpacing: '0.1em'
+          }}>
+            Interactive 3D Engine Pipeline v1.0
+          </p>
         </div>
 
-        {/* Buttons - Firmly anchored to the bottom */}
-        <div style={{ display: 'flex', gap: '1.6rem', pointerEvents: 'auto', marginTop: '2rem' }}>
+        {/* Responsive Glass Description */}
+        <div style={{
+          width: 'min(540px, 92%)',
+          padding: '1.75rem 2.2rem',
+          background: 'rgba(12, 18, 35, 0.7)',
+          backdropFilter: 'blur(32px)',
+          WebkitBackdropFilter: 'blur(32px)',
+          borderRadius: '24px',
+          border: '1px solid rgba(255,255,255,0.25)',
+          boxShadow: '0 30px 70px -20px rgba(0,0,0,0.8)',
+          lineHeight: 1.65,
+          fontSize: '14.8px',
+          color: '#e0f0ff',
+          pointerEvents: 'auto',
+          margin: '1.5rem auto 2rem',
+          alignSelf: 'center'
+        }}>
+          A high-performance WebGL canvas environment built piece by piece. 
+          Click and drag to rotate space, or select any orbiting panel module.
+        </div>
+
+        {/* Buttons */}
+        <div style={{ display: 'flex', gap: '1.6rem', pointerEvents: 'auto', marginTop: 'auto' }}>
           <button style={{
             padding: '16px 38px',
             fontSize: '1.1rem',
