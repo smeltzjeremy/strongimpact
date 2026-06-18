@@ -13,7 +13,7 @@ function App() {
         zIndex: 0,
       }} />
 
-      {/* 2. Frosted Glass Layer (Behind 3D Canvas) */}
+      {/* 2. Frosted Glass Layer */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -29,18 +29,19 @@ function App() {
         <SceneContainer />
       </div>
 
-      {/* 4. Micro-Texture Layer (Lifted to zIndex 3 to sit evenly over canvas) */}
-      <div style={{
+      {/* 4. Micro-Texture Layer (TEMPORARILY DISABLED FOR DIAGNOSTIC) */}
+      {/* <div style={{
         position: 'fixed',
         inset: 0,
         backgroundImage: 'radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px)',
         backgroundSize: '4px 4px',
-        opacity: 0.11,
-        zIndex: 3, 
+        opacity: 0.06,
+        zIndex: 5, 
         pointerEvents: 'none',
-      }} />
+      }} /> 
+      */}
 
-      {/* 5. Edge Reflections + Vignette (Restored to zIndex 4 for clean, sharp glass framing) */}
+      {/* 5. Edge Reflections + Vignette */}
       <div style={{
         position: 'fixed',
         inset: 0,

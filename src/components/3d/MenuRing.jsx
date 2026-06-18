@@ -39,7 +39,7 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
       >
         <boxGeometry args={[1.8, 1.0, 0.03]} />
         <meshPhysicalMaterial
-          color="#b4b9c4"               // Frosted silver for better glass look
+          color="#2a2f3a"               // Restored to dark frosted tone for premium contrast
           transmission={0.93}
           roughness={0.14}
           metalness={0.08}
@@ -47,7 +47,7 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
           ior={1.54}
           clearcoat={1.0}
           clearcoatRoughness={0.01}
-          envMapIntensity={2.3}
+          envMapIntensity={2.3}         // Keeps the rim lights catching the edges
           transparent={true}
           opacity={hovered ? 0.95 : 0.70}
           side={THREE.DoubleSide}
