@@ -3,39 +3,39 @@ import SceneContainer from './components/3d/SceneContainer';
 
 function App() {
   return (
-    <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden', background: '#020208' }}>
       
-      {/* 1. Base Depth Gradient */}
+      {/* 1. Base Depth Gradient - Deep Midnight Core */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(circle at 50% 45%, #0a0a16 0%, #020208 82%)',
+        background: 'radial-gradient(circle at 50% 48%, #04040d 0%, #020206 85%)',
         zIndex: 0,
       }} />
 
-      {/* 2. Premium Frosted Glass Layer (Blurs *only* the background void) */}
+      {/* 2. Premium Frosted Glass Layer (Increased Tint for Viewport Depth) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(12, 22, 48, 0.055)',
+        background: 'rgba(12, 22, 48, 0.08)', // Raised to 8% for enhanced atmospheric presence
         backdropFilter: 'blur(22px)',
         WebkitBackdropFilter: 'blur(22px)',
-        zIndex: 1, // Pushed down below the canvas
+        zIndex: 1,
         pointerEvents: 'none',
       }} />
 
-      {/* 3. 3D Canvas (Brought forward so it stays perfectly crisp) */}
+      {/* 3. 3D Canvas */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 2 }}>
         <SceneContainer />
       </div>
 
-      {/* 4. Micro-Texture Layer */}
+      {/* 4. Micro-Texture Layer (Elevated for Clear Front Window Presence) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        backgroundImage: 'radial-gradient(rgba(255,255,255,0.13) 1px, transparent 1px)',
-        backgroundSize: '5px 5px',
-        opacity: 0.065,
+        backgroundImage: 'radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px)',
+        backgroundSize: '4px 4px',
+        opacity: 0.09, // Raised to 9% to make the front glass boundary tactile on mobile
         zIndex: 3,
         pointerEvents: 'none',
       }} />
@@ -45,10 +45,10 @@ function App() {
         position: 'fixed',
         inset: 0,
         background: `
-          linear-gradient(to bottom, rgba(255,255,255,0.09) 0%, transparent 5%),
-          linear-gradient(to right, rgba(255,255,255,0.045) 0%, transparent 4%),
-          linear-gradient(to left, rgba(255,255,255,0.045) 0%, transparent 4%),
-          radial-gradient(circle at 50% 50%, transparent 40%, rgba(2,2,8,0.87) 100%)
+          linear-gradient(to bottom, rgba(255,255,255,0.12) 0%, transparent 6%),
+          linear-gradient(to right, rgba(255,255,255,0.06) 0%, transparent 4%),
+          linear-gradient(to left, rgba(255,255,255,0.06) 0%, transparent 4%),
+          radial-gradient(circle at 50% 50%, transparent 38%, rgba(2,2,8,0.91) 100%)
         `,
         zIndex: 4,
         pointerEvents: 'none',

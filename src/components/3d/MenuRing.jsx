@@ -39,15 +39,15 @@ function MenuPanel({ item, angle, radius, currentRingRotation }) {
       >
         <boxGeometry args={[1.8, 1.0, 0.03]} />
         <meshPhysicalMaterial
-          color="#ffffff"
-          transmission={0.95}
-          roughness={0.14}              // 3. Calibrated to smoother satin window for future images
-          metalness={0.06}
-          thickness={0.15}
-          ior={1.52}
-          clearcoat={1.0}
-          clearcoatRoughness={0.015}    // 4. Set to your excellent sharp reflection threshold
-          envMapIntensity={1.7}         // 1. Tuned down to avoid washed-out over-shining
+          color="#d2d6e0"               // Slightly greyed base to drink in reflections rather than blooming out
+          transmission={0.93}           // Balanced transmission to ensure structural glass visibility
+          roughness={0.14}              
+          metalness={0.08}              
+          thickness={0.15}              
+          ior={1.54}                    // Slightly elevated refractive index for heavier crystal bending
+          clearcoat={1.0}               
+          clearcoatRoughness={0.01}     // Razor-sharp surface lacquer coat for mirror look
+          envMapIntensity={2.3}         // Forcefully pulls the environment lights back onto the surface
           transparent={true}
           opacity={hovered ? 0.95 : 0.70}
           side={THREE.DoubleSide}
@@ -102,10 +102,10 @@ export default function MenuRing() {
 
   return (
     <group>
-      {/* 2. Rim Light Intensity — Controlled glare trace outside rotation */}
+      {/* High-intensity back lighting rig outside rotation for clean edge lines */}
       <directionalLight
         position={[0, 9, -15]}
-        intensity={6.8}                // Positioned safely inside your 6.5–7.0 target range
+        intensity={6.8}                
         color="#b0f2ff"
       />
 
