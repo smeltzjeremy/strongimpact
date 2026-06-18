@@ -13,37 +13,46 @@ function App() {
         zIndex: 0,
       }} />
 
-      {/* 2. Broad Radial Chrome Sheen (Wide ellipse for natural volume across the ring area) */}
+      {/* 2. Curved Radial Chrome Pop (Offset for natural curvature) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(ellipse 160% 110% at 50% 12%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 45%, transparent 75%)',
+        background: 'radial-gradient(ellipse 160% 115% at 20% 25%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.05) 45%, transparent 78%)',
         zIndex: 1,
         pointerEvents: 'none',
       }} />
 
-      {/* 3. 3D Canvas */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: 2 }}>
+      {/* 3. Broad Volumetric Top Sheen (Lowered anchor for center coverage) */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'radial-gradient(ellipse 145% 105% at 50% 18%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 50%, transparent 80%)',
+        zIndex: 2,
+        pointerEvents: 'none',
+      }} />
+
+      {/* 4. 3D Canvas */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 3 }}>
         <SceneContainer />
       </div>
 
-      {/* 4. Very Light Micro-Texture */}
+      {/* 5. Very Light Micro-Texture */}
       <div style={{
         position: 'fixed',
         inset: 0,
         backgroundImage: 'radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)',
         backgroundSize: '5px 5px',
         opacity: 0.035,
-        zIndex: 3,
+        zIndex: 4,
         pointerEvents: 'none',
       }} />
 
-      {/* 5. Clean Vignette */}
+      {/* 6. Softened Vignette (More breathing room in the center) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(circle at 50% 50%, transparent 35%, rgba(0,0,0,0.95) 100%)',
-        zIndex: 4,
+        background: 'radial-gradient(circle at 50% 50%, transparent 45%, rgba(0,0,0,0.96) 100%)',
+        zIndex: 5,
         pointerEvents: 'none',
       }} />
 
