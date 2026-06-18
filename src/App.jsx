@@ -5,7 +5,7 @@ function App() {
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
       
-      {/* 1. Base Deep Polished Obsidian Plate */}
+      {/* 1. Base Deep Polished Obsidian */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -13,25 +13,21 @@ function App() {
         zIndex: 0,
       }} />
 
-      {/* 2. Strong Chrome Top Shine (Wider, smoother falloff for natural reflection) */}
+      {/* 2. Broad Radial Chrome Sheen (Wide ellipse for natural volume across the ring area) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.19) 0%, rgba(255, 255, 255, 0.19) 12%, rgba(255, 255, 255, 0.04) 42%, rgba(255, 255, 255, 0.01) 58%, transparent 78%)',
+        background: 'radial-gradient(ellipse 160% 110% at 50% 12%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 45%, transparent 75%)',
         zIndex: 1,
         pointerEvents: 'none',
       }} />
 
-      {/* 3. Clean Edge Polish */}
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'linear-gradient(to bottom, rgba(255,255,255,0.07) 0%, transparent 3%)',
-        zIndex: 2,
-        pointerEvents: 'none',
-      }} />
+      {/* 3. 3D Canvas */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 2 }}>
+        <SceneContainer />
+      </div>
 
-      {/* 4. Very Subtle Micro-Texture */}
+      {/* 4. Very Light Micro-Texture */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -42,19 +38,14 @@ function App() {
         pointerEvents: 'none',
       }} />
 
-      {/* 5. Strong Clean Vignette */}
+      {/* 5. Clean Vignette */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(circle at 50% 50%, transparent 32%, rgba(0,0,0,0.96) 100%)',
+        background: 'radial-gradient(circle at 50% 50%, transparent 35%, rgba(0,0,0,0.95) 100%)',
         zIndex: 4,
         pointerEvents: 'none',
       }} />
-
-      {/* 6. 3D Canvas */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: 5 }}>
-        <SceneContainer />
-      </div>
 
       {/* UI Overlay */}
       <div style={{
