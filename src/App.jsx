@@ -3,47 +3,56 @@ import SceneContainer from './components/3d/SceneContainer';
 
 function App() {
   return (
-    <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden', background: '#020208' }}>
       
-      {/* 1. Base Depth Gradient */}
+      {/* 1. Subtle Curved Depth (Base void gradient) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(circle at 50% 45%, #0a0a14 0%, #020208 78%)',
+        background: 'radial-gradient(circle at 50% 50%, #0c0c1a 0%, #020206 80%)',
         zIndex: 0,
       }} />
 
-      {/* 2. Premium Frosted Glass Layer (Tuned Frost + Enhanced Micro Texture) */}
+      {/* 2. Main Frosted Glass Layer (Optimized blur behind the 3D Canvas) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(15, 25, 55, 0.08)', // Tuned cool tint opacity up slightly
-        backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px)', // Enhanced texture opacity
-        backgroundSize: '6px 6px', // Slightly larger pattern for better visibility on mobile
-        backdropFilter: 'blur(28px)', // Increased blur to 28px for stronger frost look
-        WebkitBackdropFilter: 'blur(28px)',
+        background: 'rgba(15, 22, 45, 0.07)', 
+        backdropFilter: 'blur(24px)',          // Tuned to 24px for pristine 3D panel clarity
+        WebkitBackdropFilter: 'blur(24px)',
         zIndex: 1,
         pointerEvents: 'none',
       }} />
 
-      {/* 3. Edge Reflections + Darker Vignette Tuning */}
+      {/* 3. Edge Reflections + Vignette */}
       <div style={{
         position: 'fixed',
         inset: 0,
         background: `
-          linear-gradient(to bottom, rgba(255,255,255,0.085) 0%, transparent 5%),
-          linear-gradient(to right, rgba(255,255,255,0.045) 0%, transparent 4%),
-          linear-gradient(to left, rgba(255,255,255,0.045) 0%, transparent 4%),
-          radial-gradient(circle at 50% 50%, transparent 42%, rgba(2,2,8,0.85) 100%)
-        `, // Darkened vignette to 0.85 to lock focus onto the center ring
+          linear-gradient(to bottom, rgba(255,255,255,0.09) 0%, transparent 4%),
+          linear-gradient(to right, rgba(255,255,255,0.04) 0%, transparent 3%),
+          linear-gradient(to left, rgba(255,255,255,0.04) 0%, transparent 3%),
+          radial-gradient(circle at 50% 50%, transparent 40%, rgba(1,1,4,0.85) 100%)
+        `, 
         zIndex: 2,
         pointerEvents: 'none',
       }} />
 
-      {/* 4. 3D Canvas (Alpha transparency enabled via SceneContainer integration) */}
+      {/* 4. 3D Canvas Layer */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 3 }}>
-        <SceneContainer gl={{ alpha: true }} />
+        <SceneContainer />
       </div>
+
+      {/* 5. Front Viewport Micro-Texture (Tuned to 0.05 for distinct mobile visibility) */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)',
+        backgroundSize: '4px 4px',
+        opacity: 0.05, // Upgraded to your target value to make the viewport tactile
+        zIndex: 4,
+        pointerEvents: 'none',
+      }} />
 
       {/* UI Overlay */}
       <div style={{
