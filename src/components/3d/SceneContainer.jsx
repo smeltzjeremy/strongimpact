@@ -1,26 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Stars, Environment } from '@react-three/drei';
 import MenuRing from './MenuRing';
 
 export default function SceneContainer() {
-  const [verticalOffset, setVerticalOffset] = useState(-1.3);
-
-  useEffect(() => {
-    const updateOffset = () => {
-      const isMobile = window.innerWidth < 768;
-      setVerticalOffset(isMobile ? -2.4 : -1.3);   // Lower on mobile
-    };
-
-    updateOffset();
-    window.addEventListener('resize', updateOffset);
-    return () => window.removeEventListener('resize', updateOffset);
-  }, []);
+  // Fixed low position forces the ring completely into the bottom half of all viewports
+  const fixedOffset = -2.6;
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}>
       <Canvas
-        camera={{ position: [0, 2.0, 11], fov: 48 }}
+        camera={{ position: [0, 2.8, 11.5], fov: 48 }}
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
       >
         <color attach="background" args={['#05050f']} />
@@ -29,7 +19,7 @@ export default function SceneContainer() {
         <directionalLight position={[5, 12, 5]} intensity={1.6} color="#e0f0ff" />
         <Stars radius={100} depth={50} count={2500} factor={6} saturation={0} fade speed={0.5} />
 
-        <group position={[0, verticalOffset, 0]}>
+        <group position={[0, fixedOffset, 0]}>
           <MenuRing />
         </group>
 
@@ -38,9 +28,9 @@ export default function SceneContainer() {
           enablePan={false}
           minDistance={6.5}
           maxDistance={14}
-          target={[0, verticalOffset, 0]}
-          minPolarAngle={Math.PI / 2.4}
-          maxPolarAngle={Math.PI / 1.6}
+          target={[0, fixedOffset, 0]}
+          minPolarAngle={Math.PI / 2.6}
+          maxPolarAngle={Math.PI / 1.5}
         />
       </Canvas>
     </div>

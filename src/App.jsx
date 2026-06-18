@@ -39,7 +39,7 @@ function App() {
         alignItems: 'center'
       }}>
         
-        {/* Top Content Cluster (Title + Description) */}
+        {/* Top Content Cluster */}
         <div style={{ 
           display: 'flex', 
           flexDirection: 'column', 
