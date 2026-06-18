@@ -5,7 +5,7 @@ function App() {
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
       
-      {/* 1. Base Depth Gradient */}
+      {/* 1. Base Deep Background */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -13,40 +13,60 @@ function App() {
         zIndex: 0,
       }} />
 
-      {/* 1.5 NEW: Atmospheric Cyan/Blue Core Glow */}
+      {/* 2. Ambient Colored Glows (for refraction depth) */}
       <div style={{
         position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: '80vw',
-        height: '80vw',
-        maxWidth: '900px',
-        maxHeight: '900px',
-        background: 'radial-gradient(circle, rgba(0, 255, 204, 0.08) 0%, rgba(51, 153, 255, 0.04) 40%, transparent 70%)',
-        filter: 'blur(90px)',
-        WebkitFilter: 'blur(90px)',
+        top: '-10%',
+        left: '-10%',
+        width: '500px',
+        height: '500px',
+        borderRadius: '50%',
+        background: 'rgba(139, 92, 246, 0.12)',
+        filter: 'blur(120px)',
+        zIndex: 0,
+        pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'fixed',
+        bottom: '-10%',
+        right: '-10%',
+        width: '500px',
+        height: '500px',
+        borderRadius: '50%',
+        background: 'rgba(103, 232, 249, 0.12)',
+        filter: 'blur(120px)',
         zIndex: 0,
         pointerEvents: 'none',
       }} />
 
-      {/* 2. Frosted Glass Layer */}
+      {/* 3. Frosted Glass Layer */}
       <div style={{
         position: 'fixed',
         inset: 0,
         background: 'rgba(12, 22, 48, 0.095)',
-        backdropFilter: 'blur(21px)',
-        WebkitBackdropFilter: 'blur(21px)',
+        backdropFilter: 'blur(22px)',
+        WebkitBackdropFilter: 'blur(22px)',
         zIndex: 1,
         pointerEvents: 'none',
       }} />
 
-      {/* 3. 3D Canvas */}
+      {/* 4. 3D Canvas */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 2 }}>
         <SceneContainer />
       </div>
 
-      {/* 4. Edge Reflections + Vignette */}
+      {/* 5. Subtle Noise / Micro-Texture */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundImage: 'radial-gradient(rgba(255,255,255,0.16) 1px, transparent 1px)',
+        backgroundSize: '4px 4px',
+        opacity: 0.065,
+        zIndex: 3,
+        pointerEvents: 'none',
+      }} />
+
+      {/* 6. Edge Reflections + Vignette */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -57,17 +77,6 @@ function App() {
           radial-gradient(circle at 50% 50%, transparent 38%, rgba(2,2,8,0.92) 100%)
         `,
         zIndex: 4,
-        pointerEvents: 'none',
-      }} />
-
-      {/* 5. Micro-Texture Layer */}
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundImage: 'radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px)',
-        backgroundSize: '4px 4px',
-        opacity: 0.06, 
-        zIndex: 6, 
         pointerEvents: 'none',
       }} />
 
