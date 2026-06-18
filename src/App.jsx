@@ -5,7 +5,7 @@ function App() {
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
       
-      {/* 1. Base Depth Gradient */}
+      {/* 1. Base Depth Gradient (Furthest Back) */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -13,12 +13,7 @@ function App() {
         zIndex: 0,
       }} />
 
-      {/* 2. 3D Canvas */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: 1 }}>
-        <SceneContainer />
-      </div>
-
-      {/* 3. Premium Frosted Glass Layer (Tint + Blur + Subtle Texture) */}
+      {/* 2. Premium Frosted Glass Layer (Moved BEHIND the 3D Canvas) */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -27,11 +22,11 @@ function App() {
         backgroundSize: '5px 5px',
         backdropFilter: 'blur(24px)',
         WebkitBackdropFilter: 'blur(24px)',
-        zIndex: 2,
+        zIndex: 1, // Pushed down
         pointerEvents: 'none',
       }} />
 
-      {/* 4. Edge Reflections + Vignette */}
+      {/* 3. Edge Reflections + Vignette (Moved BEHIND the 3D Canvas) */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -41,11 +36,16 @@ function App() {
           linear-gradient(to left, rgba(255,255,255,0.045) 0%, transparent 4%),
           radial-gradient(circle at 50% 50%, transparent 42%, rgba(2,2,8,0.82) 100%)
         `,
-        zIndex: 3,
+        zIndex: 2, // Pushed down
         pointerEvents: 'none',
       }} />
 
-      {/* UI Overlay */}
+      {/* 4. 3D Canvas (Brought FORWARD so it renders razor-sharp) */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 3 }}>
+        <SceneContainer />
+      </div>
+
+      {/* 5. UI Overlay (Absolute Front) */}
       <div style={{
         position: 'relative',
         zIndex: 10,
