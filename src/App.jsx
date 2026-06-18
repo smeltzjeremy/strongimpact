@@ -3,23 +3,23 @@ import SceneContainer from './components/3d/SceneContainer';
 
 function App() {
   return (
-    <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden', background: '#020208' }}>
+    <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden' }}>
       
-      {/* 1. Base Depth Gradient - Deep Midnight Core */}
+      {/* 1. Base Depth Gradient */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(circle at 50% 48%, #04040d 0%, #020206 85%)',
+        background: 'radial-gradient(circle at 50% 48%, #0a0a16 0%, #020208 85%)',
         zIndex: 0,
       }} />
 
-      {/* 2. Premium Frosted Glass Layer (Increased Tint for Viewport Depth) */}
+      {/* 2. Frosted Glass Layer - Enhanced Tint Opacity */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(12, 22, 48, 0.08)', // Raised to 8% for enhanced atmospheric presence
-        backdropFilter: 'blur(22px)',
-        WebkitBackdropFilter: 'blur(22px)',
+        background: 'rgba(12, 22, 48, 0.095)', // Upgraded to 9.5% for deeper obsidian tinting
+        backdropFilter: 'blur(21px)',           // Maintained sharp blur definition
+        WebkitBackdropFilter: 'blur(21px)',
         zIndex: 1,
         pointerEvents: 'none',
       }} />
@@ -29,13 +29,13 @@ function App() {
         <SceneContainer />
       </div>
 
-      {/* 4. Micro-Texture Layer (Elevated for Clear Front Window Presence) */}
+      {/* 4. Micro-Texture Layer - Hardened Front Window Presence */}
       <div style={{
         position: 'fixed',
         inset: 0,
         backgroundImage: 'radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px)',
         backgroundSize: '4px 4px',
-        opacity: 0.09, // Raised to 9% to make the front glass boundary tactile on mobile
+        opacity: 0.11, // Bumped to 11% to separate the front screen from the 3D void
         zIndex: 3,
         pointerEvents: 'none',
       }} />
@@ -48,7 +48,7 @@ function App() {
           linear-gradient(to bottom, rgba(255,255,255,0.12) 0%, transparent 6%),
           linear-gradient(to right, rgba(255,255,255,0.06) 0%, transparent 4%),
           linear-gradient(to left, rgba(255,255,255,0.06) 0%, transparent 4%),
-          radial-gradient(circle at 50% 50%, transparent 38%, rgba(2,2,8,0.91) 100%)
+          radial-gradient(circle at 50% 50%, transparent 38%, rgba(2,2,8,0.92) 100%) // Nudged falloff slightly
         `,
         zIndex: 4,
         pointerEvents: 'none',
