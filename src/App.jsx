@@ -35,11 +35,11 @@ function App() {
         flexDirection: 'column',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '3vh 20px 6vh',
+        padding: '4vh 20px 6vh',
         pointerEvents: 'none',
         boxSizing: 'border-box',
       }}>
-        {/* Top Content Block pushed up further */}
+        {/* Top Header Block */}
         <div style={{ 
           display: 'flex', 
           flexDirection: 'column', 
@@ -47,7 +47,7 @@ function App() {
           textAlign: 'center',
           width: '100%'
         }}>
-          <header style={{ pointerEvents: 'auto', marginBottom: '1rem' }}>
+          <header style={{ pointerEvents: 'auto' }}>
             <h1 style={{
               fontSize: 'clamp(2.8rem, 8.5vw, 5.5rem)',
               fontWeight: 900,
@@ -63,34 +63,16 @@ function App() {
               color: '#67ffcc',
               marginTop: '0.4rem',
               fontWeight: 700,
-              letterSpacing: '0.1em'
+              letterSpacing: '0.1em',
+              margin: 0
             }}>
               Interactive 3D Engine Pipeline v1.0
             </p>
           </header>
-
-          {/* Glass Description */}
-          <div style={{
-            width: 'min(540px, 92%)',
-            padding: '1.6rem 2rem',
-            background: 'rgba(12, 18, 35, 0.7)',
-            backdropFilter: 'blur(32px)',
-            WebkitBackdropFilter: 'blur(32px)',
-            borderRadius: '24px',
-            border: '1px solid rgba(255,255,255,0.25)',
-            boxShadow: '0 30px 70px -20px rgba(0,0,0,0.8)',
-            lineHeight: 1.65,
-            fontSize: '14.5px',
-            color: '#e0f0ff',
-            pointerEvents: 'auto',
-          }}>
-            A high-performance WebGL canvas environment built piece by piece. 
-            Click and drag to rotate space, or select any orbiting panel module.
-          </div>
         </div>
 
         {/* Buttons at Bottom */}
-        <div style={{ display: 'flex', gap: '1.6rem', pointerEvents: 'auto', marginTop: '2rem' }}>
+        <div style={{ display: 'flex', gap: '1.6rem', pointerEvents: 'auto', marginTop: 'auto' }}>
           <button style={{
             padding: '16px 38px',
             fontSize: '1.1rem',
