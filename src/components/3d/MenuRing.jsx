@@ -33,17 +33,23 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
     <group position={[x, 0, z]}>
       <mesh
         ref={meshRef}
-        onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
-        onPointerOut={() => setHovered(false)}
+        onPointerOver={(e) => { 
+          e.stopPropagation(); 
+          setHovered(true); 
+          document.body.style.cursor = 'pointer'; 
+        }}
+        onPointerOut={() => { 
+          setHovered(false); 
+          document.body.style.cursor = 'auto'; 
+        }}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
         <boxGeometry args={[isMobile ? 1.35 : 1.7, 0.9, 0.05]} />
         <meshPhysicalMaterial
-          color="#edeff5"           
-          metalness={1.0}          
-          // TUNED: Stepped down to 0.05 roughness to sharpen the mirror reflection boundaries
-          roughness={0.05}          
-          envMapIntensity={4.8}     
+          color="#ffffff"           
+          metalness={0.98}          
+          roughness={0.11}          
+          envMapIntensity={4.6}     
           clearcoat={1.0}           
           clearcoatRoughness={0.02} 
           transparent={true}
