@@ -13,7 +13,7 @@ export default function App() {
           <Link to="/admin" className="px-5 py-2.5 bg-white/10 hover:bg-white/20 rounded-2xl text-sm font-medium border border-white/20 transition">Admin Panel</Link>
         </header>
 
-        {/* Hero Text at Top - Enhanced Shading */}
+        {/* Hero Text at Top */}
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 text-center pointer-events-none">
           <div className="inline-flex items-center gap-2 px-5 py-1.5 mb-6 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium tracking-widest">
             INTERACTIVE 3D ENGINE
@@ -25,10 +25,16 @@ export default function App() {
           </h1>
         </div>
 
-        {/* Premium Depth Background + 3D Ring */}
-        <div className="fixed inset-0 z-0 pointer-events-auto premium-depth-bg">
-          <SceneContainer />
-        </div>
+        {/* Routes */}
+        <Routes>
+          <Route path="/" element={
+            <div className="fixed inset-0 z-0 pointer-events-auto premium-depth-bg">
+              <SceneContainer />
+            </div>
+          } />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
 
       </div>
     </Router>
