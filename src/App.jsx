@@ -8,13 +8,13 @@ function App() {
       {/* 1. Base Obsidian Void */}
       <div style={{ position: 'fixed', inset: 0, background: '#030305', zIndex: 0 }} />
 
-      {/* 2. TUNED: Stronger Center Shine.
-          Peak center opacity elevated to 0.32 and ellipse stretched wider (150% x 50%) 
-          to cast an authoritative chrome horizon wash directly behind the ring path. */}
+      {/* 2. TUNED: Liquid Anamorphic Backdrop Core.
+          Peak center opacity raised to 0.35 and stretched to 160% wide 
+          to create a liquid-metallic horizon beam instead of a round spotlight. */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(ellipse 150% 50% at 50% 38%, rgba(215,225,245,0.32) 0%, rgba(200,205,220,0.18) 22%, rgba(200,205,220,0.05) 50%, transparent 75%)',
+        background: 'radial-gradient(ellipse 160% 52% at 50% 38%, rgba(215,225,245,0.35) 0%, rgba(200,205,220,0.20) 20%, rgba(200,205,220,0.05) 52%, transparent 75%)',
         zIndex: 1,
         pointerEvents: 'none',
       }} />
@@ -24,9 +24,9 @@ function App() {
         <SceneContainer />
       </div>
 
-      {/* 4. TUNED: Subtle Reinforced Bottom Bounce.
-          Stabilized at 0.10 opacity floor and extended higher up the screen viewport 
-          to ensure panels rotating through the bottom half cleanly hold their glass profiles. */}
+      {/* 4. TUNED: Precise Double-Layered Bottom Bounce.
+          Stabilized at a clean 0.10 opacity floor to catch the lower panel loops 
+          and preserve the glassmorphism pass-through. */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -55,7 +55,7 @@ function App() {
         pointerEvents: 'none',
       }} />
 
-      {/* UI Overlay Layout */}
+      {/* UI Overlay */}
       <div style={{
         position: 'relative',
         zIndex: 10,
