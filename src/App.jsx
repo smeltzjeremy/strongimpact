@@ -6,7 +6,7 @@ import SceneContainer from './components/3d/SceneContainer';
 export default function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-black text-white font-sans antialiased overflow-hidden relative">
+      <div className="min-h-screen bg-[#05050f] text-white font-sans antialiased overflow-hidden relative">
         
         {/* Top Navigation */}
         <header className="fixed top-0 left-0 w-full z-50 bg-black/70 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex justify-end items-center">
