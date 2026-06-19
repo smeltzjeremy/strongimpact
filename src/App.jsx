@@ -8,27 +8,29 @@ function App() {
       {/* 1. Base Obsidian Void */}
       <div style={{ position: 'fixed', inset: 0, background: '#030305', zIndex: 0 }} />
 
-      {/* 2. OPTIMIZED: Highly focused, vertically compressed gray-chrome ellipse. 
-          Concentrates a 28% bright hotspot directly behind the center of the ring, 
-          letting the light pool taper off aggressively toward the edges. */}
+      {/* 2. FIXED: High-Exposure Specular Chrome Core.
+          Uses multi-stop nesting to jam a bright, sharp white highlight right in the center (36% to 38%),
+          mimicking a physical, high-frequency fluorescent tube light source behind the cards. */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(ellipse 160% 55% at 50% 36%, rgba(200,205,220,0.28) 0%, rgba(200,205,220,0.12) 30%, rgba(200,205,220,0.03) 55%, transparent 75%)',
+        background: 'radial-gradient(ellipse 140% 45% at 50% 38%, rgba(240,245,255,0.38) 0%, rgba(200,205,220,0.22) 15%, rgba(200,205,220,0.06) 45%, transparent 70%)',
         zIndex: 1,
         pointerEvents: 'none',
       }} />
 
-      {/* 3. 3D Canvas */}
+      {/* 3. 3D Canvas Space (Housing your updated overlapping MenuRing meshes) */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 2 }}>
         <SceneContainer />
       </div>
 
-      {/* 4. Coordinated Bottom Bounce Overlay */}
+      {/* 4. FIXED: Amplified Ground Bounce.
+          Cranked from 0.08 to 0.14 and pulled up higher to fully illuminate the bottom 
+          half of the screen, ensuring the glass panels never drop into a dead black void. */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'linear-gradient(to top, rgba(180,185,200,0.08) 0%, transparent 40%)',
+        background: 'linear-gradient(to top, rgba(195,200,220,0.14) 0%, rgba(195,200,220,0.03) 30%, transparent 55%)',
         zIndex: 4,
         pointerEvents: 'none',
       }} />
@@ -44,11 +46,11 @@ function App() {
         pointerEvents: 'none',
       }} />
 
-      {/* 6. Wide Peripheral Vignette */}
+      {/* 6. Recalibrated Vignette (Pushed wide to 62% to allow the high-exposure core to breathe on desktop monitors) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(circle at 50% 50%, transparent 58%, rgba(0,0,0,0.96) 100%)',
+        background: 'radial-gradient(circle at 50% 50%, transparent 62%, rgba(0,0,0,0.98) 100%)',
         zIndex: 6,
         pointerEvents: 'none',
       }} />
