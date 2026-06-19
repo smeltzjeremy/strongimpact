@@ -46,16 +46,16 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
       >
         <boxGeometry args={[isMobile ? 1.35 : 2.4, 0.9, 0.05]} />
         
-        {/* 🛠️ MASTER RECALIBRATION: THE HYBRID SPECULAR CHROME-GLASS PROFILE */}
+        {/* 🛠️ SHARP SPECULAR LIQUID-CHROME GLASS MATERIAL */}
         <meshPhysicalMaterial
-          color="#d0d5e0"           // TUNED: Cool grayish tint provides perfect architectural depth base
-          metalness={0.70}          // TUNED: Restores solid chrome reflections across the panel faces
-          roughness={0.07}          // TUNED: Sharper specular highlights without creating black mirror void clips
+          color="#d0d5e0"           // Cool grayish tint provides perfect architectural depth base
+          metalness={0.82}          // FIXED: Pushed into the 0.8–0.85 sweet spot to snap the mirror-chrome sheen back into existence
+          roughness={0.05}          // FIXED: Tightened to 5% to lock in razor-sharp high-contrast specular reflections
           envMapIntensity={5.0}     
           clearcoat={1.0}           // High-gloss outer crystal clear coat lacquer shell
-          clearcoatRoughness={0.015}// Polished outer shell finish
-          transmission={0.78}       // TUNED: High translucent pass-through for rich glassmorphic stacking
-          ior={1.60}                // Refractive capability index
+          clearcoatRoughness={0.01} // Extra-polished outer clearcoat layer for perfect gloss stability
+          transmission={0.78}       // High translucent pass-through for rich glassmorphic stacking
+          ior={1.62}                // Slightly elevated index of refraction to match the crisper chrome depth
           thickness={0.22}          // Structural edge-depth slab factor
           transparent={true}
           opacity={hovered ? 0.82 : 0.52}   // Balanced visibility tracking
