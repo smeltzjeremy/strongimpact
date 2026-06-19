@@ -44,21 +44,23 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
         }}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        <boxGeometry args={[isMobile ? 1.35 : 1.7, 0.9, 0.05]} />
+        {/* FIXED: Drastically widened desktop panels from 1.7 to 2.4 so they 
+            are physically forced to overlap and create glass composite layers */}
+        <boxGeometry args={[isMobile ? 1.35 : 2.4, 0.9, 0.05]} />
         
-        {/* 🛠️ IMPROVED HYBRID CHROME-GLASS MATERIAL */}
+        {/* 🛠️ MASTER REWRITE: LIQUID GLASS-CHROME HYBRID MATERIAL */}
         <meshPhysicalMaterial
-          color="#f1f5f9"           // Pristine light crystal base
-          metalness={0.45}          // OPTIMIZED: Balanced down to 0.45 to prevent clipping the glass transmission channel
-          roughness={0.05}          // OPTIMIZED: Slightly sharpened frosting to ensure clean specular highlight bands
-          envMapIntensity={5.0}     
-          clearcoat={1.0}           // Thick outer lacquer clear shell
-          clearcoatRoughness={0.01} // Mirror-polished outer lacquer surface
-          transmission={0.80}       // OPTIMIZED: Crisp 80% light pass-through rate
-          ior={1.68}                // OPTIMIZED: Increased index of refraction for intense, metallic edge-refractions
-          thickness={0.25}          // Structural glass panel thickness depth
+          color="#0a0b0e"           // Deep obsidian mirror core absorbs flat light to create stark high-contrast depth
+          metalness={1.0}           // Pure metallic baseline forces mirror-sharp edge reflections
+          roughness={0.01}          // Absolute mirror polish. Eliminates the pale, milky plastic look entirely.
+          envMapIntensity={6.0}     // Cranked env map exposure to maximize the bright edge glints
+          clearcoat={1.0}           // Pristine automotive clear shell
+          clearcoatRoughness={0.005}// Liquid-smooth outer polish layer
+          transmission={0.45}       // Perfectly balanced transparency floor
+          ior={1.85}                // Luxury dense crystal Index of Refraction for premium glass refraction cuts
+          thickness={0.3}           // Simulates thick physical glass boundaries
           transparent={true}
-          opacity={hovered ? 0.85 : 0.52}   
+          opacity={hovered ? 0.90 : 0.60}   // Clean glass visibility steps
           side={THREE.DoubleSide}
         />
       </mesh>
@@ -102,7 +104,8 @@ export default function MenuRing() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const activeRadius = isMobile ? 2.3 : 2.9;
+  // FIXED: Tightened desktop ring radius from 2.9 down to 2.4 to pull the cluster inward
+  const activeRadius = isMobile ? 2.3 : 2.4;
 
   useFrame((state, delta) => {
     if (ringRef.current) {
