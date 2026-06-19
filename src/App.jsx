@@ -8,29 +8,29 @@ function App() {
       {/* 1. Base Obsidian Void */}
       <div style={{ position: 'fixed', inset: 0, background: '#030305', zIndex: 0 }} />
 
-      {/* 2. FIXED: High-Exposure Specular Chrome Core.
-          Uses multi-stop nesting to jam a bright, sharp white highlight right in the center (36% to 38%),
-          mimicking a physical, high-frequency fluorescent tube light source behind the cards. */}
+      {/* 2. TUNED: Stronger Center Shine.
+          Peak center opacity elevated to 0.32 and ellipse stretched wider (150% x 50%) 
+          to cast an authoritative chrome horizon wash directly behind the ring path. */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(ellipse 140% 45% at 50% 38%, rgba(240,245,255,0.38) 0%, rgba(200,205,220,0.22) 15%, rgba(200,205,220,0.06) 45%, transparent 70%)',
+        background: 'radial-gradient(ellipse 150% 50% at 50% 38%, rgba(215,225,245,0.32) 0%, rgba(200,205,220,0.18) 22%, rgba(200,205,220,0.05) 50%, transparent 75%)',
         zIndex: 1,
         pointerEvents: 'none',
       }} />
 
-      {/* 3. 3D Canvas Space (Housing your updated overlapping MenuRing meshes) */}
+      {/* 3. 3D WebGL Canvas Space */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 2 }}>
         <SceneContainer />
       </div>
 
-      {/* 4. FIXED: Amplified Ground Bounce.
-          Cranked from 0.08 to 0.14 and pulled up higher to fully illuminate the bottom 
-          half of the screen, ensuring the glass panels never drop into a dead black void. */}
+      {/* 4. TUNED: Subtle Reinforced Bottom Bounce.
+          Stabilized at 0.10 opacity floor and extended higher up the screen viewport 
+          to ensure panels rotating through the bottom half cleanly hold their glass profiles. */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'linear-gradient(to top, rgba(195,200,220,0.14) 0%, rgba(195,200,220,0.03) 30%, transparent 55%)',
+        background: 'linear-gradient(to top, rgba(190,195,215,0.10) 0%, rgba(190,195,215,0.03) 35%, transparent 60%)',
         zIndex: 4,
         pointerEvents: 'none',
       }} />
@@ -46,16 +46,16 @@ function App() {
         pointerEvents: 'none',
       }} />
 
-      {/* 6. Recalibrated Vignette (Pushed wide to 62% to allow the high-exposure core to breathe on desktop monitors) */}
+      {/* 6. Peripheral Vignette */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(circle at 50% 50%, transparent 62%, rgba(0,0,0,0.98) 100%)',
+        background: 'radial-gradient(circle at 50% 50%, transparent 60%, rgba(0,0,0,0.98) 100%)',
         zIndex: 6,
         pointerEvents: 'none',
       }} />
 
-      {/* UI Overlay */}
+      {/* UI Overlay Layout */}
       <div style={{
         position: 'relative',
         zIndex: 10,

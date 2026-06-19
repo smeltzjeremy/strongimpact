@@ -7,21 +7,25 @@ export default function SceneContainer() {
   return (
     <div style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}>
       <Canvas
-        // FIXED: Dropped camera y from 1.8 down to -0.2 to perfectly align with the drop group.
-        // This keeps the panels facing the lens directly for clean, uniform reflections.
-        camera={{ position: [0, -0.2, 7.5], fov: 45 }}
+        // TUNED: Positioned camera vertically at y: -0.4.
+        // This precise alignment forces the panel faces to clip your main light sources head-on.
+        camera={{ position: [0, -0.4, 7.5], fov: 45 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       >
         <Environment preset="studio" />
 
         <ambientLight intensity={0.35} />
 
-        {/* Key lights for sharp rim highlights */}
-        <directionalLight position={[6, 12, 5]} intensity={2.4} color="#ffffff" />
-        <directionalLight position={[-5, 8, 4]} intensity={1.2} color="#e0f0ff" />
+        {/* Sharp overhead rims */}
+        <directionalLight position={[6, 12, 5]} intensity={2.5} color="#ffffff" />
+        <directionalLight position={[-5, 8, 4]} intensity={1.5} color="#e0f0ff" />
 
-        {/* Soft back fill light for deep glassmorphism depth pass-through */}
-        <pointLight position={[0, -1.2, -4]} intensity={2.2} color="#a0c0ff" />
+        {/* TUNED: Front Key Fill Light elevated to 1.9 intensity.
+            Provides constant face illumination, locking in a clean metallic sheen on the canvas center plane. */}
+        <directionalLight position={[0, 0, 8]} intensity={1.9} color="#f0f5ff" />
+
+        {/* Back point illumination source */}
+        <pointLight position={[0, -1.2, -4]} intensity={2.4} color="#a0c0ff" />
 
         <group position={[0, -1.2, 0]}>
           <MenuRing />
@@ -32,7 +36,7 @@ export default function SceneContainer() {
           enablePan={false}
           minDistance={5}
           maxDistance={12}
-          target={[0, -1.2, 0]} // Perfectly targeted center pivot point
+          target={[0, -1.2, 0]} 
         />
       </Canvas>
     </div>
