@@ -8,37 +8,46 @@ function App() {
       {/* 1. Base Obsidian Void */}
       <div style={{ position: 'fixed', inset: 0, background: '#030305', zIndex: 0 }} />
 
-      {/* 2. Concentrated Anamorphic Light Bar (Squashed vertically, centered behind the ring) */}
+      {/* 2. FIXED: Sharp Overhead Linear Light Bank (Compressed boundaries for crisp chrome glints) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(ellipse 140% 65% at 50% 38%, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.07) 28%, rgba(255,255,255,0.01) 50%, transparent 75%)',
+        background: 'linear-gradient(to bottom, rgba(255,255,255,0.16) 15%, rgba(255,255,255,0.24) 26%, rgba(255,255,255,0.03) 35%, transparent 42%)',
         zIndex: 1,
         pointerEvents: 'none',
       }} />
 
-      {/* 3. 3D Canvas Space */}
+      {/* 3. 3D Canvas Layer */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 2 }}>
         <SceneContainer />
       </div>
 
-      {/* 4. Film Grain Micro-Texture */}
+      {/* 4. FIXED: Shifted Bottom Bounce to zIndex: 4 to act as a proper foreground reflection overlay */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'linear-gradient(to top, rgba(255,255,255,0.07) 0%, transparent 38%)',
+        zIndex: 4,
+        pointerEvents: 'none',
+      }} />
+
+      {/* 5. Micro-Texture */}
       <div style={{
         position: 'fixed',
         inset: 0,
         backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)',
         backgroundSize: '6px 6px',
         opacity: 0.04,
-        zIndex: 3,
+        zIndex: 5,
         pointerEvents: 'none',
       }} />
 
-      {/* 5. Peripheral Vignette (Pushed wide to 60% to eliminate mid-screen gray fog) */}
+      {/* 6. Wide Vignette Boundary */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(circle at 50% 50%, transparent 60%, rgba(0,0,0,0.98) 100%)',
-        zIndex: 4,
+        background: 'radial-gradient(circle at 50% 50%, transparent 58%, rgba(0,0,0,0.96) 100%)',
+        zIndex: 6,
         pointerEvents: 'none',
       }} />
 
@@ -55,7 +64,6 @@ function App() {
         pointerEvents: 'none',
         boxSizing: 'border-box',
       }}>
-        {/* Header Block */}
         <div style={{ textAlign: 'center', pointerEvents: 'auto' }}>
           <h1 style={{
             fontSize: 'clamp(2.8rem, 8.5vw, 5.5rem)',
@@ -78,7 +86,6 @@ function App() {
           </p>
         </div>
 
-        {/* Action Controls */}
         <div style={{ display: 'flex', gap: '1.5rem', pointerEvents: 'auto' }}>
           <button style={{
             padding: '16px 42px',
