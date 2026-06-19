@@ -8,16 +8,16 @@ function App() {
       {/* 1. Base Obsidian */}
       <div style={{ position: 'fixed', inset: 0, background: '#030305', zIndex: 0 }} />
 
-      {/* 2. TUNED: 160% horizontal scale with bumped 0.14 core for optimal ring wrapping */}
+      {/* 2. Stronger Central Chrome Sheen */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(ellipse 160% 115% at 50% 25%, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.03) 42%, transparent 72%)',
+        background: 'radial-gradient(ellipse 160% 120% at 50% 28%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 45%, transparent 75%)',
         zIndex: 1,
         pointerEvents: 'none',
       }} />
 
-      {/* 3. 3D Canvas Space */}
+      {/* 3. 3D Canvas */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 2 }}>
         <SceneContainer />
       </div>
@@ -33,7 +33,7 @@ function App() {
         pointerEvents: 'none',
       }} />
 
-      {/* 5. Wide-Set Vignette */}
+      {/* 5. Wide Vignette */}
       <div style={{
         position: 'fixed',
         inset: 0,
