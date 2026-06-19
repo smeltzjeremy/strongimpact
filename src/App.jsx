@@ -5,14 +5,16 @@ function App() {
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden', background: '#030305' }}>
       
-      {/* 1. Base Obsidian */}
+      {/* 1. Base Obsidian Void */}
       <div style={{ position: 'fixed', inset: 0, background: '#030305', zIndex: 0 }} />
 
-      {/* 2. Stronger Central Shine (Wider and brighter) */}
+      {/* 2. OPTIMIZED: Highly focused, vertically compressed gray-chrome ellipse. 
+          Concentrates a 28% bright hotspot directly behind the center of the ring, 
+          letting the light pool taper off aggressively toward the edges. */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'linear-gradient(to bottom, rgba(255,255,255,0.18) 12%, rgba(255,255,255,0.26) 26%, rgba(255,255,255,0.05) 38%, transparent 48%)',
+        background: 'radial-gradient(ellipse 160% 55% at 50% 36%, rgba(200,205,220,0.28) 0%, rgba(200,205,220,0.12) 30%, rgba(200,205,220,0.03) 55%, transparent 75%)',
         zIndex: 1,
         pointerEvents: 'none',
       }} />
@@ -22,23 +24,32 @@ function App() {
         <SceneContainer />
       </div>
 
-      {/* 4. Micro-Texture */}
+      {/* 4. Coordinated Bottom Bounce Overlay */}
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'linear-gradient(to top, rgba(180,185,200,0.08) 0%, transparent 40%)',
+        zIndex: 4,
+        pointerEvents: 'none',
+      }} />
+
+      {/* 5. Micro-Texture */}
       <div style={{
         position: 'fixed',
         inset: 0,
         backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)',
         backgroundSize: '6px 6px',
-        opacity: 0.04,
-        zIndex: 3,
+        opacity: 0.035,
+        zIndex: 5,
         pointerEvents: 'none',
       }} />
 
-      {/* 5. Wide Vignette */}
+      {/* 6. Wide Peripheral Vignette */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(circle at 50% 50%, transparent 55%, rgba(0,0,0,0.96) 100%)',
-        zIndex: 4,
+        background: 'radial-gradient(circle at 50% 50%, transparent 58%, rgba(0,0,0,0.96) 100%)',
+        zIndex: 6,
         pointerEvents: 'none',
       }} />
 

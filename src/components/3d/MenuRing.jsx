@@ -15,18 +15,15 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
 
-  // Math to position the panels on the ring radius
   const x = radius * Math.cos(angle);
   const z = radius * Math.sin(angle);
 
   useFrame((state) => {
     if (meshRef.current) {
-      // 1. Subtle idle hover animation
       meshRef.current.position.y = hovered
         ? Math.sin(state.clock.getElapsedTime() * 4) * 0.08 + 0.03
         : Math.sin(state.clock.getElapsedTime() * 1.5) * 0.02;
 
-      // 2. Continuous rotation so the panel faces the camera
       const absoluteAngle = angle + currentRingRotation;
       meshRef.current.rotation.y = -absoluteAngle + Math.PI / 2;
     }
@@ -47,26 +44,26 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
         }}
         onClick={() => alert(`Accessing ${item.label} Module...`)}
       >
-        {/* Panel geometry (responsive width) */}
         <boxGeometry args={[isMobile ? 1.35 : 1.7, 0.9, 0.05]} />
         
-        {/* 🛠️ TRANSLUCENT GLASS-CHROME MATERIAL 🛠️ */}
+        {/* 🛠️ IMPROVED HYBRID CHROME-GLASS MATERIAL */}
         <meshPhysicalMaterial
-          color="#222530"           // Dark-titanium base color tint
-          metalness={0.95}          // High metallic reflection baseline
-          roughness={0.03}          // Ultra-smooth mirror surface to catch clean, sharp specular lines
-          envMapIntensity={5.5}     // High exposure multiplier to pop edges
-          clearcoat={1.0}           // Shiny outer glass lacquer clear layer
-          clearcoatRoughness={0.01} // Pristine outer polish
-          transmission={0.3}        // Controlled internal refraction
-          ior={1.5}                 // Balanced index of refraction for standard glass pass-through
+          color="#f1f5f9"           // Pristine light crystal base
+          metalness={0.45}          // OPTIMIZED: Balanced down to 0.45 to prevent clipping the glass transmission channel
+          roughness={0.05}          // OPTIMIZED: Slightly sharpened frosting to ensure clean specular highlight bands
+          envMapIntensity={5.0}     
+          clearcoat={1.0}           // Thick outer lacquer clear shell
+          clearcoatRoughness={0.01} // Mirror-polished outer lacquer surface
+          transmission={0.80}       // OPTIMIZED: Crisp 80% light pass-through rate
+          ior={1.68}                // OPTIMIZED: Increased index of refraction for intense, metallic edge-refractions
+          thickness={0.25}          // Structural glass panel thickness depth
           transparent={true}
-          opacity={hovered ? 0.75 : 0.42}   // FIXED: Forced opacity baseline down to 42% so background gradients bleed through
+          opacity={hovered ? 0.85 : 0.52}   
           side={THREE.DoubleSide}
         />
       </mesh>
 
-      {/* HTML Text Overlay Label (Anchored to panel geometry) */}
+      {/* HTML Text Overlay Label */}
       <Html position={[0, 0, 0.04]} center distanceFactor={4.0} pointerEvents="none">
         <span style={{
           color: hovered ? item.color : '#ffffff',
@@ -96,23 +93,19 @@ export default function MenuRing() {
   const ringRef = useRef();
   const rotationRef = useRef(0);
 
-  // Set the default width (acts as desktop fallback during SSR)
   const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
   const isMobile = width < 768;
 
   useEffect(() => {
-    // Handle responsive resize events
     const handleResize = () => setWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Configure responsive layout boundaries
   const activeRadius = isMobile ? 2.3 : 2.9;
 
   useFrame((state, delta) => {
     if (ringRef.current) {
-      // Continuous idle ring spin (slow and subtle)
       ringRef.current.rotation.y += delta * 0.06;
       rotationRef.current = ringRef.current.rotation.y;
     }
