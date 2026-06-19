@@ -50,19 +50,18 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
         {/* Panel geometry (responsive width) */}
         <boxGeometry args={[isMobile ? 1.35 : 1.7, 0.9, 0.05]} />
         
-        {/* 🛠️ FINALIZED CHROME GLASS MATERIAL 🛠️ */}
+        {/* 🛠️ TRANSLUCENT GLASS-CHROME MATERIAL 🛠️ */}
         <meshPhysicalMaterial
-          color="#101115"           // FIXED: Deep obsidian base lets highlights slice with premium contrast. #ffffff creates the flat gray look.
-          metalness={1.0}           // Pure reflective raw element status
-          roughness={0.02}          // FIXED: Ultra-smooth mirror surface to catch clean, bright reflections of the linear light bar.
-          envMapIntensity={5.5}     // High exposure multiplier to blow out the edges beautifully
-          clearcoat={1.0}           // Thick, crystal-clear shell on top
-          clearcoatRoughness={0.01} // FIXED: Liquid-smooth lacquer layer so highlights stay sharp like polished crystal
-          transmission={0.65}       // FIXED: 65% physical light pass-through to create genuine heavy glass depth and see elements through each other.
-          ior={1.7}                 // FIXED: Dense glass Index of Refraction for realistic heavy crystal bending and distortion.
-          thickness={0.2}           // Simulates physical glass thickness
+          color="#222530"           // Dark-titanium base color tint
+          metalness={0.95}          // High metallic reflection baseline
+          roughness={0.03}          // Ultra-smooth mirror surface to catch clean, sharp specular lines
+          envMapIntensity={5.5}     // High exposure multiplier to pop edges
+          clearcoat={1.0}           // Shiny outer glass lacquer clear layer
+          clearcoatRoughness={0.01} // Pristine outer polish
+          transmission={0.3}        // Controlled internal refraction
+          ior={1.5}                 // Balanced index of refraction for standard glass pass-through
           transparent={true}
-          opacity={hovered ? 0.98 : 0.90}
+          opacity={hovered ? 0.75 : 0.42}   // FIXED: Forced opacity baseline down to 42% so background gradients bleed through
           side={THREE.DoubleSide}
         />
       </mesh>
