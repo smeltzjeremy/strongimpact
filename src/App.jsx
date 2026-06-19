@@ -5,39 +5,39 @@ function App() {
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', overflow: 'hidden', background: '#030305' }}>
       
-      {/* 1. Base Obsidian */}
+      {/* 1. Base Obsidian Void */}
       <div style={{ position: 'fixed', inset: 0, background: '#030305', zIndex: 0 }} />
 
-      {/* 2. Stronger Central Chrome Sheen */}
+      {/* 2. Concentrated Anamorphic Light Bar (Squashed vertically, centered behind the ring) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(ellipse 160% 120% at 50% 28%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 45%, transparent 75%)',
+        background: 'radial-gradient(ellipse 140% 65% at 50% 38%, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.07) 28%, rgba(255,255,255,0.01) 50%, transparent 75%)',
         zIndex: 1,
         pointerEvents: 'none',
       }} />
 
-      {/* 3. 3D Canvas */}
+      {/* 3. 3D Canvas Space */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 2 }}>
         <SceneContainer />
       </div>
 
-      {/* 4. Micro-Texture */}
+      {/* 4. Film Grain Micro-Texture */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        backgroundImage: 'radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px)',
+        backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)',
         backgroundSize: '6px 6px',
         opacity: 0.04,
         zIndex: 3,
         pointerEvents: 'none',
       }} />
 
-      {/* 5. Wide Vignette */}
+      {/* 5. Peripheral Vignette (Pushed wide to 60% to eliminate mid-screen gray fog) */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'radial-gradient(circle at 50% 50%, transparent 45%, rgba(0,0,0,0.96) 100%)',
+        background: 'radial-gradient(circle at 50% 50%, transparent 60%, rgba(0,0,0,0.98) 100%)',
         zIndex: 4,
         pointerEvents: 'none',
       }} />
@@ -55,6 +55,7 @@ function App() {
         pointerEvents: 'none',
         boxSizing: 'border-box',
       }}>
+        {/* Header Block */}
         <div style={{ textAlign: 'center', pointerEvents: 'auto' }}>
           <h1 style={{
             fontSize: 'clamp(2.8rem, 8.5vw, 5.5rem)',
@@ -77,6 +78,7 @@ function App() {
           </p>
         </div>
 
+        {/* Action Controls */}
         <div style={{ display: 'flex', gap: '1.5rem', pointerEvents: 'auto' }}>
           <button style={{
             padding: '16px 42px',
