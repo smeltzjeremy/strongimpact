@@ -8,33 +8,24 @@ export default function App() {
     <Router>
       <div className="min-h-screen bg-black text-white font-sans antialiased overflow-hidden relative">
         
-        {/* Navigation Header - Glassmorphic */}
-        <header className="fixed top-0 left-0 w-full z-50 bg-black/70 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex justify-between items-center">
-          <Link to="/" className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">JSTRONG</Link>
+        {/* Top Navigation - No JSTRONG on left */}
+        <header className="fixed top-0 left-0 w-full z-50 bg-black/70 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex justify-end items-center">
           <Link to="/admin" className="px-5 py-2.5 bg-white/10 hover:bg-white/20 rounded-2xl text-sm font-medium border border-white/20 transition">Admin Panel</Link>
         </header>
 
-        {/* Full 3D Ring Layer */}
-        <div className="fixed inset-0 z-0 pointer-events-auto">
-          <SceneContainer />
+        {/* Hero Text at Top - Fixed and out of the way */}
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 text-center pointer-events-none">
+          <div className="inline-flex items-center gap-2 px-5 py-1.5 mb-4 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium tracking-widest">
+            INTERACTIVE 3D ENGINE
+          </div>
+          <h1 className="text-5xl md:text-6xl font-extrabold tracking-tighter leading-none bg-gradient-to-b from-white to-zinc-300 bg-clip-text text-transparent">
+            STRONG IMPACT
+          </h1>
         </div>
 
-        {/* Minimal Overlay Content - Better Glassmorphism & Coloring */}
-        <div className="relative z-10 min-h-screen flex flex-col justify-center items-center pointer-events-none px-6 text-center">
-          <div className="pointer-events-auto max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium tracking-widest">
-              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-              INTERACTIVE 3D ENGINE
-            </div>
-            
-            <h1 className="text-6xl md:text-7xl font-extrabold tracking-tighter leading-none bg-gradient-to-b from-white via-zinc-100 to-zinc-400 bg-clip-text text-transparent mb-6">
-              STRONG IMPACT
-            </h1>
-            
-            <p className="text-xl text-zinc-400 max-w-md mx-auto">
-              Real-time 3D pipelines with premium glassmorphic interfaces
-            </p>
-          </div>
+        {/* Full 3D Ring - Maximum Interaction Space */}
+        <div className="fixed inset-0 z-0 pointer-events-auto">
+          <SceneContainer />
         </div>
 
       </div>
