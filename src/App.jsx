@@ -19,7 +19,7 @@ export default function App() {
             INTERACTIVE 3D ENGINE
           </div>
           <h1 className="text-6xl md:text-7xl font-extrabold tracking-tighter leading-none">
-            <span className="bg-gradient-to-b from-white via-zinc-100 to-zinc-400 bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(255,255,255,0.3)]">STRONG </span>
+            <span className="bg-gradient-to-b from-white via-zinc-100 to-zinc-400 bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(2 canvas55,255,255,0.3)]">STRONG </span>
             <span className="bg-gradient-to-b from-red-400 via-red-500 to-red-700 bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(239,68,68,0.6)]">IMPACT</span>
           </h1>
         </div>
@@ -27,7 +27,7 @@ export default function App() {
         {/* Routes */}
         <Routes>
           <Route path="/" element={
-            <div className="relative w-full h-screen z-10 pointer-events-auto premium-depth-bg">
+            <div className="relative w-full h-dvh z-10 pointer-events-auto premium-bg">
               <SceneContainer />
             </div>
           } />
