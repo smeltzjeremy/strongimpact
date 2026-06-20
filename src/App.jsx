@@ -1,6 +1,7 @@
 import React from 'react';
 import { HashRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
+import SceneContainer from './components/3d/SceneContainer';
 
 export default function App() {
   return (
@@ -23,11 +24,11 @@ export default function App() {
           </h1>
         </div>
 
-        {/* Routes */}
+        {/* Simple Home Route */}
         <Routes>
           <Route path="/" element={
-            <div className="fixed inset-0 z-0 pointer-events-auto premium-depth-bg flex items-center justify-center text-4xl text-emerald-400 font-bold">
-              3D RING SHOULD BE HERE
+            <div className="fixed inset-0 z-0 pointer-events-auto premium-depth-bg flex items-center justify-center">
+              <div className="text-4xl text-emerald-400 font-bold">3D RING SHOULD BE HERE</div>
             </div>
           } />
           <Route path="/admin" element={<AdminDashboard />} />
