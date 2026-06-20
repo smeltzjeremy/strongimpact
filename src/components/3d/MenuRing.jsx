@@ -22,7 +22,6 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
   const z = radius * Math.sin(angle);
 
   useFrame((state) => {
-    // Keep a running time scalar for custom slow breathing effects
     setTime(state.clock.getElapsedTime());
 
     if (meshRef.current) {
@@ -44,8 +43,7 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
     }
   };
 
-  // Create a gentle, slow, non-aggressive breathing scale factor (oscillates between 0.96 and 1.04)
-  const slowPulseScale = hovered ? 1.1 : 1 + Math.sin(time * 2) * 0.04;
+  const slowPulseScale = hovered ? 1.12 : 1 + Math.sin(time * 1.8) * 0.035;
 
   return (
     <group position={[x, 0, z]}>
@@ -72,79 +70,73 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
         />
       </mesh>
 
-      {/* 🏈 UPDATED HOLOGRAPHIC TARGET RIG */}
-      <Html position={[0, 1.2, 0]} center style={{ pointerEvents: 'auto' }}>
-        <div className="flex flex-col items-center gap-2 select-none">
+      {/* 🏷️ LABEL ON CARD (Centered directly over the glass crystal plane) */}
+      <Html position={[0, 0, 0.06]} center style={{ pointerEvents: 'none' }}>
+        <span 
+          className="font-black text-xs tracking-widest uppercase select-none bg-black/70 px-4 py-1.5 rounded-full backdrop-blur-md border transition-all duration-300 shadow" 
+          style={{ 
+            color: hovered ? item.color : '#ffffff',
+            borderColor: hovered ? `${item.color}44` : 'rgba(255,255,255,0.1)'
+          }}
+        >
+          {item.label}
+        </span>
+      </Html>
+
+      {/* 🏈 HOLOGRAPHIC FOOTBALL TARGET (Lowered position with custom hover metadata) */}
+      <Html position={[0, 0.65, 0]} center style={{ pointerEvents: 'auto' }}>
+        <div className="flex flex-col items-center gap-1.5 select-none">
           
-          {/* Target Button with dynamic mobile upscale */}
           <button 
             onClick={handlePipelineLaunch}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
-            className="rounded-full border bg-zinc-950/90 backdrop-blur-xl flex items-center justify-center cursor-pointer transition-all duration-500 group relative shadow-[0_0_35px_rgba(0,0,0,0.9)]"
+            className="rounded-full border bg-zinc-950/90 backdrop-blur-2xl flex items-center justify-center cursor-pointer transition-all duration-500 group relative shadow-2xl"
             style={{ 
-              width: isMobile ? '4.25rem' : '3.75rem',  // Upsized on mobile for thumb safety
-              height: isMobile ? '4.25rem' : '3.75rem', // Upsized on mobile for thumb safety
+              width: isMobile ? '4.6rem' : '4rem',
+              height: isMobile ? '2.3rem' : '2rem',
               transform: `scale(${slowPulseScale})`,
-              borderColor: hovered ? item.color : 'rgba(255, 255, 255, 0.15)',
+              borderColor: hovered ? item.color : 'rgba(255,255,255,0.25)',
               boxShadow: hovered 
-                ? `0 0 35px ${item.color}bb, inset 0 0 15px ${item.color}44` 
-                : `0 0 20px rgba(0,0,0,0.8), inset 0 0 10px rgba(255,255,255,0.03)`
+                ? `0 0 35px ${item.color}bb, inset 0 0 10px ${item.color}44` 
+                : '0 0 20px rgba(0,0,0,0.8)'
             }}
           >
             {/* 🌌 SOFT OUTSIDE HOLOGRAPHIC GLOW RING */}
             <div 
-              className="absolute inset-[-6px] rounded-full border transition-all duration-700 opacity-40 mix-blend-screen"
+              className="absolute inset-[-5px] rounded-full border transition-all duration-700 opacity-40 mix-blend-screen"
               style={{ 
                 borderColor: item.color,
-                boxShadow: `0 0 15px ${item.color}33`,
-                transform: hovered ? 'scale(1.15)' : `scale(${1 + Math.sin(time * 2) * 0.05})`
+                boxShadow: `0 0 12px ${item.color}33`,
+                transform: hovered ? 'scale(1.1)' : `scale(${1 + Math.sin(time * 1.8) * 0.04})`
               }}
             />
 
-            {/* Subtle Radar Ring Wave */}
+            {/* Glowing Internal Core Element */}
             <div 
-              className="absolute inset-0 rounded-full animate-ping opacity-10 duration-[3000ms]"
-              style={{ backgroundColor: item.color }}
-            />
-
-            {/* Core Element */}
-            <div 
-              className="w-5 h-5 rounded-full transition-transform duration-500 group-hover:scale-125" 
+              className="w-3 h-3 rounded-full transition-transform duration-500 group-hover:scale-110" 
               style={{ 
-                backgroundColor: item.color,
-                boxShadow: `0 0 20px ${item.color}, inset 0 2px 4px rgba(255,255,255,0.4)`
-              }}
+                backgroundColor: item.color, 
+                boxShadow: `0 0 15px ${item.color}, inset 0 1px 2px rgba(255,255,255,0.5)` 
+              }} 
             />
           </button>
 
-          {/* Contextual Hover Label */}
+          {/* Contextual Hover Label (Fades in dynamically) */}
           <div 
             className={`transition-all duration-300 transform pointer-events-none ${
               hovered ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-1 scale-95'
             }`}
           >
             <span 
-              className="text-[9px] font-black tracking-[0.3em] px-2.5 py-1 rounded bg-zinc-950/95 border text-white shadow-2xl"
+              className="text-[9px] font-black tracking-[0.25em] px-2 py-0.5 rounded bg-zinc-950/95 border text-white shadow-xl"
               style={{ borderColor: `${item.color}33` }}
             >
               LAUNCH
             </span>
           </div>
-        </div>
-      </Html>
 
-      {/* TEXT LABEL OVERLAY */}
-      <Html position={[0, -0.9, 0]} center style={{ pointerEvents: 'none' }}>
-        <span 
-          className="font-black text-xs tracking-[0.2em] uppercase select-none transition-all duration-300 bg-black/50 px-4 py-1.5 rounded-full backdrop-blur-md border shadow-md"
-          style={{ 
-            color: hovered ? item.color : '#ffffff',
-            borderColor: hovered ? `${item.color}44` : 'rgba(255,255,255,0.05)'
-          }}
-        >
-          {item.label}
-        </span>
+        </div>
       </Html>
     </group>
   );
