@@ -4,17 +4,16 @@ import * as THREE from 'three';
 
 export default function DynamicChromeShader() {
   const meshRef = useRef();
-  const { viewport, mouse } = useThree();
+  const { mouse } = useThree();
 
-  // Mouse target for smooth lerp
+  // Mouse target for smooth interaction (kept for depth but no time movement)
   const targetMouse = useRef(new THREE.Vector2(0.5, 0.5));
 
-  useFrame((state) => {
+  useFrame(() => {
     if (meshRef.current) {
-      // Smooth mouse lerp
       targetMouse.current.lerp(mouse, 0.08);
       meshRef.current.material.uniforms.u_mouse.value.copy(targetMouse.current);
-      meshRef.current.material.uniforms.u_time.value = state.clock.getElapsedTime();
+      // u_time removed entirely to maintain frozen state execution
     }
   });
 
@@ -23,7 +22,6 @@ export default function DynamicChromeShader() {
       <planeGeometry args={[2, 2]} />
       <shaderMaterial
         uniforms={{
-          u_time: { value: 0 },
           u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
           u_mouse: { value: new THREE.Vector2(0.5, 0.5) }
         }}
@@ -35,7 +33,6 @@ export default function DynamicChromeShader() {
           }
         `}
         fragmentShader={`
-          uniform float u_time;
           uniform vec2 u_resolution;
           uniform vec2 u_mouse;
           varying vec2 vUv;
@@ -71,38 +68,33 @@ export default function DynamicChromeShader() {
             vec2 uv = vUv;
             uv.x *= u_resolution.x / u_resolution.y;
 
-            float t = u_time * 0.35;
+            // Mouse influence for subtle depth (no time movement)
+            vec2 mouseOffset = (u_mouse - 0.5) * 1.2;
 
-            // Mouse influence
-            vec2 mouseOffset = (u_mouse - 0.5) * 1.5;
+            vec2 p = uv * 4.2;
+            p.x += sin(p.y * 2.4) * 0.55 + mouseOffset.x * 0.8;
+            p.y += cos(p.x * 1.9) * 0.4 + mouseOffset.y * 0.6;
 
-            vec2 p = uv * 4.0;
-            p.x += sin(p.y * 2.5 + t * 1.2) * 0.6 + mouseOffset.x * 0.8;
-            p.y += cos(p.x * 2.0 + t * 0.9) * 0.4 + mouseOffset.y * 0.6;
+            float height = fbm(p);
 
-            float height = fbm(p + vec2(t * 0.4, t * 0.3));
-
-            // Normals
-            float eps = 0.005;
-            float nx = fbm(p + vec2(eps, 0) + vec2(t * 0.4, t * 0.3)) - height;
-            float ny = fbm(p + vec2(0, eps) + vec2(t * 0.4, t * 0.3)) - height;
-            vec3 normal = normalize(vec3(-nx * 60.0, -ny * 60.0, 1.0));
+            // Steeper normals for deep carved look
+            float eps = 0.004;
+            float nx = fbm(p + vec2(eps, 0)) - height;
+            float ny = fbm(p + vec2(0, eps)) - height;
+            vec3 normal = normalize(vec3(-nx * 120.0, -ny * 120.0, 1.0));
 
             // Lighting
             vec3 lightDir = normalize(vec3(0.5, 0.9, 1.4));
             float diff = max(dot(normal, lightDir), 0.0);
-            float spec = pow(max(dot(normal, normalize(lightDir + vec3(0.0, 0.0, 1.0))), 0.0), 48.0);
+            float spec = pow(max(dot(normal, normalize(lightDir + vec3(0.0, 0.0, 1.0))), 0.0), 64.0);
 
-            // Metallic ramp
-            vec3 base = vec3(0.03, 0.03, 0.06);
-            vec3 mid = vec3(0.68, 0.70, 0.74);
-            vec3 highlight = vec3(1.0, 1.0, 1.0);
+            // Blacker base + high-contrast metallic ramp
+            vec3 base = vec3(0.0, 0.0, 0.0);           // Pure pitch black
+            vec3 mid = vec3(0.55, 0.57, 0.62);         // Slick platinum
+            vec3 highlight = vec3(1.0, 1.0, 1.0);      // Blinding white
 
-            vec3 color = mix(base, mid, diff * 0.85);
-            color = mix(color, highlight, spec * 0.9);
-
-            float flow = sin(p.x * 4.0 + t * 2.0) * 0.12 + 0.5;
-            color = mix(color, highlight * 0.85, flow * 0.22);
+            vec3 color = mix(base, mid, diff * 0.75);
+            color = mix(color, highlight, spec * 0.95);
 
             gl_FragColor = vec4(color, 1.0);
           }
