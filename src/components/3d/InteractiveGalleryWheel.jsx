@@ -2,21 +2,21 @@ import React, { useMemo } from 'react';
 import * as THREE from 'three';
 
 export default function InteractiveGalleryWheel() {
-  // Construct a wide 3D surface using your exact high-frequency multiplied layout values
-  const repeatingChromeGeometry = useMemo(() => {
-    // Generates a massive backdrop to guarantee complete screen coverage
-    const geo = new THREE.PlaneGeometry(60, 60, 120, 120);
+  // Construct a perfectly smooth, full-coverage backdrop using your clean ribbon tuning
+  const smoothChromeGeometry = useMemo(() => {
+    // Large, dense grid to support the smooth curve translations edge-to-edge
+    const geo = new THREE.PlaneGeometry(60, 60, 140, 140);
     const pos = geo.attributes.position;
     
-    // Multiplies the design folds cleanly down the page by removing uTime animations
+    // Applying your cleaner frequency multipliers (0.8, 0.7, 1.5, 1.1) completely frozen
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const y = pos.getY(i);
       
-      // Your exact frequency tuning (1.2, 1.0, 2.2, 1.5) to crowd the empty space with ribbons
-      const zValue = Math.sin(x * 1.2) * 0.5
-                   + Math.cos(y * 1.0) * 0.4
-                   + Math.sin(x * 2.2 + y * 1.5) * 0.3;
+      // Removed uTime so this pristine ribbon structure locks in solid
+      const zValue = Math.sin(x * 0.8) * 0.35
+                   + Math.cos(y * 0.7) * 0.28
+                   + Math.sin(x * 1.5 + y * 1.1) * 0.15;
                    
       pos.setZ(i, zValue);
     }
@@ -27,18 +27,17 @@ export default function InteractiveGalleryWheel() {
 
   return (
     <group>
-      {/* 🌊 LAYER 1: REPEATING HIGH-CONTRAST STATIC OBSIDIAN CHROME */}
+      {/* 🌊 LAYER 1: CLEAN FULL-VIEWPORT STATIC OBSIDIAN CHROME */}
       <mesh 
-        geometry={repeatingChromeGeometry} 
-        position={[0, -2, -10]} 
-        rotation={[-Math.PI / 2.8, 0, 0]} // Your exact framing position vectors
+        geometry={smoothChromeGeometry} 
+        position={[0, 0, -8]} // Kept flat at center to ensure zero top-edge clipping
       >
         <meshPhysicalMaterial 
-          color="#040408"          // Deep midnight/black contrast base
-          roughness={0.01}         // Maximum polish for bright reflections
-          metalness={1.0}          // Heavy chrome surface rating
-          clearcoat={1.0}          // High-gloss glassy layer to make highlights pop
-          clearcoatRoughness={0.005}
+          color="#030306"          // Match your precise color vector mix base
+          roughness={0.01}         // Maximum gloss mirror polish
+          metalness={1.0}          // Pure chrome surface rating
+          clearcoat={1.0}          // Mirror clearcoat layer
+          clearcoatRoughness={0.0} // Perfectly smooth glass shell reflections
         />
       </mesh>
     </group>
