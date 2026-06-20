@@ -1,10 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
-import { useNavigate } from 'react-router-dom'; // Added for seamless client-side routing
+import { useNavigate } from 'react-router-dom';
 import * as THREE from 'three';
 
-// Updated SECURITY to GALLERY with a striking crimson accent color
+// Standardized architectural configuration parameters
 const MENU_ITEMS = [
   { id: 1, label: 'GRAPHICS', color: '#00ffcc' },
   { id: 2, label: 'PIPELINE', color: '#3399ff' },
@@ -15,18 +15,21 @@ const MENU_ITEMS = [
 
 function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
   const meshRef = useRef();
-  const navigate = useNavigate(); // Component routing instance
+  const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
 
+  // Map individual points around the 3D ring circumference
   const x = radius * Math.cos(angle);
   const z = radius * Math.sin(angle);
 
   useFrame((state) => {
     if (meshRef.current) {
+      // Subtle float animation loop for the physical glass panels
       meshRef.current.position.y = hovered
         ? Math.sin(state.clock.getElapsedTime() * 4) * 0.08 + 0.03
         : Math.sin(state.clock.getElapsedTime() * 1.5) * 0.02;
 
+      // Ensure panels always mathematically face the camera lens as they orbit
       const absoluteAngle = angle + currentRingRotation;
       meshRef.current.rotation.y = -absoluteAngle + Math.PI / 2;
     }
@@ -34,7 +37,6 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
 
   const handlePanelClick = () => {
     if (item.label === 'GALLERY') {
-      // Revert cursor styling before unmounting elements
       document.body.style.cursor = 'auto';
       navigate('/gallery');
     } else {
@@ -44,8 +46,9 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
 
   return (
     <group position={[x, 0, z]}>
+      
+      {/* 🛑 THE INVISIBLE GHOST HITBOX (Expands touch targets for easier clicks) */}
       <mesh
-        ref={meshRef}
         onPointerOver={(e) => { 
           e.stopPropagation(); 
           setHovered(true); 
@@ -57,9 +60,15 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
         }}
         onClick={handlePanelClick}
       >
+        {/* Generous physical volume catching swipes and clicks safely between slots */}
+        <boxGeometry args={[isMobile ? 1.8 : 2.6, 1.4, 0.4]} />
+        <meshBasicMaterial transparent={true} opacity={0} visible={false} />
+      </mesh>
+
+      {/* ✨ THE VISUAL MATERIAL MESH (The sleek, thin crystal panel users see) */}
+      <mesh ref={meshRef}>
         <boxGeometry args={[isMobile ? 1.35 : 2.4, 0.9, 0.05]} />
         
-        {/* 🛠️ SHARP SPECULAR LIQUID-CHROME GLASS MATERIAL */}
         <meshPhysicalMaterial
           color="#d0d5e0"           
           metalness={0.82}          
