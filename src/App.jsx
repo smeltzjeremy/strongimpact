@@ -1,7 +1,7 @@
 import React from 'react';
 import { HashRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
-import Gallery from './pages/Gallery'; // Import the placeholder
+import Gallery from './pages/Gallery';
 import SceneContainer from './components/3d/SceneContainer';
 
 export default function App() {
@@ -24,15 +24,20 @@ export default function App() {
                 </Link>
               </header>
 
-              {/* Hero Text at Top */}
-              <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 text-center pointer-events-none">
-                <div className="inline-flex items-center gap-2 px-5 py-1.5 mb-6 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium tracking-widest">
+              {/* Hero Logo Placement Center Top */}
+              <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 text-center pointer-events-none flex flex-col items-center max-w-[90vw]">
+                <div className="inline-flex items-center gap-2 px-5 py-1.5 mb-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium tracking-widest">
                   INTERACTIVE 3D ENGINE
                 </div>
-                <h1 className="text-6xl md:text-7xl font-extrabold tracking-tighter leading-none">
-                  <span className="bg-gradient-to-b from-white via-zinc-100 to-zinc-400 bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(255,255,255,0.3)]">STRONG </span>
-                  <span className="bg-gradient-to-b from-red-400 via-red-500 to-red-700 bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(239,68,68,0.6)]">IMPACT</span>
-                </h1>
+                
+                {/* 🌟 BRAND LOGO DISPLAY EMBED */}
+                <div className="w-[320px] sm:w-[420px] md:w-[480px] h-auto flex items-center justify-center mix-blend-screen overflow-hidden drop-shadow-[0_4px_30px_rgba(255,255,255,0.15)]">
+                  <img 
+                    src="https://i.ibb.co/RpQhSsTv/IMG-5057.jpg" 
+                    alt="Strong Impact Logo" 
+                    className="w-full h-auto object-contain select-none pointer-events-none"
+                  />
+                </div>
               </div>
 
               <SceneContainer />
