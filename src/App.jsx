@@ -26,8 +26,8 @@ export default function App() {
         {/* Routes */}
         <Routes>
           <Route path="/" element={
-            <div className="fixed inset-0 z-0 pointer-events-auto premium-depth-bg flex items-center justify-center text-2xl text-zinc-500">
-              3D Ring Loading... (Check console for errors)
+            <div className="fixed inset-0 z-0 pointer-events-auto premium-depth-bg flex items-center justify-center text-3xl text-zinc-400">
+              3D Ring (Loading...)
             </div>
           } />
           <Route path="/admin" element={<AdminDashboard />} />
