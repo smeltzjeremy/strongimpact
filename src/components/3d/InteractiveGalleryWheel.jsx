@@ -2,18 +2,17 @@ import React, { useMemo } from 'react';
 import * as THREE from 'three';
 
 export default function InteractiveGalleryWheel() {
-  // Construct a perfectly smooth, full-coverage backdrop using your clean ribbon tuning
-  const smoothChromeGeometry = useMemo(() => {
-    // Large, dense grid to support the smooth curve translations edge-to-edge
-    const geo = new THREE.PlaneGeometry(60, 60, 140, 140);
+  // Building the backdrop using your dense grid specifications
+  const ultraSmoothGeometry = useMemo(() => {
+    // Your massive dimensions and high division counts to stop jagged stretching
+    const geo = new THREE.PlaneGeometry(90, 90, 180, 180);
     const pos = geo.attributes.position;
     
-    // Applying your cleaner frequency multipliers (0.8, 0.7, 1.5, 1.1) completely frozen
+    // Smooth ribbon coordinates mapped symmetrically without uTime
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const y = pos.getY(i);
       
-      // Removed uTime so this pristine ribbon structure locks in solid
       const zValue = Math.sin(x * 0.8) * 0.35
                    + Math.cos(y * 0.7) * 0.28
                    + Math.sin(x * 1.5 + y * 1.1) * 0.15;
@@ -27,17 +26,18 @@ export default function InteractiveGalleryWheel() {
 
   return (
     <group>
-      {/* 🌊 LAYER 1: CLEAN FULL-VIEWPORT STATIC OBSIDIAN CHROME */}
+      {/* 🌊 LAYER 1: ULTRA-DENSE STATIC SILK OBSIDIAN CHROME */}
       <mesh 
-        geometry={smoothChromeGeometry} 
-        position={[0, 0, -8]} // Kept flat at center to ensure zero top-edge clipping
+        geometry={ultraSmoothGeometry} 
+        position={[0, -4, -15]}       // Your updated coordinate mapping
+        rotation={[-Math.PI / 3.8, 0, 0]} // Your updated framing rotation vector
       >
         <meshPhysicalMaterial 
-          color="#030306"          // Match your precise color vector mix base
-          roughness={0.01}         // Maximum gloss mirror polish
-          metalness={1.0}          // Pure chrome surface rating
-          clearcoat={1.0}          // Mirror clearcoat layer
-          clearcoatRoughness={0.0} // Perfectly smooth glass shell reflections
+          color="#020204"              // Deep obsidian base
+          roughness={0.05}             // Your optimized gloss specification
+          metalness={1.0}              // Pure mirror reflective properties
+          clearcoat={1.0}              // High-sheen top layer
+          clearcoatRoughness={0.0}     // Your mirror-smooth glass finish vector
         />
       </mesh>
     </group>
