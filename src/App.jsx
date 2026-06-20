@@ -1,7 +1,13 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
-import SceneContainer from './components/3d/SceneContainer';
+// Import SceneContainer with fallback if it fails
+let SceneContainer;
+try {
+  SceneContainer = require('./components/3d/SceneContainer').default;
+} catch (e) {
+  SceneContainer = () => <div className="text-white">3D Engine Loading...</div>;
+}
 
 export default function App() {
   return (
@@ -18,14 +24,13 @@ export default function App() {
           <div className="inline-flex items-center gap-2 px-5 py-1.5 mb-6 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium tracking-widest">
             INTERACTIVE 3D ENGINE
           </div>
-          
           <h1 className="text-6xl md:text-7xl font-extrabold tracking-tighter leading-none">
             <span className="bg-gradient-to-b from-white via-zinc-100 to-zinc-400 bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(255,255,255,0.3)]">STRONG </span>
             <span className="bg-gradient-to-b from-red-400 via-red-500 to-red-700 bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(239,68,68,0.6)]">IMPACT</span>
           </h1>
         </div>
 
-        {/* Routes */}
+        {/* Routes with Safe Fallback */}
         <Routes>
           <Route path="/" element={
             <div className="fixed inset-0 z-0 pointer-events-auto premium-depth-bg">
