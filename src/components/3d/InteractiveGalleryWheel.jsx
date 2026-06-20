@@ -3,14 +3,20 @@ import * as THREE from 'three';
 
 export default function InteractiveGalleryWheel() {
   const chromeGeometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(80, 80, 120, 120);
+    // Keeping your high density grid to ensure those glassy reflections stay silky smooth
+    const geo = new THREE.PlaneGeometry(80, 80, 140, 140);
     const pos = geo.attributes.position;
     
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const y = pos.getY(i);
-      const elevation = Math.sin(x * 0.6) * 0.4 + Math.cos(y * 0.5) * 0.3;
-      pos.setZ(i, elevation);
+      
+      // Your exact optimized frequency formula to draw more ribbons down the page
+      const zValue = Math.sin(x * 1.2) * 0.45
+                   + Math.cos(y * 1.0) * 0.35
+                   + Math.sin(x * 2.0 + y * 1.5) * 0.25;
+                   
+      pos.setZ(i, zValue);
     }
     
     geo.computeVertexNormals();
@@ -19,11 +25,16 @@ export default function InteractiveGalleryWheel() {
 
   return (
     <group>
-      <mesh geometry={chromeGeometry} position={[0, 0, -12]} rotation={[-Math.PI / 3.5, 0, 0]}>
+      {/* 🌊 LAYER 1: MULTIPLIED LIQUID CHROMIUM BACKDROP */}
+      <mesh 
+        geometry={chromeGeometry} 
+        position={[0, -1, -11]}       // Shifted slightly down/forward to pull ribbons to the bottom
+        rotation={[-Math.PI / 3.2, 0, 0]} // Adjusted tilt angle to keep the bottom half in view
+      >
         <meshPhysicalMaterial 
           color="#0a0a0f" 
           metalness={1.0} 
-          roughness={0.08} 
+          roughness={0.07}            // Tailored gloss finish to match your pristine reflection quality
           clearcoat={1.0} 
         />
       </mesh>
