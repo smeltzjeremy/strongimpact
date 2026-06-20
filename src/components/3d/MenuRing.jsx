@@ -1,18 +1,21 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
+import { useNavigate } from 'react-router-dom'; // Added for seamless client-side routing
 import * as THREE from 'three';
 
+// Updated SECURITY to GALLERY with a striking crimson accent color
 const MENU_ITEMS = [
   { id: 1, label: 'GRAPHICS', color: '#00ffcc' },
   { id: 2, label: 'PIPELINE', color: '#3399ff' },
   { id: 3, label: 'DATABASE', color: '#ff3366' },
-  { id: 4, label: 'SECURITY', color: '#ffcc00' },
+  { id: 4, label: 'GALLERY', color: '#ff3344' }, 
   { id: 5, label: 'NETWORKS', color: '#b833ff' }
 ];
 
 function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
   const meshRef = useRef();
+  const navigate = useNavigate(); // Component routing instance
   const [hovered, setHovered] = useState(false);
 
   const x = radius * Math.cos(angle);
@@ -29,6 +32,16 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
     }
   });
 
+  const handlePanelClick = () => {
+    if (item.label === 'GALLERY') {
+      // Revert cursor styling before unmounting elements
+      document.body.style.cursor = 'auto';
+      navigate('/gallery');
+    } else {
+      alert(`Accessing ${item.label} Module...`);
+    }
+  };
+
   return (
     <group position={[x, 0, z]}>
       <mesh
@@ -42,23 +55,23 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
           setHovered(false); 
           document.body.style.cursor = 'auto'; 
         }}
-        onClick={() => alert(`Accessing ${item.label} Module...`)}
+        onClick={handlePanelClick}
       >
         <boxGeometry args={[isMobile ? 1.35 : 2.4, 0.9, 0.05]} />
         
         {/* 🛠️ SHARP SPECULAR LIQUID-CHROME GLASS MATERIAL */}
         <meshPhysicalMaterial
-          color="#d0d5e0"           // Cool grayish tint provides perfect architectural depth base
-          metalness={0.82}          // FIXED: Pushed into the 0.8–0.85 sweet spot to snap the mirror-chrome sheen back into existence
-          roughness={0.05}          // FIXED: Tightened to 5% to lock in razor-sharp high-contrast specular reflections
+          color="#d0d5e0"           
+          metalness={0.82}          
+          roughness={0.05}          
           envMapIntensity={5.0}     
-          clearcoat={1.0}           // High-gloss outer crystal clear coat lacquer shell
-          clearcoatRoughness={0.01} // Extra-polished outer clearcoat layer for perfect gloss stability
-          transmission={0.78}       // High translucent pass-through for rich glassmorphic stacking
-          ior={1.62}                // Slightly elevated index of refraction to match the crisper chrome depth
-          thickness={0.22}          // Structural edge-depth slab factor
+          clearcoat={1.0}           
+          clearcoatRoughness={0.01} 
+          transmission={0.78}       
+          ior={1.62}                
+          thickness={0.22}          
           transparent={true}
-          opacity={hovered ? 0.82 : 0.52}   // Balanced visibility tracking
+          opacity={hovered ? 0.82 : 0.52}   
           side={THREE.DoubleSide}
         />
       </mesh>
