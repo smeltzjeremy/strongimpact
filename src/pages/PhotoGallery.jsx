@@ -7,10 +7,9 @@ export default function PhotoGallery() {
   return (
     <div className="w-full h-screen bg-black relative overflow-hidden">
       
-      {/* 🎥 WIDER CAMERA STAGE CONFIGURATION */}
       <Canvas 
-        camera={{ position: [0, 0, 12], fov: 45 }} 
-        gl={{ antialias: true, alpha: true }}
+        camera={{ position: [0, 0, 8], fov: 50 }} 
+        gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
         dpr={[1, 1.5]}
       >
         <ambientLight intensity={0.15} />
