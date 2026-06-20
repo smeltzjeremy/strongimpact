@@ -1,13 +1,6 @@
 import React from 'react';
 import { HashRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
-// Import SceneContainer with fallback if it fails
-let SceneContainer;
-try {
-  SceneContainer = require('./components/3d/SceneContainer').default;
-} catch (e) {
-  SceneContainer = () => <div className="text-white">3D Engine Loading...</div>;
-}
 
 export default function App() {
   return (
@@ -30,11 +23,11 @@ export default function App() {
           </h1>
         </div>
 
-        {/* Routes with Safe Fallback */}
+        {/* Routes */}
         <Routes>
           <Route path="/" element={
-            <div className="fixed inset-0 z-0 pointer-events-auto premium-depth-bg">
-              <SceneContainer />
+            <div className="fixed inset-0 z-0 pointer-events-auto premium-depth-bg flex items-center justify-center text-2xl text-zinc-500">
+              3D Ring Loading... (Check console for errors)
             </div>
           } />
           <Route path="/admin" element={<AdminDashboard />} />
