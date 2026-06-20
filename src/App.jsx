@@ -15,14 +15,14 @@ export default function App() {
             <div className="relative w-full h-dvh z-10 pointer-events-auto premium-bg">
               
               {/* 🛠️ GLOBAL FIXED NAVIGATION HEADER */}
-              <header className="fixed top-0 left-0 w-full z-50 bg-black/80 backdrop-blur-xl border-b border-white/10 px-4 sm:px-6 py-3 flex justify-between items-center gap-4">
+              <header className="fixed top-0 left-0 w-full z-50 bg-black/70 backdrop-blur-xl border-b border-white/10 px-4 sm:px-6 py-3 flex justify-between items-center gap-4">
                 
-                {/* 🔗 EXPANDED HIGH-VISIBILITY BRAND LOGO */}
-                <div className="h-14 sm:h-16 w-24 sm:w-32 flex items-center justify-center bg-white rounded-xl overflow-hidden p-1 border border-white/10 shadow-lg shrink-0">
+                {/* 🔗 EXPANDED LOGO BOX - SCALED TO PERFECTLY FIT EXTENTS */}
+                <div className="h-12 sm:h-16 w-28 sm:w-36 flex items-center justify-center bg-white rounded-xl overflow-hidden border border-white/10 shadow-lg shrink-0">
                   <img 
                     src="https://i.ibb.co/RpQhSsTv/IMG-5057.jpg" 
                     alt="Strong Impact Logo" 
-                    className="h-full w-full object-contain select-none pointer-events-none"
+                    className="h-full w-full object-cover object-center scale-105 select-none pointer-events-none"
                   />
                 </div>
 
@@ -38,7 +38,7 @@ export default function App() {
               </header>
 
               {/* ⚡ CLEAN HERO TYPOGRAPHY */}
-              <div className="fixed top-28 sm:top-32 left-1/2 -translate-x-1/2 z-40 text-center pointer-events-none w-full max-w-[90vw]">
+              <div className="fixed top-28 sm:top-36 left-1/2 -translate-x-1/2 z-40 text-center pointer-events-none w-full max-w-[90vw]">
                 <div className="inline-flex items-center gap-2 px-5 py-1.5 mb-5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] sm:text-xs font-medium tracking-widest uppercase">
                   INTERACTIVE 3D ENGINE
                 </div>
