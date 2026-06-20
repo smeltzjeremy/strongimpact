@@ -1,7 +1,6 @@
 import React from 'react';
-import { HashRouter as Router, Link } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
-import SceneContainer from './components/3d/SceneContainer';
 
 export default function App() {
   return (
@@ -24,10 +23,18 @@ export default function App() {
           </h1>
         </div>
 
-        {/* 3D Ring */}
-        <div className="fixed inset-0 z-0 pointer-events-auto premium-depth-bg">
-          <SceneContainer />
+        {/* Test Colored Background Instead of Ring */}
+        <div className="fixed inset-0 z-0 pointer-events-auto premium-depth-bg flex items-center justify-center">
+          <div className="text-5xl text-emerald-400 font-bold text-center">
+            TEST BACKGROUND<br />(Ring should be here)
+          </div>
         </div>
+
+        {/* Routes */}
+        <Routes>
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
 
       </div>
     </Router>
