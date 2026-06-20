@@ -30,8 +30,8 @@ export default function App() {
                   INTERACTIVE 3D ENGINE
                 </div>
                 
-                {/* 🌟 BRAND LOGO DISPLAY EMBED */}
-                <div className="w-[320px] sm:w-[420px] md:w-[480px] h-auto flex items-center justify-center mix-blend-screen overflow-hidden drop-shadow-[0_4px_30px_rgba(255,255,255,0.15)]">
+                {/* 🌟 SLIM BRAND LOGO DISPLAY EMBED (Optimized dimensions & multiply layer filter) */}
+                <div className="w-[180px] sm:w-[220px] md:w-[260px] h-auto flex items-center justify-center mix-blend-multiply overflow-hidden drop-shadow-[0_2px_12px_rgba(255,255,255,0.05)]">
                   <img 
                     src="https://i.ibb.co/RpQhSsTv/IMG-5057.jpg" 
                     alt="Strong Impact Logo" 
