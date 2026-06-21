@@ -9,19 +9,17 @@ export default function DynamicChromeShader() {
   const targetMouse = useRef(new THREE.Vector2(0.5, 0.5));
 
   const shaderUniforms = useMemo(() => ({
-    u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-    u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
-    u_time: { value: 0.0 }
+    u_resolution: { value: new THREE.Vector2(size.width || window.innerWidth, size.height || window.innerHeight) },
+    u_mouse: { value: new THREE.Vector2(0.5, 0.5) }
   }), []);
 
   useFrame((state) => {
     if (meshRef.current) {
-      const dTime = Math.min(state.delta, 0.1);
-      const lerpSpeed = 1.0 - Math.exp(-9.0 * dTime);
+      const delta = Math.min(state.delta, 0.1);
+      const lerpSpeed = 1.0 - Math.exp(-9.0 * delta);
       targetMouse.current.lerp(mouse, lerpSpeed);
 
       meshRef.current.material.uniforms.u_mouse.value.copy(targetMouse.current);
-      meshRef.current.material.uniforms.u_time.value = state.clock.getElapsedTime();
       meshRef.current.material.uniforms.u_resolution.value.set(
         size.width || window.innerWidth,
         size.height || window.innerHeight
@@ -30,8 +28,7 @@ export default function DynamicChromeShader() {
   });
 
   return (
-    <mesh ref={meshRef}>
-      {/* FIXED BOUNDS: Explicit geometry numbers provided to stop the app crash */}
+    <mesh ref={meshRef} position={[0, 0, -0.01]}>
       <planeGeometry args={[2, 2, 1, 1]} />
       <shaderMaterial
         depthWrite={false}
@@ -47,9 +44,9 @@ export default function DynamicChromeShader() {
         fragmentShader={`
           uniform vec2 u_resolution;
           uniform vec2 u_mouse;
-          uniform float u_time;
           varying vec2 vUv;
 
+          // Micro-texture analytical noise layer for organic silk distortion
           float microTexture(vec2 p) {
             return sin(p.x * 12.0 + sin(p.y * 8.0)) * cos(p.y * 12.0 + cos(p.x * 8.0)) * 0.12;
           }
@@ -61,6 +58,7 @@ export default function DynamicChromeShader() {
             p.x *= 0.44;
             p.y *= 1.32;
 
+            // Apply micro-distortion layer seamlessly to waves
             float microWarp = microTexture(p * 1.5);
             p += vec2(microWarp * 0.14, -microWarp * 0.1);
 
@@ -86,8 +84,7 @@ export default function DynamicChromeShader() {
               1.0
             ));
 
-            float slowDrift = u_time * 0.05;
-            vec3 lightDir1 = normalize(vec3(0.32 + sin(slowDrift) * 0.02, 0.76, 0.56 + cos(slowDrift) * 0.02));
+            vec3 lightDir1 = normalize(vec3(0.32, 0.76, 0.56));
             vec3 lightDir2 = normalize(vec3(-0.52, -0.12, 0.38));
             vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
