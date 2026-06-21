@@ -1,7 +1,6 @@
 import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
-import GalleryLayoutPage from './pages/GalleryLayoutPage';
 import SceneContainer from './components/3d/SceneContainer';
 
 export default function App() {
@@ -9,7 +8,7 @@ export default function App() {
     <Router>
       <div className="min-h-screen bg-[#05050f] text-white font-sans antialiased overflow-hidden relative">
         <Routes>
-          {/* YOUR ORIGINAL MAIN PAGE — RESTORED */}
+          {/* MAIN PAGE - RESTORED WITH STRONG IMPACT */}
           <Route path="/" element={
             <div className="relative w-full h-dvh z-10 pointer-events-auto premium-bg">
               {/* FIXED NAVIGATION HEADER */}
@@ -23,9 +22,6 @@ export default function App() {
                 </div>
 
                 <div className="flex items-center gap-2 sm:gap-4">
-                  <a href="/gallery" className="px-3 sm:px-4 py-1.5 sm:py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-[11px] sm:text-xs font-medium border border-red-500/20 transition whitespace-nowrap">
-                    Launch Gallery
-                  </a>
                   <a href="/admin" className="px-4 sm:px-5 py-2 sm:py-2.5 bg-white/10 hover:bg-white/20 rounded-2xl text-xs sm:text-sm font-medium border border-white/20 transition whitespace-nowrap">
                     Admin Panel
                   </a>
@@ -36,10 +32,10 @@ export default function App() {
             </div>
           } />
 
-          {/* Gallery (temporarily disabled to fix main page) */}
-          <Route path="/gallery" element={<div style={{height: '100vh', background: '#000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Gallery temporarily disabled - fixing...</div>} />
-
+          {/* Admin for Photos */}
           <Route path="/admin" element={<AdminDashboard />} />
+
+          {/* Catch all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
