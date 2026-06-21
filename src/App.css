@@ -1,31 +1,13 @@
-import React from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import AdminDashboard from './pages/AdminDashboard';
-import GalleryLayoutPage from './pages/GalleryLayoutPage';
-import SceneContainer from './components/3d/SceneContainer';  // Keep your main page
+/* src/App.css */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
 
-export default function App() {
-  return (
-    <Router>
-      <div className="min-h-screen bg-[#05050f] text-white font-sans antialiased overflow-hidden relative">
-        <Routes>
-          {/* YOUR ORIGINAL MAIN PAGE — UNTOUCHED */}
-          <Route path="/" element={
-            <div className="relative w-full h-dvh z-10 pointer-events-auto premium-bg">
-              {/* Your existing header, hero, SceneContainer etc. */}
-              <SceneContainer />
-            </div>
-          } />
+.premium-bg {
+  background: radial-gradient(circle at 50% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
+}
 
-          {/* NEW GALLERY WITH SATIN CHROME */}
-          <Route path="/gallery" element={<GalleryLayoutPage />} />
-
-          {/* Admin */}
-          <Route path="/admin" element={<AdminDashboard />} />
-
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
-    </Router>
-  );
+.min-h-screen {
+  min-height: 100vh;
 }
