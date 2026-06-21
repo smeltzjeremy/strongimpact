@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
 import SceneContainer from './components/3d/SceneContainer';
 
@@ -21,12 +21,12 @@ export default function App() {
                   />
                 </div>
 
-                <a 
-                  href="/admin" 
+                <Link 
+                  to="/admin" 
                   className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl text-sm font-medium border border-white/20 transition whitespace-nowrap"
                 >
                   Admin Panel
-                </a>
+                </Link>
               </header>
 
               {/* HERO TITLE */}
