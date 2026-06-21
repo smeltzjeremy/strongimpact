@@ -8,7 +8,7 @@ export default function App() {
     <Router>
       <div className="min-h-screen bg-[#05050f] text-white font-sans antialiased overflow-hidden relative">
         <Routes>
-          {/* MAIN PAGE - RESTORED WITH STRONG IMPACT */}
+          {/* MAIN PAGE WITH STRONG IMPACT HERO */}
           <Route path="/" element={
             <div className="relative w-full h-dvh z-10 pointer-events-auto premium-bg">
               {/* FIXED NAVIGATION HEADER */}
@@ -28,14 +28,22 @@ export default function App() {
                 </div>
               </header>
 
+              {/* STRONG IMPACT HERO */}
+              <div className="fixed top-28 sm:top-36 left-1/2 -translate-x-1/2 z-40 text-center pointer-events-none w-full max-w-[90vw]">
+                <div className="inline-flex items-center gap-2 px-5 py-1.5 mb-5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] sm:text-xs font-medium tracking-widest uppercase">
+                  INTERACTIVE 3D ENGINE
+                </div>
+                <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tighter leading-none select-none">
+                  <span className="bg-gradient-to-b from-white via-zinc-100 to-zinc-400 bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(255,255,255,0.3)]">STRONG </span>
+                  <span className="bg-gradient-to-b from-red-400 via-red-500 to-red-700 bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(239,68,68,0.6)]">IMPACT</span>
+                </h1>
+              </div>
+
               <SceneContainer />
             </div>
           } />
 
-          {/* Admin for Photos */}
           <Route path="/admin" element={<AdminDashboard />} />
-
-          {/* Catch all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
