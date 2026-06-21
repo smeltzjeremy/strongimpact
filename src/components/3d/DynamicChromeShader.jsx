@@ -4,17 +4,27 @@ import * as THREE from 'three';
 
 export default function DynamicChromeShader() {
   const meshRef = useRef();
-  const { size } = useThree();
+  const { size, mouse } = useThree();
 
-  // Establish fallback measurements during early context mount phases
+  const targetMouse = useRef(new THREE.Vector2(0.5, 0.5));
+
   const shaderUniforms = useMemo(() => ({
-    u_resolution: { value: new THREE.Vector2(size.width || window.innerWidth, size.height || window.innerHeight) }
+    u_resolution: { value: new THREE.Vector2(size.width || window.innerWidth, size.height || window.innerHeight) },
+    u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
+    u_time: { value: 0.0 } // Used strictly for an ultra-subtle light drift
   }), []);
 
-  useFrame(() => {
+  useFrame((state) => {
     if (meshRef.current) {
+      // Fix 1: Pull state.delta directly to guarantee flawless frame tracking without clock skips
+      const dTime = Math.min(state.delta, 0.1);
+      const lerpSpeed = 1.0 - Math.exp(-9.0 * dTime);
+      targetMouse.current.lerp(mouse, lerpSpeed);
+
+      meshRef.current.material.uniforms.u_mouse.value.copy(targetMouse.current);
+      meshRef.current.material.uniforms.u_time.value = state.clock.getElapsedTime();
       meshRef.current.material.uniforms.u_resolution.value.set(
-        size.width || window.innerWidth, 
+        size.width || window.innerWidth,
         size.height || window.innerHeight
       );
     }
@@ -22,7 +32,7 @@ export default function DynamicChromeShader() {
 
   return (
     <mesh ref={meshRef}>
-      <planeGeometry args={[2, 2]} />
+      <planeGeometry args={[2, 2, 1, 1]} />
       <shaderMaterial
         depthWrite={false}
         depthTest={false}
@@ -36,58 +46,71 @@ export default function DynamicChromeShader() {
         `}
         fragmentShader={`
           uniform vec2 u_resolution;
+          uniform vec2 u_mouse;
+          uniform float u_time;
           varying vec2 vUv;
 
-          // Pure math curves creating broad, silk-smooth fluid topology
-          float getSilkHeight(vec2 uv) {
-            // Using vUv directly keeps the scale completely square on any device screen
-            vec2 p = (uv - 0.5) * 3.0;
-            
-            // Lock horizontal orientation to flatten the wave valleys into wide silk bands
-            p.x *= 0.5;
-            p.y *= 1.8;
-            
-            // Simple low-frequency macro equations to match the reference image flow
-            float wave1 = sin(p.x * 2.5 + p.y * 1.5);
-            float wave2 = cos(p.y * 2.0 - p.x * 1.0 + wave1 * 0.8);
-            
-            return (wave1 * 0.5 + wave2 * 0.5) * 0.5 + 0.5;
+          float microTexture(vec2 p) {
+            return sin(p.x * 12.0 + sin(p.y * 8.0)) * cos(p.y * 12.0 + cos(p.x * 8.0)) * 0.12;
+          }
+
+          float getChromeHeight(vec2 uv, vec2 mouseOffset) {
+            vec2 aspect = vec2(u_resolution.x / u_resolution.y, 1.0);
+            vec2 p = (uv - 0.5) * aspect * vec2(3.6, 7.6) + (mouseOffset * 0.45);
+
+            p.x *= 0.44;
+            p.y *= 1.32;
+
+            float microWarp = microTexture(p * 1.5);
+            p += vec2(microWarp * 0.14, -microWarp * 0.1);
+
+            float wave1 = sin(p.x * 2.18 + p.y * 1.42);
+            float wave2 = cos(p.y * 2.08 - p.x * 1.18 + wave1 * 0.72);
+            float wave3 = sin(p.x * 1.52 + wave2 * 1.28) * 0.48;
+
+            return (wave1 * 0.54 + wave2 * 0.46 + wave3 * 0.28) * 0.58 + 0.5;
           }
 
           void main() {
-            // Sample the mesh coordinate layer instead of the pixel screen layer
             vec2 uv = vUv;
+            vec2 mouseOffset = (u_mouse - 0.5) * 0.38;
 
-            // Extremely small sampling delta forces razor-sharp light reflections
-            float delta = 0.001; 
-            float h = getSilkHeight(uv);
-            float hX = getSilkHeight(uv + vec2(delta, 0.0));
-            float hY = getSilkHeight(uv + vec2(0.0, delta));
+            // Fix 2: Analytical numerical sample separation optimized to prevent mobile GPU battery drain
+            float delta = 0.0012;
+            float h  = getChromeHeight(uv, mouseOffset);
+            float hX = getChromeHeight(uv + vec2(delta, 0.0), mouseOffset);
+            float hY = getChromeHeight(uv + vec2(0.0, delta), mouseOffset);
 
-            // High-contrast slope normal vector mapping
-            vec3 normal = normalize(vec3((h - hX) / delta, (h - hY) / delta, 0.01));
+            vec3 normal = normalize(vec3(
+              (h - hX) / delta * 245.0,
+              (h - hY) / delta * 245.0,
+              1.0
+            ));
 
-            // Studio high-contrast light direction vectors
-            vec3 lightDir = normalize(vec3(0.4, 0.8, 0.5));
+            // Fix 3: Ultra-subtle, slow ambient shifting applied only to light arrays to make the chrome feel alive 
+            float slowDrift = u_time * 0.05;
+            vec3 lightDir1 = normalize(vec3(0.32 + sin(slowDrift) * 0.02, 0.76, 0.56 + cos(slowDrift) * 0.02));
+            vec3 lightDir2 = normalize(vec3(-0.52, -0.12, 0.38));
             vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-            // Tight, hyper-polished specular calculation to create wide chrome strips
-            float spec = pow(max(dot(reflect(-lightDir, normal), viewDir), 0.0), 95.0);
-            float diffuse = max(dot(normal, lightDir), 0.0);
+            float diff = max(dot(normal, lightDir1), 0.0);
+            float spec1 = pow(max(dot(reflect(-lightDir1, normal), viewDir), 0.0), 148.0);
+            float spec2 = pow(max(dot(reflect(-lightDir2, normal), viewDir), 0.0), 36.0);
 
-            // COLOR PALETTE: Hard obsidian black to pure mercury white
-            vec3 pureVoidBlack = vec3(0.0, 0.0, 0.0);
-            vec3 metallicSilver = vec3(0.65, 0.67, 0.73);
-            vec3 pureWhiteShine = vec3(1.0, 1.0, 1.0);
+            float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.8);
 
-            // Construct composite light gradients
-            vec3 finalColor = mix(pureVoidBlack, metallicSilver, diffuse * 0.35);
-            finalColor += spec * 2.4 * pureWhiteShine;
+            vec3 base = vec3(0.0, 0.0, 0.0);
+            vec3 mid = vec3(0.38, 0.40, 0.44);
+            vec3 highlight = vec3(1.0, 1.0, 1.0);
 
-            // Strict contrast threshold mapping to kill all foggy gray midtones
-            finalColor = smoothstep(0.12, 0.88, finalColor);
+            vec3 color = mix(base, mid, diff * 0.20);
+            color += (spec1 * 4.6 + spec2 * 0.75) * highlight;
+            color += fresnel * 0.42 * highlight;
 
-            gl_FragColor = vec4(finalColor, 1.0);
+            color = smoothstep(0.06, 0.94, color);
+            color = pow(color, vec3(1.0 / 2.2));
+
+            gl_FragColor = vec4(color, 1.0);
           }
         `}
       />
