@@ -8,15 +8,15 @@ export default function DynamicChromeShader() {
 
   const targetMouse = useRef(new THREE.Vector2(0.5, 0.5));
 
+  // INITIALIZATION FIX: Explicitly setup all matching structural properties natively
   const shaderUniforms = useMemo(() => ({
-    u_resolution: { value: new THREE.Vector2(size.width || window.innerWidth, size.height || window.innerHeight) },
+    u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
     u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
-    u_time: { value: 0.0 } // Used strictly for an ultra-subtle light drift
+    u_time: { value: 0.0 }
   }), []);
 
   useFrame((state) => {
     if (meshRef.current) {
-      // Fix 1: Pull state.delta directly to guarantee flawless frame tracking without clock skips
       const dTime = Math.min(state.delta, 0.1);
       const lerpSpeed = 1.0 - Math.exp(-9.0 * dTime);
       targetMouse.current.lerp(mouse, lerpSpeed);
@@ -32,6 +32,7 @@ export default function DynamicChromeShader() {
 
   return (
     <mesh ref={meshRef}>
+      {/* GEOMETRY FIX: Added explicit dimensions so the GPU engine draws across the full screen */}
       <planeGeometry args={[2, 2, 1, 1]} />
       <shaderMaterial
         depthWrite={false}
@@ -75,8 +76,7 @@ export default function DynamicChromeShader() {
             vec2 uv = vUv;
             vec2 mouseOffset = (u_mouse - 0.5) * 0.38;
 
-            // Fix 2: Analytical numerical sample separation optimized to prevent mobile GPU battery drain
-            float delta = 0.0012;
+            float delta = 0.0015;
             float h  = getChromeHeight(uv, mouseOffset);
             float hX = getChromeHeight(uv + vec2(delta, 0.0), mouseOffset);
             float hY = getChromeHeight(uv + vec2(0.0, delta), mouseOffset);
@@ -87,7 +87,6 @@ export default function DynamicChromeShader() {
               1.0
             ));
 
-            // Fix 3: Ultra-subtle, slow ambient shifting applied only to light arrays to make the chrome feel alive 
             float slowDrift = u_time * 0.05;
             vec3 lightDir1 = normalize(vec3(0.32 + sin(slowDrift) * 0.02, 0.76, 0.56 + cos(slowDrift) * 0.02));
             vec3 lightDir2 = normalize(vec3(-0.52, -0.12, 0.38));
