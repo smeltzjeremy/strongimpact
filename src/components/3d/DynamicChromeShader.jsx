@@ -8,7 +8,6 @@ export default function DynamicChromeShader() {
 
   const targetMouse = useRef(new THREE.Vector2(0.5, 0.5));
 
-  // INITIALIZATION FIX: Explicitly setup all matching structural properties natively
   const shaderUniforms = useMemo(() => ({
     u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
     u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
@@ -32,7 +31,7 @@ export default function DynamicChromeShader() {
 
   return (
     <mesh ref={meshRef}>
-      {/* GEOMETRY FIX: Added explicit dimensions so the GPU engine draws across the full screen */}
+      {/* FIXED BOUNDS: Explicit geometry numbers provided to stop the app crash */}
       <planeGeometry args={[2, 2, 1, 1]} />
       <shaderMaterial
         depthWrite={false}
