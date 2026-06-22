@@ -42,14 +42,14 @@ export default function ProceduralChromeBackground() {
 
         float liquidSilkTopology(vec2 p) {
           float value = 0.0;
-          float amp = 0.68;
+          float amp = 0.65;
           float freq = 1.0;
           for (int i = 0; i < 5; i++) {
-            p *= rot(0.8);
-            p += vec2(sin(p.y * 0.5), cos(p.x * 0.5)) * 0.4;
+            p *= rot(0.82);
+            p += vec2(sin(p.y * 0.52), cos(p.x * 0.52)) * 0.42;
             value += noise(p * freq) * amp;
-            freq *= 1.7;
-            amp *= 0.48;
+            freq *= 1.72;
+            amp *= 0.47;
           }
           return value;
         }
@@ -64,20 +64,24 @@ export default function ProceduralChromeBackground() {
           vec2 eps = vec2(0.003, 0.0);
           float gradX = liquidSilkTopology((uv + eps.xy) * topologyScale) - liquidSilkTopology((uv - eps.xy) * topologyScale);
           float gradY = liquidSilkTopology((uv + eps.yx) * topologyScale) - liquidSilkTopology((uv - eps.yx) * topologyScale);
-          vec3 normal = normalize(vec3(-gradX, -gradY, 0.09));
+
+          // 1. Much lower normal Z → dramatically steeper slopes
+          vec3 normal = normalize(vec3(-gradX, -gradY, 0.012));
 
           vec3 lightDir1 = normalize(vec3(0.5, 0.8, 0.6));
           vec3 lightDir2 = normalize(vec3(-0.6, -0.4, 0.7));
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 42.0);
-          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 22.0);
-          vec3 specular = (vec3(1.0) * spec1 * 8.5) + (vec3(0.8) * spec2 * 3.5);
+          // 2. Much higher specular exponents → sharp, thin chrome highlights
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 160.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 90.0);
+          vec3 specular = (vec3(1.0) * spec1 * 9.5) + (vec3(0.8) * spec2 * 4.2);
 
           float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.8);
-          vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 3.0;
+          vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 3.2;
 
-          vec3 base = vec3(0.035, 0.035, 0.045);
+          // 3. Darker base for true black valleys
+          vec3 base = vec3(0.012, 0.012, 0.02);
           vec3 color = base + specular + rim;
 
           gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
