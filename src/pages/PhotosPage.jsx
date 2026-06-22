@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function PhotosPage() {
   return (
@@ -7,12 +8,12 @@ export default function PhotosPage() {
         <h1 className="text-6xl font-bold mb-6 tracking-tighter">PHOTOS</h1>
         <p className="text-white/60 mb-8">Premium gallery coming soon</p>
         
-        <a 
-          href="/gallery" 
+        <Link 
+          to="/gallery" 
           className="inline-block px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/30 rounded-3xl text-sm font-medium transition"
         >
           ← Back to Gallery
-        </a>
+        </Link>
       </div>
     </div>
   );
