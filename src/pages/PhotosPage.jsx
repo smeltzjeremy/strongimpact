@@ -1,18 +1,17 @@
 import React, { Suspense, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
+import { Environment } from '@react-three/drei';
 import { Link } from 'react-router-dom';
 import * as THREE from 'three';
 
 function LiquidMetalBackground() {
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(60, 60, 140, 140);
+    const geo = new THREE.PlaneGeometry(70, 70, 160, 160);
     const pos = geo.attributes.position;
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const y = pos.getY(i);
-      // Static wave displacement
-      const z = Math.sin(x * 0.65) * 2.2 + Math.cos(y * 0.55) * 1.8 + Math.sin(x * 1.1 + y * 0.8) * 0.6;
+      const z = Math.sin(x * 0.6) * 2.4 + Math.cos(y * 0.5) * 2.0 + Math.sin((x + y) * 0.9) * 0.7;
       pos.setZ(i, z);
     }
     geo.computeVertexNormals();
@@ -22,27 +21,14 @@ function LiquidMetalBackground() {
   return (
     <mesh 
       geometry={geometry} 
-      rotation={[Math.PI * -0.38, 0, 0]} 
-      position={[0, -7, -14]}
+      rotation={[-0.9, 0, 0]} 
+      position={[0, -8, -10]}
     >
       <meshStandardMaterial 
-        color="#08080c"
+        color="#07070b"
         metalness={0.99}
-        roughness={0.08}
-        envMapIntensity={1.8}
-      />
-    </mesh>
-  );
-}
-
-function CentralTestSphere() {
-  return (
-    <mesh position={[0, 1, 0]}>
-      <sphereGeometry args={[2.1, 64, 64]} />
-      <meshStandardMaterial 
-        color="#0f0f12" 
-        metalness={0.98} 
-        roughness={0.05}
+        roughness={0.07}
+        envMapIntensity={2.0}
       />
     </mesh>
   );
@@ -62,25 +48,17 @@ export default function PhotosPage() {
 
       <div className="absolute inset-0">
         <Canvas
-          camera={{ position: [0, 4, 18], fov: 40 }}
+          camera={{ position: [0, 6, 22], fov: 38 }}
           style={{ background: '#05050f' }}
         >
           <Suspense fallback={null}>
-            <ambientLight intensity={0.25} />
-            <pointLight position={[15, 18, 10]} intensity={3} color="#e0e0e0" />
-            <pointLight position={[-12, -5, -8]} intensity={1.2} color="#666666" />
+            <ambientLight intensity={0.2} />
+            <pointLight position={[18, 20, 12]} intensity={3.5} color="#f0f0f0" />
+            <pointLight position={[-15, -4, -10]} intensity={1.4} color="#555555" />
 
             <LiquidMetalBackground />
-            <CentralTestSphere />
 
             <Environment preset="night" />
-            <OrbitControls 
-              enablePan={false} 
-              enableZoom={true} 
-              minDistance={8} 
-              maxDistance={45}
-              target={[0, 0, 0]}
-            />
           </Suspense>
         </Canvas>
       </div>
