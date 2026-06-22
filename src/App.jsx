@@ -2,7 +2,8 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
 import SceneContainer from './components/3d/SceneContainer';
- 
+import GalleryPage from './pages/GalleryPage';   // ← added
+
 export default function App() {
   return (
     <Router>
@@ -49,8 +50,13 @@ export default function App() {
               <SceneContainer />
             </div>
           } />
+
+          {/* GALLERY STEPPING STONE */}
+          <Route path="/gallery" element={<GalleryPage />} />
+
           {/* ADMIN PAGE */}
           <Route path="/admin" element={<AdminDashboard />} />
+
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -58,4 +64,3 @@ export default function App() {
     </Router>
   );
 }
- 
