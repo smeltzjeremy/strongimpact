@@ -6,17 +6,16 @@ import * as THREE from 'three';
 
 function LiquidMetalBackground() {
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(80, 80, 180, 180);
+    const geo = new THREE.PlaneGeometry(75, 75, 160, 160);
     const pos = geo.attributes.position;
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const y = pos.getY(i);
-      // More varied organic waves
+      // Cleaner, more elegant wave pattern
       const z = 
-        Math.sin(x * 0.45) * 2.8 + 
-        Math.cos(y * 0.4) * 2.4 + 
-        Math.sin(x * 1.15 + y * 0.75) * 1.1 +
-        Math.cos(x * 0.7 + y * 1.1) * 0.8;
+        Math.sin(x * 0.55) * 2.6 + 
+        Math.cos(y * 0.48) * 2.2 + 
+        Math.sin(x * 0.95 + y * 0.65) * 0.9;
       pos.setZ(i, z);
     }
     geo.computeVertexNormals();
@@ -26,14 +25,14 @@ function LiquidMetalBackground() {
   return (
     <mesh 
       geometry={geometry} 
-      rotation={[-0.85, 0.05, 0]} 
-      position={[0, -9, -11]}
+      rotation={[-0.82, 0.03, 0]} 
+      position={[0, -8.5, -10]}
     >
       <meshStandardMaterial 
-        color="#0c0c12"
+        color="#0a0a10"
         metalness={0.99}
-        roughness={0.05}
-        envMapIntensity={2.4}
+        roughness={0.04}
+        envMapIntensity={2.6}
       />
     </mesh>
   );
@@ -53,13 +52,13 @@ export default function PhotosPage() {
 
       <div className="absolute inset-0">
         <Canvas
-          camera={{ position: [0, 8, 24], fov: 36 }}
+          camera={{ position: [0, 7.5, 23], fov: 37 }}
           style={{ background: '#05050f' }}
         >
           <Suspense fallback={null}>
-            <ambientLight intensity={0.4} />
-            <pointLight position={[20, 25, 15]} intensity={4.5} color="#f8f8f8" />
-            <pointLight position={[-18, -8, -12]} intensity={1.8} color="#777777" />
+            <ambientLight intensity={0.35} />
+            <pointLight position={[18, 22, 14]} intensity={4.8} color="#f4f4f4" />
+            <pointLight position={[-16, -6, -9]} intensity={1.6} color="#666666" />
 
             <LiquidMetalBackground />
 
