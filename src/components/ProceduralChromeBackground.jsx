@@ -59,21 +59,24 @@ export default function ProceduralChromeBackground() {
           uv = uv * 2.0 - 1.0;
           uv.x *= uResolution.x / uResolution.y;
 
-          // Stretch coordinates to turn blobs into long flowing ribbons
+          // Anisotropic stretch for long flowing ribbons
           vec2 distortedUV = uv;
-          distortedUV.y *= 0.5;   // Stretch vertically
-          distortedUV.x *= 1.8;   // Compress horizontally
+          distortedUV.y *= 0.5;
+          distortedUV.x *= 1.8;
 
           float topologyScale = 0.58;
 
-          vec2 eps = vec2(0.003, 0.0);
-          float gradX = liquidSilkTopology((distortedUV + eps.xy) * topologyScale) - liquidSilkTopology((distortedUV - eps.xy) * topologyScale);
-          float gradY = liquidSilkTopology((distortedUV + eps.yx) * topologyScale) - liquidSilkTopology((distortedUV - eps.yx) * topologyScale);
+          // Scale epsilon to match the stretched coordinate space
+          vec2 epsX = vec2(0.003 * 1.8, 0.0);
+          vec2 epsY = vec2(0.0, 0.003 * 0.5);
+
+          float gradX = liquidSilkTopology((distortedUV + epsX) * topologyScale) - liquidSilkTopology((distortedUV - epsX) * topologyScale);
+          float gradY = liquidSilkTopology((distortedUV + epsY) * topologyScale) - liquidSilkTopology((distortedUV - epsY) * topologyScale);
           vec3 normal = normalize(vec3(-gradX * 5.0, -gradY * 5.0, 0.012));
 
-          // Lights brought closer together for stronger unified highlights + deeper shadows
-          vec3 lightDir1 = normalize(vec3(1.2, 1.5, 0.8));
-          vec3 lightDir2 = normalize(vec3(1.0, 1.4, 0.9));
+          // Split lights with strong horizontal emphasis for cascading ribbons
+          vec3 lightDir1 = normalize(vec3(1.4, 0.6, 0.25));
+          vec3 lightDir2 = normalize(vec3(-1.4, 0.4, 0.3));
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
           float spec1 = pow(max(dot(normal, lightDir1), 0.0), 320.0);
