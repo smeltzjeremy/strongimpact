@@ -6,12 +6,17 @@ import * as THREE from 'three';
 
 function LiquidMetalBackground() {
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(70, 70, 160, 160);
+    const geo = new THREE.PlaneGeometry(80, 80, 180, 180);
     const pos = geo.attributes.position;
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const y = pos.getY(i);
-      const z = Math.sin(x * 0.6) * 2.4 + Math.cos(y * 0.5) * 2.0 + Math.sin((x + y) * 0.9) * 0.7;
+      // More varied organic waves
+      const z = 
+        Math.sin(x * 0.45) * 2.8 + 
+        Math.cos(y * 0.4) * 2.4 + 
+        Math.sin(x * 1.15 + y * 0.75) * 1.1 +
+        Math.cos(x * 0.7 + y * 1.1) * 0.8;
       pos.setZ(i, z);
     }
     geo.computeVertexNormals();
@@ -21,14 +26,14 @@ function LiquidMetalBackground() {
   return (
     <mesh 
       geometry={geometry} 
-      rotation={[-0.9, 0, 0]} 
-      position={[0, -8, -10]}
+      rotation={[-0.85, 0.05, 0]} 
+      position={[0, -9, -11]}
     >
       <meshStandardMaterial 
-        color="#07070b"
+        color="#0c0c12"
         metalness={0.99}
-        roughness={0.07}
-        envMapIntensity={2.0}
+        roughness={0.05}
+        envMapIntensity={2.4}
       />
     </mesh>
   );
@@ -48,13 +53,13 @@ export default function PhotosPage() {
 
       <div className="absolute inset-0">
         <Canvas
-          camera={{ position: [0, 6, 22], fov: 38 }}
+          camera={{ position: [0, 8, 24], fov: 36 }}
           style={{ background: '#05050f' }}
         >
           <Suspense fallback={null}>
-            <ambientLight intensity={0.2} />
-            <pointLight position={[18, 20, 12]} intensity={3.5} color="#f0f0f0" />
-            <pointLight position={[-15, -4, -10]} intensity={1.4} color="#555555" />
+            <ambientLight intensity={0.4} />
+            <pointLight position={[20, 25, 15]} intensity={4.5} color="#f8f8f8" />
+            <pointLight position={[-18, -8, -12]} intensity={1.8} color="#777777" />
 
             <LiquidMetalBackground />
 
