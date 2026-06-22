@@ -2,7 +2,7 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
 import SceneContainer from './components/3d/SceneContainer';
-
+ 
 export default function App() {
   return (
     <Router>
@@ -11,24 +11,31 @@ export default function App() {
           {/* MAIN 3D PAGE */}
           <Route path="/" element={
             <div className="relative w-full h-dvh z-10 pointer-events-auto premium-bg">
-              {/* HEADER */}
+              {/* HEADER WITH GALLERY LINK */}
               <header className="fixed top-0 left-0 w-full z-50 bg-black/70 backdrop-blur-xl border-b border-white/10 px-4 sm:px-6 py-3 flex justify-between items-center gap-4">
                 <div className="h-12 sm:h-16 w-28 sm:w-36 flex items-center justify-center bg-white rounded-xl overflow-hidden border border-white/10 shadow-lg shrink-0">
-                  <img 
-                    src="https://i.ibb.co/RpQhSsTv/IMG-5057.jpg" 
-                    alt="Strong Impact Logo" 
+                  <img
+                    src="https://ibb.co"
+                    alt="Strong Impact Logo"
                     className="h-full w-full object-cover object-center scale-105 select-none pointer-events-none"
                   />
                 </div>
-
-                <Link 
-                  to="/admin" 
-                  className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl text-sm font-medium border border-white/20 transition whitespace-nowrap"
-                >
-                  Admin Panel
-                </Link>
+                {/* Clean, isolated button container */}
+                <div className="flex gap-3">
+                  <Link
+                    to="/gallery"
+                    className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl text-sm font-medium border border-white/20 transition whitespace-nowrap"
+                  >
+                    Gallery
+                  </Link>
+                  <Link
+                    to="/admin"
+                    className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl text-sm font-medium border border-white/20 transition whitespace-nowrap"
+                  >
+                    Admin Panel
+                  </Link>
+                </div>
               </header>
-
               {/* HERO TITLE */}
               <div className="fixed top-28 sm:top-36 left-1/2 -translate-x-1/2 z-40 text-center pointer-events-none w-full max-w-[90vw]">
                 <div className="inline-flex items-center gap-2 px-5 py-1.5 mb-5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium tracking-widest uppercase">
@@ -39,14 +46,11 @@ export default function App() {
                   <span className="bg-gradient-to-b from-red-400 via-red-500 to-red-700 bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(239,68,68,0.6)]">IMPACT</span>
                 </h1>
               </div>
-
               <SceneContainer />
             </div>
           } />
-
           {/* ADMIN PAGE */}
           <Route path="/admin" element={<AdminDashboard />} />
-
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -54,3 +58,4 @@ export default function App() {
     </Router>
   );
 }
+ 
