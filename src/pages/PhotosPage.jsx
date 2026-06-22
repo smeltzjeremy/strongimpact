@@ -3,15 +3,28 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 
-function MetallicBackground() {
+function MetallicWaves() {
   return (
-    <mesh rotation={[Math.PI * -0.5, 0, 0]} position={[0, -3, 0]}>
-      <planeGeometry args={[40, 40]} />
+    <mesh rotation={[Math.PI * -0.4, 0, 0]} position={[0, -4, -8]}>
+      <planeGeometry args={[50, 50, 80, 80]} />
       <meshStandardMaterial 
-        color="#111111" 
-        metalness={0.9} 
-        roughness={0.2}
-        envMapIntensity={0.6}
+        color="#0a0a0a"
+        metalness={0.95}
+        roughness={0.15}
+        envMapIntensity={1.2}
+      />
+    </mesh>
+  );
+}
+
+function CentralSphere() {
+  return (
+    <mesh position={[0, 0, 0]}>
+      <sphereGeometry args={[2.8, 64, 64]} />
+      <meshStandardMaterial 
+        color="#1a1a1a" 
+        metalness={0.98} 
+        roughness={0.08}
       />
     </mesh>
   );
@@ -32,32 +45,30 @@ export default function PhotosPage() {
 
       <div className="absolute inset-0">
         <Canvas
-          camera={{ position: [0, 0, 12], fov: 50 }}
+          camera={{ position: [0, 2, 14], fov: 45 }}
           style={{ background: '#05050f' }}
         >
           <Suspense fallback={null}>
-            <ambientLight intensity={0.3} />
-            <pointLight position={[10, 10, 10]} intensity={1.5} color="#ffffff" />
-            
-            <MetallicBackground />
+            <ambientLight intensity={0.4} />
+            <pointLight position={[8, 12, 10]} intensity={2} color="#aaaaaa" />
+            <pointLight position={[-10, -8, -5]} intensity={0.6} color="#444444" />
 
-            {/* Temporary placeholder sphere - we'll replace this later */}
-            <mesh position={[0, 0, 0]}>
-              <sphereGeometry args={[2.5, 64, 64]} />
-              <meshStandardMaterial 
-                color="#222222" 
-                metalness={0.95} 
-                roughness={0.1}
-              />
-            </mesh>
+            <MetallicWaves />
+            <CentralSphere />
 
             <Environment preset="night" />
-            <OrbitControls enablePan={false} enableZoom={true} minDistance={5} maxDistance={30} />
+            <OrbitControls 
+              enablePan={false} 
+              enableZoom={true} 
+              minDistance={6} 
+              maxDistance={35}
+              target={[0, 0, 0]}
+            />
           </Suspense>
         </Canvas>
       </div>
 
-      <div className="absolute top-8 left-1/2 -translate-x-1/2 z-40 text-center">
+      <div className="absolute top-8 left-1/2 -translate-x-1/2 z-40 text-center pointer-events-none">
         <h1 className="text-6xl font-bold tracking-tighter">PHOTOS</h1>
       </div>
     </div>
