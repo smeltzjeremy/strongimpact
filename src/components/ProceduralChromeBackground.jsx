@@ -46,11 +46,7 @@ export default function ProceduralChromeBackground() {
           float freq = 1.0;
           for (int i = 0; i < 3; i++) {
             p *= rot(0.95);
-
-            // Asymmetrical domain warping for organic horizontal curves
-            float warpFactor = 1.4;
-            p += vec2(sin(p.y * 1.2 + 0.5), cos(p.x * 0.8 - 0.5)) * warpFactor;
-
+            p += vec2(sin(p.y * 1.2 + 0.5), cos(p.x * 0.8 - 0.5)) * 1.4;
             value += noise(p * freq) * amp;
             freq *= 1.45;
             amp *= 0.52;
@@ -63,15 +59,19 @@ export default function ProceduralChromeBackground() {
           uv = uv * 2.0 - 1.0;
           uv.x *= uResolution.x / uResolution.y;
 
-          // Relaxed stretch for natural sweeping curves
-          vec2 distortedUV = uv;
+          // Global rotation to turn vertical tracks into sweeping horizontal curves
+          vec2 twistedUV = rot(1.1) * uv;
+
+          // Relaxed stretch after rotation
+          vec2 distortedUV = twistedUV;
           distortedUV.y *= 0.8;
           distortedUV.x *= 1.1;
 
           float topologyScale = 0.58;
 
-          vec2 epsX = vec2(0.003 * 1.1, 0.0);
-          vec2 epsY = vec2(0.0, 0.003 * 0.8);
+          // Epsilon scaled to match the new orientation and stretch
+          vec2 epsX = vec2(0.001 * 0.65, 0.0);   // Tighter sampling
+          vec2 epsY = vec2(0.0, 0.001 * 1.35);
 
           float gradX = liquidSilkTopology((distortedUV + epsX) * topologyScale) - liquidSilkTopology((distortedUV - epsX) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV + epsY) * topologyScale) - liquidSilkTopology((distortedUV - epsY) * topologyScale);
@@ -81,14 +81,16 @@ export default function ProceduralChromeBackground() {
           vec3 lightDir2 = normalize(vec3(-1.4, 0.4, 0.3));
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 320.0);
-          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 200.0);
+          // Extreme specular compression for razor-thin highlights
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 1200.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 600.0);
           vec3 specular = (vec3(1.0) * spec1 * 12.0) + (vec3(0.8) * spec2 * 5.0);
 
           float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.8);
           vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 0.3;
 
-          vec3 base = vec3(0.012, 0.012, 0.02);
+          // Near-black base for deep ink valleys
+          vec3 base = vec3(0.0, 0.0, 0.005);
           vec3 color = base + specular + rim;
 
           gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
