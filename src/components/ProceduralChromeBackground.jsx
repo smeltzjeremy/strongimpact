@@ -44,12 +44,11 @@ export default function ProceduralChromeBackground() {
           float value = 0.0;
           float amp = 0.7;
           float freq = 1.0;
-          // Reduced to 3 octaves + gentler frequency ramp for larger forms
           for (int i = 0; i < 3; i++) {
             p *= rot(0.8);
             p += vec2(sin(p.y * 0.5), cos(p.x * 0.5)) * 0.4;
             value += noise(p * freq) * amp;
-            freq *= 1.35;   // Much gentler frequency increase
+            freq *= 1.35;
             amp *= 0.5;
           }
           return value;
@@ -60,13 +59,14 @@ export default function ProceduralChromeBackground() {
           uv = uv * 2.0 - 1.0;
           uv.x *= uResolution.x / uResolution.y;
 
-          // Much lower scale = larger, sweeping waves on mobile
-          float topologyScale = 0.38;
+          float topologyScale = 0.58;   // Slightly increased for better visibility
 
           vec2 eps = vec2(0.003, 0.0);
           float gradX = liquidSilkTopology((uv + eps.xy) * topologyScale) - liquidSilkTopology((uv - eps.xy) * topologyScale);
           float gradY = liquidSilkTopology((uv + eps.yx) * topologyScale) - liquidSilkTopology((uv - eps.yx) * topologyScale);
-          vec3 normal = normalize(vec3(-gradX, -gradY, 0.012));
+
+          // Amplify gradients to restore strong specular on large waves
+          vec3 normal = normalize(vec3(-gradX * 5.0, -gradY * 5.0, 0.012));
 
           vec3 lightDir1 = normalize(vec3(0.5, 0.8, 0.6));
           vec3 lightDir2 = normalize(vec3(-0.6, -0.4, 0.7));
