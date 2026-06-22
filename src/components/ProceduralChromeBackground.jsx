@@ -73,11 +73,12 @@ export default function ProceduralChromeBackground() {
           float gradX = liquidSilkTopology((distortedUV + epsX) * topologyScale) - liquidSilkTopology((distortedUV - epsX) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV + epsY) * topologyScale) - liquidSilkTopology((distortedUV - epsY) * topologyScale);
 
-          // Maximum gradient amplification for razor edges
-          vec3 normal = normalize(vec3(-gradX * 35.0, -gradY * 35.0, 0.012));
+          // Balanced gradient amplification (restores 3D curves)
+          vec3 normal = normalize(vec3(-gradX * 18.0, -gradY * 18.0, 0.012));
 
-          vec3 lightDir1 = normalize(vec3(0.1, 1.8, 0.4));
-          vec3 lightDir2 = normalize(vec3(-0.2, -1.5, 0.5));
+          // Slightly off-axis lights to graze the diagonal curves
+          vec3 lightDir1 = normalize(vec3(0.6, 1.6, 0.5));
+          vec3 lightDir2 = normalize(vec3(-0.7, -1.2, 0.6));
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
           float spec1 = pow(max(dot(normal, lightDir1), 0.0), 600.0);
@@ -90,9 +91,9 @@ export default function ProceduralChromeBackground() {
           vec3 base = vec3(0.0, 0.0, 0.005);
           vec3 color = base + specular + rim;
 
-          // Extreme contrast clamping for razor-sharp metallic edges
+          // Softer contrast ramp (preserves beautiful mid-tone curves)
           color = smoothstep(0.05, 0.95, color);
-          color = pow(color, vec3(1.8));
+          color = pow(color, vec3(1.2));
 
           gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
         }
