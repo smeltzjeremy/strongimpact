@@ -42,14 +42,15 @@ export default function ProceduralChromeBackground() {
 
         float liquidSilkTopology(vec2 p) {
           float value = 0.0;
-          float amp = 0.65;
+          float amp = 0.7;
           float freq = 1.0;
-          for (int i = 0; i < 5; i++) {
-            p *= rot(0.82);
-            p += vec2(sin(p.y * 0.52), cos(p.x * 0.52)) * 0.42;
+          // Reduced to 3 octaves + gentler frequency ramp for larger forms
+          for (int i = 0; i < 3; i++) {
+            p *= rot(0.8);
+            p += vec2(sin(p.y * 0.5), cos(p.x * 0.5)) * 0.4;
             value += noise(p * freq) * amp;
-            freq *= 1.72;
-            amp *= 0.47;
+            freq *= 1.35;   // Much gentler frequency increase
+            amp *= 0.5;
           }
           return value;
         }
@@ -59,20 +60,18 @@ export default function ProceduralChromeBackground() {
           uv = uv * 2.0 - 1.0;
           uv.x *= uResolution.x / uResolution.y;
 
-          float topologyScale = 1.2;
+          // Much lower scale = larger, sweeping waves on mobile
+          float topologyScale = 0.38;
 
           vec2 eps = vec2(0.003, 0.0);
           float gradX = liquidSilkTopology((uv + eps.xy) * topologyScale) - liquidSilkTopology((uv - eps.xy) * topologyScale);
           float gradY = liquidSilkTopology((uv + eps.yx) * topologyScale) - liquidSilkTopology((uv - eps.yx) * topologyScale);
-
-          // 1. Much lower normal Z → dramatically steeper slopes
           vec3 normal = normalize(vec3(-gradX, -gradY, 0.012));
 
           vec3 lightDir1 = normalize(vec3(0.5, 0.8, 0.6));
           vec3 lightDir2 = normalize(vec3(-0.6, -0.4, 0.7));
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          // 2. Much higher specular exponents → sharp, thin chrome highlights
           float spec1 = pow(max(dot(normal, lightDir1), 0.0), 160.0);
           float spec2 = pow(max(dot(normal, lightDir2), 0.0), 90.0);
           vec3 specular = (vec3(1.0) * spec1 * 9.5) + (vec3(0.8) * spec2 * 4.2);
@@ -80,7 +79,6 @@ export default function ProceduralChromeBackground() {
           float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.8);
           vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 3.2;
 
-          // 3. Darker base for true black valleys
           vec3 base = vec3(0.012, 0.012, 0.02);
           vec3 color = base + specular + rim;
 
