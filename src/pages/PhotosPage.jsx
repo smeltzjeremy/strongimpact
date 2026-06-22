@@ -6,12 +6,13 @@ import * as THREE from 'three';
 
 function LiquidMetalBackground() {
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(60, 60, 120, 120);
+    const geo = new THREE.PlaneGeometry(60, 60, 140, 140);
     const pos = geo.attributes.position;
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const y = pos.getY(i);
-      const z = Math.sin(x * 0.8) * 1.8 + Math.cos(y * 0.7) * 1.4;
+      // Static wave displacement
+      const z = Math.sin(x * 0.65) * 2.2 + Math.cos(y * 0.55) * 1.8 + Math.sin(x * 1.1 + y * 0.8) * 0.6;
       pos.setZ(i, z);
     }
     geo.computeVertexNormals();
@@ -21,14 +22,14 @@ function LiquidMetalBackground() {
   return (
     <mesh 
       geometry={geometry} 
-      rotation={[Math.PI * -0.35, 0, 0]} 
-      position={[0, -6, -12]}
+      rotation={[Math.PI * -0.38, 0, 0]} 
+      position={[0, -7, -14]}
     >
       <meshStandardMaterial 
-        color="#0a0a0f"
-        metalness={0.98}
-        roughness={0.12}
-        envMapIntensity={1.4}
+        color="#08080c"
+        metalness={0.99}
+        roughness={0.08}
+        envMapIntensity={1.8}
       />
     </mesh>
   );
@@ -36,12 +37,12 @@ function LiquidMetalBackground() {
 
 function CentralTestSphere() {
   return (
-    <mesh position={[0, 0.5, 0]}>
-      <sphereGeometry args={[2.2, 64, 64]} />
+    <mesh position={[0, 1, 0]}>
+      <sphereGeometry args={[2.1, 64, 64]} />
       <meshStandardMaterial 
-        color="#111111" 
+        color="#0f0f12" 
         metalness={0.98} 
-        roughness={0.06}
+        roughness={0.05}
       />
     </mesh>
   );
@@ -61,13 +62,13 @@ export default function PhotosPage() {
 
       <div className="absolute inset-0">
         <Canvas
-          camera={{ position: [0, 3, 16], fov: 42 }}
+          camera={{ position: [0, 4, 18], fov: 40 }}
           style={{ background: '#05050f' }}
         >
           <Suspense fallback={null}>
-            <ambientLight intensity={0.35} />
-            <pointLight position={[12, 14, 8]} intensity={2.2} color="#cccccc" />
-            <pointLight position={[-14, -6, -10]} intensity={0.7} color="#555555" />
+            <ambientLight intensity={0.25} />
+            <pointLight position={[15, 18, 10]} intensity={3} color="#e0e0e0" />
+            <pointLight position={[-12, -5, -8]} intensity={1.2} color="#666666" />
 
             <LiquidMetalBackground />
             <CentralTestSphere />
@@ -76,8 +77,8 @@ export default function PhotosPage() {
             <OrbitControls 
               enablePan={false} 
               enableZoom={true} 
-              minDistance={7} 
-              maxDistance={40}
+              minDistance={8} 
+              maxDistance={45}
               target={[0, 0, 0]}
             />
           </Suspense>
