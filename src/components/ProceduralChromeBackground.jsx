@@ -6,10 +6,12 @@ import * as THREE from 'three';
 export default function ProceduralChromeBackground() {
   const { size } = useThree();
 
+  // Immutable uniform allocation + properly reactive to resize
   const uniforms = useMemo(() => ({
     uResolution: { value: new THREE.Vector2(size.width, size.height) },
   }), [size.width, size.height]);
 
+  // Direct GPU uniform value streaming pipeline
   useFrame(() => {
     uniforms.uResolution.value.set(size.width, size.height);
   });
@@ -18,25 +20,37 @@ export default function ProceduralChromeBackground() {
     return new THREE.ShaderMaterial({
       uniforms,
       vertexShader: `
-        void main() {
-          gl_Position = vec4(position, 1.0);
+        void main() { 
+          gl_Position = vec4(position, 1.0); 
         }
       `,
       fragmentShader: `
         uniform vec2 uResolution;
 
-        float hash(vec2 p) {
-          p = fract(p * vec2(0.3183099, 0.3678794));
-          p = p * p * (3.0 - 2.0 * p);
-          return fract(p.x * p.y * (p.x + p.y));
+        // Clean spatial rotation matrix
+        mat2 rot(float a) {
+          float c = cos(a), s = sin(a);
+          return mat2(c, -s, s, c);
         }
 
-        float noise(vec2 p) {
-          vec2 i = floor(p);
-          vec2 f = fract(p);
-          f = f * f * (3.0 - 2.0 * f);
-          return mix(mix(hash(i), hash(i + vec2(1.0,0.0)), f.x),
-                     mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), f.x), f.y);
+        // Fast-path procedural continuous wave fields
+        float noise(in vec2 p) {
+          return sin(p.x * 1.5) * sin(p.y * 1.5);
+        }
+
+        // 5-octave domain warping + rotation for organic liquid silk
+        float liquidSilkTopology(vec2 p) {
+          float amp = 0.55;
+          float freq = 1.1;
+          float value = 0.0;
+          for(int i = 0; i < 5; i++) {
+            p *= rot(0.65);
+            p += vec2(sin(p.y * 0.4), cos(p.x * 0.4)) * 0.3;
+            value += noise(p * freq) * amp;
+            freq *= 1.65;
+            amp *= 0.52;
+          }
+          return value;
         }
 
         void main() {
@@ -44,20 +58,33 @@ export default function ProceduralChromeBackground() {
           uv = uv * 2.0 - 1.0;
           uv.x *= uResolution.x / uResolution.y;
 
-          // Multi-octave domain warping for organic flow
-          vec2 p = uv * 4.0;
-          for (int i = 0; i < 5; i++) {
-            p += 0.15 * vec2(noise(p + vec2(i)), noise(p.yx + vec2(i)));
-          }
+          float topology = liquidSilkTopology(uv * 1.3 + vec2(0.5, -0.5));
+          
+          // Analytical normals via central differences
+          vec2 eps = vec2(0.003, 0.0);
+          float gradX = liquidSilkTopology((uv + eps.xy) * 1.3) - liquidSilkTopology((uv - eps.xy) * 1.3);
+          float gradY = liquidSilkTopology((uv + eps.yx) * 1.3) - liquidSilkTopology((uv - eps.yx) * 1.3);
+          vec3 normal = normalize(vec3(-gradX, -gradY, 0.12));
 
-          float pattern = noise(p * 3.0) * 0.7 + noise(p * 8.0) * 0.3;
+          vec3 lightDir1 = normalize(vec3(0.6, 0.75, 0.5));
+          vec3 lightDir2 = normalize(vec3(-0.6, -0.4, 0.7));
+          vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          vec3 darkMetal = vec3(0.04, 0.04, 0.06);
-          vec3 brightChrome = vec3(0.85, 0.88, 0.95);
+          // Dual-source high-power specular
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 45.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 24.0);
+          vec3 specularComposition = (vec3(1.0) * spec1 * 4.6) + (vec3(0.7) * spec2 * 1.8);
+          
+          // Fresnel edge reflection rim
+          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.0);
+          vec3 fresnelRim = vec3(0.65, 0.68, 0.72) * fresnel * 1.5;
 
-          vec3 color = mix(darkMetal, brightChrome, pattern * 1.1);
+          // Deep black metal base
+          vec3 darkMetal = vec3(0.02, 0.02, 0.03);
+          vec3 finalLinearColor = darkMetal + specularComposition + fresnelRim;
 
-          gl_FragColor = vec4(color, 1.0);
+          // sRGB gamma correction
+          gl_FragColor = vec4(pow(finalLinearColor, vec3(1.0 / 2.2)), 1.0);
         }
       `,
       depthWrite: false,
@@ -65,6 +92,7 @@ export default function ProceduralChromeBackground() {
     });
   }, [uniforms]);
 
+  // Explicit GPU memory cleanup on route change
   useEffect(() => {
     return () => material.dispose();
   }, [material]);
