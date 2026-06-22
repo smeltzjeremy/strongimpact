@@ -6,9 +6,10 @@ import * as THREE from 'three';
 export default function ProceduralChromeBackground() {
   const { size } = useThree();
 
+  // Persistent material (no recompilation on resize)
   const uniforms = useMemo(() => ({
     uResolution: { value: new THREE.Vector2(size.width, size.height) },
-  }), [size.width, size.height]);
+  }), []);
 
   useFrame(() => {
     uniforms.uResolution.value.set(size.width, size.height);
@@ -27,19 +28,19 @@ export default function ProceduralChromeBackground() {
         }
 
         float noise(vec2 p) {
-          return sin(p.x * 1.8) * sin(p.y * 1.8);
+          return sin(p.x * 3.0) * sin(p.y * 3.0);
         }
 
         float liquidSilkTopology(vec2 p) {
           float value = 0.0;
-          float amp = 0.6;
-          float freq = 1.2;
-          for(int i = 0; i < 5; i++) {
-            p *= rot(0.8);
-            p += vec2(sin(p.y * 0.5), cos(p.x * 0.5)) * 0.4;
+          float amp = 0.62;
+          float freq = 1.9;
+          for (int i = 0; i < 5; i++) {
+            p *= rot(0.85);
+            p += vec2(sin(p.y * 0.55), cos(p.x * 0.55)) * 0.42;
             value += noise(p * freq) * amp;
-            freq *= 1.7;
-            amp *= 0.5;
+            freq *= 1.68;
+            amp *= 0.47;
           }
           return value;
         }
@@ -49,22 +50,36 @@ export default function ProceduralChromeBackground() {
           uv = uv * 2.0 - 1.0;
           uv.x *= uResolution.x / uResolution.y;
 
-          float topo = liquidSilkTopology(uv * 1.4);
+          // Analytical normals
+          vec2 eps = vec2(0.0025, 0.0);
+          float gradX = liquidSilkTopology((uv + eps.xy) * 2.1) - liquidSilkTopology((uv - eps.xy) * 2.1);
+          float gradY = liquidSilkTopology((uv + eps.yx) * 2.1) - liquidSilkTopology((uv - eps.yx) * 2.1);
+          vec3 normal = normalize(vec3(-gradX, -gradY, 0.13));
 
-          // Stronger lighting for visibility
-          vec3 base = vec3(0.04, 0.04, 0.06);
-          vec3 highlight = vec3(0.9, 0.95, 1.0);
+          // Dual lighting
+          vec3 lightDir1 = normalize(vec3(0.55, 0.78, 0.55));
+          vec3 lightDir2 = normalize(vec3(-0.65, -0.35, 0.68));
+          vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          float brightness = pow(max(topo, 0.0), 1.8) * 1.6;
-          vec3 color = mix(base, highlight, brightness);
+          // Specular
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 52.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 26.0);
+          vec3 specular = (vec3(1.0) * spec1 * 5.2) + (vec3(0.8) * spec2 * 2.1);
 
-          gl_FragColor = vec4(color, 1.0);
+          // Fresnel
+          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.2);
+          vec3 rim = vec3(0.72, 0.76, 0.82) * fresnel * 2.1;
+
+          vec3 base = vec3(0.018, 0.018, 0.032);
+          vec3 color = base + specular + rim;
+
+          gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
         }
       `,
       depthWrite: false,
       depthTest: false,
     });
-  }, [uniforms]);
+  }, []);
 
   useEffect(() => {
     return () => material.dispose();
