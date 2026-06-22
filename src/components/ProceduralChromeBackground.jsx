@@ -59,25 +59,25 @@ export default function ProceduralChromeBackground() {
           uv = uv * 2.0 - 1.0;
           uv.x *= uResolution.x / uResolution.y;
 
-          float topologyScale = 0.58;   // Slightly increased for better visibility
+          float topologyScale = 0.58;
 
           vec2 eps = vec2(0.003, 0.0);
           float gradX = liquidSilkTopology((uv + eps.xy) * topologyScale) - liquidSilkTopology((uv - eps.xy) * topologyScale);
           float gradY = liquidSilkTopology((uv + eps.yx) * topologyScale) - liquidSilkTopology((uv - eps.yx) * topologyScale);
-
-          // Amplify gradients to restore strong specular on large waves
           vec3 normal = normalize(vec3(-gradX * 5.0, -gradY * 5.0, 0.012));
 
           vec3 lightDir1 = normalize(vec3(0.5, 0.8, 0.6));
           vec3 lightDir2 = normalize(vec3(-0.6, -0.4, 0.7));
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 160.0);
-          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 90.0);
+          // Much higher specular exponents for razor-sharp metallic ridges
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 320.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 200.0);
           vec3 specular = (vec3(1.0) * spec1 * 9.5) + (vec3(0.8) * spec2 * 4.2);
 
+          // Greatly reduced Fresnel rim to restore deep black valleys
           float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.8);
-          vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 3.2;
+          vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 0.3;   // Reduced from 3.2
 
           vec3 base = vec3(0.012, 0.012, 0.02);
           vec3 color = base + specular + rim;
