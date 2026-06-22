@@ -59,25 +59,29 @@ export default function ProceduralChromeBackground() {
           uv = uv * 2.0 - 1.0;
           uv.x *= uResolution.x / uResolution.y;
 
+          // Stretch coordinates to turn blobs into long flowing ribbons
+          vec2 distortedUV = uv;
+          distortedUV.y *= 0.5;   // Stretch vertically
+          distortedUV.x *= 1.8;   // Compress horizontally
+
           float topologyScale = 0.58;
 
           vec2 eps = vec2(0.003, 0.0);
-          float gradX = liquidSilkTopology((uv + eps.xy) * topologyScale) - liquidSilkTopology((uv - eps.xy) * topologyScale);
-          float gradY = liquidSilkTopology((uv + eps.yx) * topologyScale) - liquidSilkTopology((uv - eps.yx) * topologyScale);
+          float gradX = liquidSilkTopology((distortedUV + eps.xy) * topologyScale) - liquidSilkTopology((distortedUV - eps.xy) * topologyScale);
+          float gradY = liquidSilkTopology((distortedUV + eps.yx) * topologyScale) - liquidSilkTopology((distortedUV - eps.yx) * topologyScale);
           vec3 normal = normalize(vec3(-gradX * 5.0, -gradY * 5.0, 0.012));
 
-          vec3 lightDir1 = normalize(vec3(0.5, 0.8, 0.6));
-          vec3 lightDir2 = normalize(vec3(-0.6, -0.4, 0.7));
+          // Lights brought closer together for stronger unified highlights + deeper shadows
+          vec3 lightDir1 = normalize(vec3(1.2, 1.5, 0.8));
+          vec3 lightDir2 = normalize(vec3(1.0, 1.4, 0.9));
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          // Much higher specular exponents for razor-sharp metallic ridges
           float spec1 = pow(max(dot(normal, lightDir1), 0.0), 320.0);
           float spec2 = pow(max(dot(normal, lightDir2), 0.0), 200.0);
           vec3 specular = (vec3(1.0) * spec1 * 9.5) + (vec3(0.8) * spec2 * 4.2);
 
-          // Greatly reduced Fresnel rim to restore deep black valleys
           float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.8);
-          vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 0.3;   // Reduced from 3.2
+          vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 0.3;
 
           vec3 base = vec3(0.012, 0.012, 0.02);
           vec3 color = base + specular + rim;
