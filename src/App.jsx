@@ -2,7 +2,8 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
 import SceneContainer from './components/3d/SceneContainer';
-import GalleryPage from './pages/GalleryPage';   // ← added
+import GalleryPage from './pages/GalleryPage';
+import PhotosPage from './pages/PhotosPage';   // ← added
 
 export default function App() {
   return (
@@ -21,7 +22,6 @@ export default function App() {
                     className="h-full w-full object-cover object-center scale-105 select-none pointer-events-none"
                   />
                 </div>
-                {/* Clean, isolated button container */}
                 <div className="flex gap-3">
                   <Link
                     to="/gallery"
@@ -53,6 +53,9 @@ export default function App() {
 
           {/* GALLERY STEPPING STONE */}
           <Route path="/gallery" element={<GalleryPage />} />
+
+          {/* PHOTOS PAGE */}
+          <Route path="/photos" element={<PhotosPage />} />
 
           {/* ADMIN PAGE */}
           <Route path="/admin" element={<AdminDashboard />} />
