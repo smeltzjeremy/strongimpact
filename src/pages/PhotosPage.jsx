@@ -1,31 +1,47 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import { Link } from 'react-router-dom';
 import * as THREE from 'three';
 
-function MetallicWaves() {
+function LiquidMetalBackground() {
+  const geometry = useMemo(() => {
+    const geo = new THREE.PlaneGeometry(60, 60, 120, 120);
+    const pos = geo.attributes.position;
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i);
+      const y = pos.getY(i);
+      const z = Math.sin(x * 0.8) * 1.8 + Math.cos(y * 0.7) * 1.4;
+      pos.setZ(i, z);
+    }
+    geo.computeVertexNormals();
+    return geo;
+  }, []);
+
   return (
-    <mesh rotation={[Math.PI * -0.4, 0, 0]} position={[0, -4, -8]}>
-      <planeGeometry args={[50, 50, 80, 80]} />
+    <mesh 
+      geometry={geometry} 
+      rotation={[Math.PI * -0.35, 0, 0]} 
+      position={[0, -6, -12]}
+    >
       <meshStandardMaterial 
-        color="#0a0a0a"
-        metalness={0.95}
-        roughness={0.15}
-        envMapIntensity={1.2}
+        color="#0a0a0f"
+        metalness={0.98}
+        roughness={0.12}
+        envMapIntensity={1.4}
       />
     </mesh>
   );
 }
 
-function CentralSphere() {
+function CentralTestSphere() {
   return (
-    <mesh position={[0, 0, 0]}>
-      <sphereGeometry args={[2.8, 64, 64]} />
+    <mesh position={[0, 0.5, 0]}>
+      <sphereGeometry args={[2.2, 64, 64]} />
       <meshStandardMaterial 
-        color="#1a1a1a" 
+        color="#111111" 
         metalness={0.98} 
-        roughness={0.08}
+        roughness={0.06}
       />
     </mesh>
   );
@@ -34,7 +50,6 @@ function CentralSphere() {
 export default function PhotosPage() {
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
-      {/* Back Link - FIXED */}
       <div className="fixed top-6 left-6 z-50">
         <Link 
           to="/gallery"
@@ -46,23 +61,23 @@ export default function PhotosPage() {
 
       <div className="absolute inset-0">
         <Canvas
-          camera={{ position: [0, 2, 14], fov: 45 }}
+          camera={{ position: [0, 3, 16], fov: 42 }}
           style={{ background: '#05050f' }}
         >
           <Suspense fallback={null}>
-            <ambientLight intensity={0.4} />
-            <pointLight position={[8, 12, 10]} intensity={2} color="#aaaaaa" />
-            <pointLight position={[-10, -8, -5]} intensity={0.6} color="#444444" />
+            <ambientLight intensity={0.35} />
+            <pointLight position={[12, 14, 8]} intensity={2.2} color="#cccccc" />
+            <pointLight position={[-14, -6, -10]} intensity={0.7} color="#555555" />
 
-            <MetallicWaves />
-            <CentralSphere />
+            <LiquidMetalBackground />
+            <CentralTestSphere />
 
             <Environment preset="night" />
             <OrbitControls 
               enablePan={false} 
               enableZoom={true} 
-              minDistance={6} 
-              maxDistance={35}
+              minDistance={7} 
+              maxDistance={40}
               target={[0, 0, 0]}
             />
           </Suspense>
