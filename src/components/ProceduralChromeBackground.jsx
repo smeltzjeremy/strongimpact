@@ -37,19 +37,19 @@ export default function ProceduralChromeBackground() {
           vec2 u = f * f * (3.0 - 2.0 * f);
           float n = mix(mix(hash(i + vec2(0.0,0.0)), hash(i + vec2(1.0,0.0)), u.x),
                         mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x), u.y);
-          return n * 2.0 - 1.0; // Signed noise for steep slopes
+          return n * 2.0 - 1.0;
         }
 
         float liquidSilkTopology(vec2 p) {
           float value = 0.0;
-          float amp = 0.65;
+          float amp = 0.68;
           float freq = 1.0;
           for (int i = 0; i < 5; i++) {
-            p *= rot(0.82);
-            p += vec2(sin(p.y * 0.52), cos(p.x * 0.52)) * 0.42;
+            p *= rot(0.8);
+            p += vec2(sin(p.y * 0.5), cos(p.x * 0.5)) * 0.4;
             value += noise(p * freq) * amp;
-            freq *= 1.72;
-            amp *= 0.47;
+            freq *= 1.7;
+            amp *= 0.48;
           }
           return value;
         }
@@ -59,25 +59,25 @@ export default function ProceduralChromeBackground() {
           uv = uv * 2.0 - 1.0;
           uv.x *= uResolution.x / uResolution.y;
 
-          float topologyScale = 1.25;
+          float topologyScale = 1.2;
 
           vec2 eps = vec2(0.003, 0.0);
           float gradX = liquidSilkTopology((uv + eps.xy) * topologyScale) - liquidSilkTopology((uv - eps.xy) * topologyScale);
           float gradY = liquidSilkTopology((uv + eps.yx) * topologyScale) - liquidSilkTopology((uv - eps.yx) * topologyScale);
-          vec3 normal = normalize(vec3(-gradX, -gradY, 0.08));
+          vec3 normal = normalize(vec3(-gradX, -gradY, 0.09));
 
           vec3 lightDir1 = normalize(vec3(0.5, 0.8, 0.6));
           vec3 lightDir2 = normalize(vec3(-0.6, -0.4, 0.7));
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 48.0);
-          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 24.0);
-          vec3 specular = (vec3(1.0) * spec1 * 6.8) + (vec3(0.78) * spec2 * 2.9);
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 42.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 22.0);
+          vec3 specular = (vec3(1.0) * spec1 * 8.5) + (vec3(0.8) * spec2 * 3.5);
 
-          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.0);
-          vec3 rim = vec3(0.72, 0.76, 0.82) * fresnel * 2.5;
+          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.8);
+          vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 3.0;
 
-          vec3 base = vec3(0.018, 0.018, 0.028);
+          vec3 base = vec3(0.035, 0.035, 0.045);
           vec3 color = base + specular + rim;
 
           gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
