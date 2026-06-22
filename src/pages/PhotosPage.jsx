@@ -1,8 +1,7 @@
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Environment } from '@react-three/drei';
 import { Link } from 'react-router-dom';
-import LiquidMetalBackground from '../components/LiquidMetalBackground';
+import ProceduralChromeBackground from '../components/ProceduralChromeBackground';
 
 export default function PhotosPage() {
   return (
@@ -18,17 +17,11 @@ export default function PhotosPage() {
 
       <div className="absolute inset-0">
         <Canvas
-          camera={{ position: [0, 8, 24], fov: 36 }}
+          camera={{ position: [0, 0, 1], fov: 50 }}
           style={{ background: '#05050f' }}
         >
           <Suspense fallback={null}>
-            <ambientLight intensity={0.3} />
-            <pointLight position={[20, 25, 15]} intensity={5} color="#ffffff" />
-            <pointLight position={[-18, -8, -12]} intensity={1.8} color="#888888" />
-
-            <LiquidMetalBackground />
-
-            <Environment preset="night" />
+            <ProceduralChromeBackground />
           </Suspense>
         </Canvas>
       </div>
