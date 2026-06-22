@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
+import { Link } from 'react-router-dom';
 import * as THREE from 'three';
 
 function MetallicWaves() {
@@ -33,14 +34,14 @@ function CentralSphere() {
 export default function PhotosPage() {
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
-      {/* Back Link */}
+      {/* Back Link - FIXED */}
       <div className="fixed top-6 left-6 z-50">
-        <a 
-          href="/gallery"
+        <Link 
+          to="/gallery"
           className="px-5 py-3 bg-black/60 hover:bg-black/80 border border-white/20 rounded-2xl text-sm transition"
         >
           ← Back to Gallery
-        </a>
+        </Link>
       </div>
 
       <div className="absolute inset-0">
