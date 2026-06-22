@@ -46,10 +46,7 @@ export default function ProceduralChromeBackground() {
           float freq = 1.0;
           for (int i = 0; i < 3; i++) {
             p *= rot(0.8);
-
-            // Domain warping - the key to liquid metal crimps and folds
             p += vec2(sin(p.y * 1.5), cos(p.x * 1.5)) * 0.8;
-
             value += noise(p * freq) * amp;
             freq *= 1.5;
             amp *= 0.5;
@@ -62,20 +59,22 @@ export default function ProceduralChromeBackground() {
           uv = uv * 2.0 - 1.0;
           uv.x *= uResolution.x / uResolution.y;
 
+          // Relaxed stretch ratios to eliminate edge pinstripes
           vec2 distortedUV = uv;
-          distortedUV.y *= 0.5;
-          distortedUV.x *= 1.8;
+          distortedUV.y *= 0.65;
+          distortedUV.x *= 1.35;
 
           float topologyScale = 0.58;
 
-          vec2 epsX = vec2(0.003 * 1.8, 0.0);
-          vec2 epsY = vec2(0.0, 0.003 * 0.5);
+          // Match epsilon scaling to the new stretch ratios
+          vec2 epsX = vec2(0.003 * 1.35, 0.0);
+          vec2 epsY = vec2(0.0, 0.003 * 0.65);
 
           float gradX = liquidSilkTopology((distortedUV + epsX) * topologyScale) - liquidSilkTopology((distortedUV - epsX) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV + epsY) * topologyScale) - liquidSilkTopology((distortedUV - epsY) * topologyScale);
 
-          // Aggressively amplified gradients for sharp metallic ridges
-          vec3 normal = normalize(vec3(-gradX * 18.0, -gradY * 18.0, 0.012));
+          // Slightly reduced gradient amplification for smoother shadows
+          vec3 normal = normalize(vec3(-gradX * 13.0, -gradY * 13.0, 0.012));
 
           vec3 lightDir1 = normalize(vec3(1.4, 0.6, 0.25));
           vec3 lightDir2 = normalize(vec3(-1.4, 0.4, 0.3));
@@ -83,7 +82,9 @@ export default function ProceduralChromeBackground() {
 
           float spec1 = pow(max(dot(normal, lightDir1), 0.0), 320.0);
           float spec2 = pow(max(dot(normal, lightDir2), 0.0), 200.0);
-          vec3 specular = (vec3(1.0) * spec1 * 9.5) + (vec3(0.8) * spec2 * 4.2);
+
+          // Boosted specular intensity to maintain brilliant chrome shine
+          vec3 specular = (vec3(1.0) * spec1 * 12.0) + (vec3(0.8) * spec2 * 5.0);
 
           float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.8);
           vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 0.3;
