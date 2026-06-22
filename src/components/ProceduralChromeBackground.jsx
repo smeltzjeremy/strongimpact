@@ -46,9 +46,12 @@ export default function ProceduralChromeBackground() {
           float freq = 1.0;
           for (int i = 0; i < 3; i++) {
             p *= rot(0.8);
-            p += vec2(sin(p.y * 0.5), cos(p.x * 0.5)) * 0.4;
+
+            // Domain warping - the key to liquid metal crimps and folds
+            p += vec2(sin(p.y * 1.5), cos(p.x * 1.5)) * 0.8;
+
             value += noise(p * freq) * amp;
-            freq *= 1.35;
+            freq *= 1.5;
             amp *= 0.5;
           }
           return value;
@@ -59,22 +62,21 @@ export default function ProceduralChromeBackground() {
           uv = uv * 2.0 - 1.0;
           uv.x *= uResolution.x / uResolution.y;
 
-          // Anisotropic stretch for long flowing ribbons
           vec2 distortedUV = uv;
           distortedUV.y *= 0.5;
           distortedUV.x *= 1.8;
 
           float topologyScale = 0.58;
 
-          // Scale epsilon to match the stretched coordinate space
           vec2 epsX = vec2(0.003 * 1.8, 0.0);
           vec2 epsY = vec2(0.0, 0.003 * 0.5);
 
           float gradX = liquidSilkTopology((distortedUV + epsX) * topologyScale) - liquidSilkTopology((distortedUV - epsX) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV + epsY) * topologyScale) - liquidSilkTopology((distortedUV - epsY) * topologyScale);
-          vec3 normal = normalize(vec3(-gradX * 5.0, -gradY * 5.0, 0.012));
 
-          // Split lights with strong horizontal emphasis for cascading ribbons
+          // Aggressively amplified gradients for sharp metallic ridges
+          vec3 normal = normalize(vec3(-gradX * 18.0, -gradY * 18.0, 0.012));
+
           vec3 lightDir1 = normalize(vec3(1.4, 0.6, 0.25));
           vec3 lightDir2 = normalize(vec3(-1.4, 0.4, 0.3));
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
