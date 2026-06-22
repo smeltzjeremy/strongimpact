@@ -73,17 +73,21 @@ export default function ProceduralChromeBackground() {
           float gradX = liquidSilkTopology((distortedUV + epsX) * topologyScale) - liquidSilkTopology((distortedUV - epsX) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV + epsY) * topologyScale) - liquidSilkTopology((distortedUV - epsY) * topologyScale);
 
-          // Balanced gradient amplification (restores 3D curves)
-          vec3 normal = normalize(vec3(-gradX * 18.0, -gradY * 18.0, 0.012));
+          // Higher gradient force now safe with softbox lighting
+          vec3 normal = normalize(vec3(-gradX * 28.0, -gradY * 28.0, 0.012));
 
-          // Slightly off-axis lights to graze the diagonal curves
-          vec3 lightDir1 = normalize(vec3(0.6, 1.6, 0.5));
-          vec3 lightDir2 = normalize(vec3(-0.7, -1.2, 0.6));
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
+          vec3 r = reflect(viewDir, normal);
 
-          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 600.0);
-          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 300.0);
-          vec3 specular = (vec3(1.0) * spec1 * 12.0) + (vec3(0.8) * spec2 * 5.0);
+          // Studio Softbox 1: Large overhead sweeping reflection
+          float box1 = smoothstep(0.1, 0.9, max(0.0, r.y * 0.5 + 0.5));
+          float spec1 = pow(box1, 40.0) * 4.5;
+
+          // Studio Softbox 2: Sharp edge kicker for diagonal slopes
+          float box2 = smoothstep(0.2, 0.8, max(0.0, dot(r, normalize(vec3(-0.8, 0.6, 0.5)))));
+          float spec2 = pow(box2, 120.0) * 8.0;
+
+          vec3 specular = vec3(1.0) * spec1 + vec3(0.9, 0.92, 0.95) * spec2;
 
           float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.8);
           vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 0.3;
@@ -91,7 +95,6 @@ export default function ProceduralChromeBackground() {
           vec3 base = vec3(0.0, 0.0, 0.005);
           vec3 color = base + specular + rim;
 
-          // Softer contrast ramp (preserves beautiful mid-tone curves)
           color = smoothstep(0.05, 0.95, color);
           color = pow(color, vec3(1.2));
 
