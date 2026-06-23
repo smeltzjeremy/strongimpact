@@ -42,15 +42,23 @@ export default function ProceduralChromeBackground() {
 
         float liquidSilkTopology(vec2 p) {
           float value = 0.0;
-          float amp = 0.7;
-          float freq = 1.0;
+          float amp = 0.75;
+          float freq = 0.95;
+          
           for (int i = 0; i < 3; i++) {
             p *= rot(0.95);
-            float warpFactor = 1.4;
-            p += vec2(sin(p.y * 1.2 + 0.5), cos(p.x * 0.8 - 0.5)) * warpFactor;
-            value += noise(p * freq) * amp;
-            freq *= 1.45;
-            amp *= 0.52;
+            float warpFactor = 1.35;
+            p += vec2(sin(p.y * 1.1 + 0.5), cos(p.x * 0.75 - 0.45)) * warpFactor;
+            
+            float layerNoise = noise(p * freq);
+            
+            // THE RIBBON STEPPING: Squeezing continuous waves into flat plateaus and drop-off lips
+            layerNoise = smoothstep(-0.6, 0.6, layerNoise);
+            layerNoise = pow(abs(layerNoise), 1.4) * sign(layerNoise);
+            
+            value += layerNoise * amp;
+            freq *= 1.5;
+            amp *= 0.48;
           }
           return value;
         }
@@ -61,37 +69,42 @@ export default function ProceduralChromeBackground() {
           uv.x *= uResolution.x / uResolution.y;
 
           vec2 distortedUV = uv;
-          distortedUV.y *= 0.8;
-          distortedUV.x *= 1.1;
+          distortedUV.y *= 0.85;
+          distortedUV.x *= 1.15;
 
-          float topologyScale = 0.58;
+          float topologyScale = 0.55;
 
-          vec2 epsX = vec2(0.003 * 1.1, 0.0);
-          vec2 epsY = vec2(0.0, 0.003 * 0.8);
+          vec2 epsX = vec2(0.002, 0.0);
+          vec2 epsY = vec2(0.0, 0.002);
 
           float gradX = liquidSilkTopology((distortedUV.yx + epsX) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsX) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV.yx + epsY) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsY) * topologyScale);
           
-          // Deeper valleys
-          vec3 normal = normalize(vec3(-gradX * 27.5, -gradY * 27.5, 0.008));
+          // Amplified normal tracking to make the ribbon edges sharp and cliff-like
+          vec3 normal = normalize(vec3(-gradX * 32.0, -gradY * 32.0, 0.008));
 
+          // Locked lighting directions from the successful horizontal setup
           vec3 lightDir1 = normalize(vec3(1.05, 0.75, 0.48));  
           vec3 lightDir2 = normalize(vec3(-1.1, -0.6, 0.32)); 
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          // More intense metallic shine
-          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 1150.0);
-          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 620.0);
-          vec3 specular = (vec3(1.12) * spec1 * 17.0) + (vec3(0.95) * spec2 * 10.0);
+          // Specular exponents optimized for the new ribbon ridges
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 1200.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 650.0);
+          vec3 specular = (vec3(1.15) * spec1 * 18.0) + (vec3(0.85) * spec2 * 8.0);
 
-          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.8);
-          vec3 rim = vec3(0.85, 0.9, 0.96) * fresnel * 0.4;
+          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.5);
+          vec3 rim = vec3(0.8, 0.85, 0.92) * fresnel * 0.4;
 
-          // Deeper black base for contrast
-          vec3 base = vec3(0.006, 0.006, 0.012);
+          // Pure ink-black valley floors for luxury depth contrast
+          vec3 base = vec3(0.0, 0.0, 0.001);
           vec3 color = base + specular + rim;
 
-          gl_FragColor = vec4(pow(color, vec3(1.0 / 2.1)), 1.0);
+          // HIGH-END CONTRAST GRADING: Flattens midtone grays, blasts white glare peaks
+          color = smoothstep(0.04, 0.88, color);
+          color = pow(color, vec3(1.25)); 
+          
+          gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
         }
       `,
       depthWrite: false,
