@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Link } from 'react-router-dom';
 import ProceduralChromeBackground from '../components/ProceduralChromeBackground';
-import RedMistCloudLayer from '../components/RedMistCloudLayer';   // ← New import
+import RedMistCloudLayer from '../components/RedMistCloudLayer';
 
 export default function PhotosPage() {
   return (
@@ -23,13 +23,13 @@ export default function PhotosPage() {
         >
           <Suspense fallback={null}>
             <ProceduralChromeBackground />
-            <RedMistCloudLayer intensity={0.12} />   {/* ← First very light cloud layer */}
+            <RedMistCloudLayer intensity={0.28} />
           </Suspense>
         </Canvas>
       </div>
 
       <div className="absolute top-8 left-1/2 -translate-x-1/2 z-40 text-center pointer-events-none">
-        <h1 className="text-6xl font-bold tracking-tighter">PHOTOS</h1>
+        <h1 className="text-6xl font-bold tracking-tighter text-white">PHOTOS</h1>
       </div>
     </div>
   );

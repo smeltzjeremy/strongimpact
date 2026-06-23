@@ -3,7 +3,7 @@ import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function RedMistCloudLayer({ intensity = 0.12 }) {
+export default function RedMistCloudLayer({ intensity = 0.22 }) {
   const meshRef = useRef();
 
   const material = useMemo(() => {
@@ -24,35 +24,29 @@ export default function RedMistCloudLayer({ intensity = 0.12 }) {
         uniform float uIntensity;
         varying vec2 vUv;
 
-        float hash(vec2 p) {
-          return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453123);
-        }
-
+        float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453123); }
         float noise(vec2 p) {
           vec2 i = floor(p);
           vec2 f = fract(p);
-          float a = hash(i);
-          float b = hash(i + vec2(1.0, 0.0));
-          float c = hash(i + vec2(0.0, 1.0));
-          float d = hash(i + vec2(1.0, 1.0));
-          vec2 u = f * f * (3.0 - 2.0 * f);
-          return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+          float a = hash(i), b = hash(i + vec2(1.0,0.0)), c = hash(i + vec2(0.0,1.0)), d = hash(i + vec2(1.0,1.0));
+          vec2 u = f*f*(3.0-2.0*f);
+          return mix(mix(a,b,u.x), mix(c,d,u.x), u.y);
         }
 
         void main() {
-          vec2 uv = vUv * 1.8;
-          float t = uTime * 0.04; // very slow movement
+          vec2 uv = vUv * 1.6;
+          float t = uTime * 0.035;
           
-          float n1 = noise(uv * 0.6 + vec2(t * 0.2, t * 0.15));
-          float n2 = noise(uv * 1.4 + vec2(t * 0.35, -t * 0.1));
+          float n1 = noise(uv * 0.65 + vec2(t*0.18, t*0.12));
+          float n2 = noise(uv * 1.35 + vec2(t*0.4, -t*0.08));
           
-          float clouds = n1 * 0.7 + n2 * 0.3;
-          clouds = smoothstep(0.35, 0.75, clouds);
+          float clouds = n1 * 0.65 + n2 * 0.35;
+          clouds = smoothstep(0.32, 0.78, clouds);
           
-          vec3 redMist = vec3(0.65, 0.08, 0.12); // deep blood red tint
+          vec3 redMist = vec3(0.72, 0.12, 0.18);
           vec3 color = redMist * clouds * uIntensity;
           
-          gl_FragColor = vec4(color, clouds * 0.55); // soft transparency
+          gl_FragColor = vec4(color, clouds * 0.48);
         }
       `,
       transparent: true,
@@ -66,7 +60,7 @@ export default function RedMistCloudLayer({ intensity = 0.12 }) {
   });
 
   return (
-    <mesh ref={meshRef} position={[0, 0, 0.1]}>
+    <mesh ref={meshRef} position={[0, 0, 0.2]}>
       <planeGeometry args={[2, 2]} />
       <primitive object={material} attach="material" />
     </mesh>
