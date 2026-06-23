@@ -42,14 +42,15 @@ export default function ProceduralChromeBackground() {
 
         float liquidSilkTopology(vec2 p) {
           float value = 0.0;
-          float amp = 0.7;
-          float freq = 1.0;
-          for (int i = 0; i < 3; i++) {
-            p *= rot(0.95);
-            p += vec2(sin(p.y * 1.2 + 0.5), cos(p.x * 0.8 - 0.5)) * 1.4;
+          float amp = 0.55;
+          float freq = 1.2;
+          
+          for (int i = 0; i < 5; i++) {
+            p *= rot(0.85);
+            p += vec2(sin(p.y * 0.9 + 0.5), cos(p.x * 0.9 - 0.5)) * 0.42;
             value += noise(p * freq) * amp;
-            freq *= 1.45;
-            amp *= 0.52;
+            freq *= 1.68;
+            amp *= 0.48;
           }
           return value;
         }
@@ -62,42 +63,36 @@ export default function ProceduralChromeBackground() {
           vec2 twistedUV = rot(1.1) * uv;
 
           vec2 distortedUV = twistedUV;
-          distortedUV.y *= 0.8;
-          distortedUV.x *= 1.1;
+          distortedUV.y *= 0.85;
+          distortedUV.x *= 1.15;
 
-          float topologyScale = 0.58;
+          float topologyScale = 1.35;
 
-          vec2 epsX = vec2(0.001 * 0.65, 0.0);
-          vec2 epsY = vec2(0.0, 0.001 * 1.35);
+          vec2 eps = vec2(0.002, 0.0);
+          float gradX = liquidSilkTopology((distortedUV + eps.xy) * topologyScale) - liquidSilkTopology((distortedUV - eps.xy) * topologyScale);
+          float gradY = liquidSilkTopology((distortedUV + eps.yx) * topologyScale) - liquidSilkTopology((distortedUV - eps.yx) * topologyScale);
 
-          float gradX = liquidSilkTopology((distortedUV + epsX) * topologyScale) - liquidSilkTopology((distortedUV - epsX) * topologyScale);
-          float gradY = liquidSilkTopology((distortedUV + epsY) * topologyScale) - liquidSilkTopology((distortedUV - epsY) * topologyScale);
-
-          // Higher gradient force now safe with softbox lighting
-          vec3 normal = normalize(vec3(-gradX * 28.0, -gradY * 28.0, 0.012));
+          vec3 normal = normalize(vec3(-gradX, -gradY, 0.065));
 
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
           vec3 r = reflect(viewDir, normal);
 
-          // Studio Softbox 1: Large overhead sweeping reflection
           float box1 = smoothstep(0.1, 0.9, max(0.0, r.y * 0.5 + 0.5));
-          float spec1 = pow(box1, 40.0) * 4.5;
+          float spec1 = pow(box1, 60.0) * 5.0;
 
-          // Studio Softbox 2: Sharp edge kicker for diagonal slopes
-          float box2 = smoothstep(0.2, 0.8, max(0.0, dot(r, normalize(vec3(-0.8, 0.6, 0.5)))));
-          float spec2 = pow(box2, 120.0) * 8.0;
+          float box2 = smoothstep(0.15, 0.85, max(0.0, dot(r, normalize(vec3(-0.7, 0.6, 0.5)))));
+          float spec2 = pow(box2, 380.0) * 9.5;
 
-          vec3 specular = vec3(1.0) * spec1 + vec3(0.9, 0.92, 0.95) * spec2;
+          vec3 specular = vec3(1.0) * spec1 + vec3(0.92, 0.94, 0.98) * spec2;
 
-          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.8);
-          vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 0.3;
+          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.2);
+          vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 1.5;
 
-          vec3 base = vec3(0.0, 0.0, 0.005);
+          vec3 base = vec3(0.005, 0.005, 0.01);
           vec3 color = base + specular + rim;
 
-          color = smoothstep(0.05, 0.95, color);
-          color = pow(color, vec3(1.2));
-
+          color = smoothstep(0.02, 0.98, color);
+          
           gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
         }
       `,
