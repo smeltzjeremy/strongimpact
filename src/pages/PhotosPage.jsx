@@ -7,7 +7,7 @@ import VectorCloudLayer from '../components/VectorCloudLayer';
 export default function PhotosPage() {
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
-      {/* NAVIGATION PANEL */}
+      {/* BACK NAVIGATION */}
       <div className="fixed top-6 left-6 z-50">
         <Link 
           to="/gallery" 
@@ -17,7 +17,7 @@ export default function PhotosPage() {
         </Link>
       </div>
 
-      {/* WEBGL CANVASES */}
+      {/* MASTER WEBGL FRAME VIEWPORT */}
       <div className="absolute inset-0 z-10">
         <Canvas
           camera={{ position: [0, 0, 5], fov: 60 }}
@@ -25,46 +25,49 @@ export default function PhotosPage() {
         >
           <Suspense fallback={null}>
             
-            {/* BACKGROUND CHROME LAYER */}
+            {/* BACKGROUND REFLECTIVE LIQUID METAL */}
             <group position={[0, 0, -4]}>
               <ProceduralChromeBackground />
             </group>
 
-            {/* UNIFIED SOLID PAPERCUT DECK */}
-            <group position={[-0.1, -2.6, 0]}>
+            {/* UNIFIED COMPOSITING SPACE
+                - Shifted safely left (X = -0.6) and down (Y = -2.55) 
+                to force iron-clad boundary seals over the left corners
+            */}
+            <group position={[-0.6, -2.55, 0]}>
               
-              {/* LAYER 2: BACK CLOUDS (Dark Maroon Foundation) */}
+              {/* LAYER 2: BACK CLOUDS (Rich Crimson Baseline) */}
               <VectorCloudLayer 
                 zPos={-2.5} 
-                solidColor="#30040a" 
-                shadowOpacity={0.6} 
+                solidColor="#6e0a19" 
+                shadowOpacity={0.55} 
                 parallaxFactor={0.15} 
                 seed={5.2}
               />
 
-              {/* LAYER 3: MID-BACK CLOUDS (Rich Crimson) */}
+              {/* LAYER 3: MID-BACK CLOUDS (Vivid Velvet Cardinal) */}
               <VectorCloudLayer 
                 zPos={-0.8} 
-                solidColor="#610916" 
-                shadowOpacity={0.5}
+                solidColor="#a3142a" 
+                shadowOpacity={0.45}
                 parallaxFactor={0.35} 
                 seed={3.4}
               />
 
-              {/* LAYER 4: MID-FRONT CLOUDS (Vivid Cardinal Red) */}
+              {/* LAYER 4: MID-FRONT CLOUDS (Bright Ruby Red) */}
               <VectorCloudLayer 
                 zPos={0.8} 
-                solidColor="#a3142a" 
-                shadowOpacity={0.4}
+                solidColor="#d42843" 
+                shadowOpacity={0.38}
                 parallaxFactor={0.6} 
                 seed={1.8}
               />
 
-              {/* LAYER 5: ABSOLUTE FOREGROUND (Bright Punchy Ruby Coral) */}
+              {/* LAYER 5: ABSOLUTE FOREGROUND (Screaming Neon Ruby Coral) */}
               <VectorCloudLayer 
                 zPos={2.2} 
-                solidColor="#e63553" 
-                shadowOpacity={0.0} // No shadow needed on the final front layer
+                solidColor="#ff4766" 
+                shadowOpacity={0.0} 
                 parallaxFactor={0.85} 
                 seed={0.6}
               />
@@ -75,7 +78,7 @@ export default function PhotosPage() {
         </Canvas>
       </div>
 
-      {/* CORE TITLE */}
+      {/* CORE FRAME TITLE */}
       <div className="absolute top-8 left-1/2 -translate-x-1/2 z-40 pointer-events-none text-center">
         <h1 className="text-6xl font-bold tracking-tighter text-white">PHOTOS</h1>
       </div>
