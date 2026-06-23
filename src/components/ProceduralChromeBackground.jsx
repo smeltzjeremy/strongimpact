@@ -84,25 +84,21 @@ export default function ProceduralChromeBackground() {
           float gradX = liquidSilkTopology((distortedUV.yx + epsX) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsX) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV.yx + epsY) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsY) * topologyScale);
           
-          vec3 normal = normalize(vec3(-gradX * 46.0, -gradY * 46.0, 0.006));
+          vec3 normal = normalize(vec3(-gradX * 44.0, -gradY * 44.0, 0.006));
 
           vec3 lightDir1 = normalize(vec3(1.05, 0.75, 0.48));  
           vec3 lightDir2 = normalize(vec3(-1.1, -0.6, 0.32)); 
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 240.0);
-          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 150.0);
-          vec3 specular = (vec3(1.05) * spec1 * 24.0) + (vec3(0.85) * spec2 * 11.0);
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 220.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 140.0);
+          vec3 specular = (vec3(1.0) * spec1 * 22.0) + (vec3(0.85) * spec2 * 10.0);
 
-          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.8);
-          vec3 rim = vec3(0.9, 0.94, 0.98) * fresnel * 0.55;
+          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.0);
+          vec3 rim = vec3(0.88, 0.92, 0.96) * fresnel * 0.48;
 
           vec3 base = vec3(0.0, 0.0, 0.0005);
           vec3 color = base + specular + rim;
-
-          // Gentle geometric depth boost (lighter than full AO)
-          float depthMask = smoothstep(0.25, 0.85, normal.z);
-          color *= mix(0.65, 1.0, depthMask);
 
           color = smoothstep(0.16, 0.72, color);
           color = pow(color, vec3(1.10)); 
