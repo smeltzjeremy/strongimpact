@@ -13,7 +13,7 @@ export default function PhotosPage() {
         </Link>
       </div>
 
-      {/* Background Chrome */}
+      {/* Chrome Background */}
       <div className="absolute inset-0 z-10">
         <Canvas camera={{ position: [0, 0, 1], fov: 50 }} style={{ background: '#05050f' }}>
           <Suspense fallback={null}>
@@ -22,39 +22,19 @@ export default function PhotosPage() {
         </Canvas>
       </div>
 
-      {/* Fluffy Red Translucent Cloud Layer */}
-      <div className="absolute inset-x-0 bottom-0 h-[45vh] z-20 pointer-events-none">
-        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="w-full h-full opacity-80">
-          <defs>
-            <linearGradient id="redCloud" x1="0%" y1="100%" x2="0%" y2="0%">
-              <stop offset="0%" stopColor="#4a020c" stopOpacity="0.95" />
-              <stop offset="45%" stopColor="#8c1a2e" stopOpacity="0.75" />
-              <stop offset="100%" stopColor="#c23d55" stopOpacity="0.35" />
-            </linearGradient>
-          </defs>
-          <path
-            fill="url(#redCloud)"
-            d="M0,280 
-               Q180,220 320,245 
-               Q480,180 620,225 
-               Q780,160 920,210 
-               Q1080,190 1180,245 
-               Q1300,200 1440,260 
-               L1440,320 L0,320 Z"
-          />
-          {/* Extra puff layer for more fluff */}
-          <path
-            fill="url(#redCloud)"
-            opacity="0.65"
-            d="M0,265 
-               Q150,200 280,230 
-               Q450,165 590,200 
-               Q750,175 880,215 
-               Q1050,180 1200,225 
-               Q1350,195 1440,245 
-               L1440,320 L0,320 Z"
-          />
-        </svg>
+      {/* Fluffy Red Translucent Cloud Layer - HTML Bubbles */}
+      <div className="absolute inset-x-0 bottom-0 h-[42vh] z-20 pointer-events-none overflow-hidden drop-shadow-[0_-25px_35px_rgba(0,0,0,0.9)]">
+        {/* Color base */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#3a020a] via-[#7a0f22] to-transparent" />
+        
+        {/* Overlapping fluffy cloud puffs */}
+        <div className="absolute bottom-0 left-0 w-full h-full flex items-end justify-around">
+          <div className="w-64 h-64 bg-[#c23d55] rounded-full -mb-20 -ml-12 opacity-70 blur-[2px]" />
+          <div className="w-80 h-80 bg-[#d15a6a] rounded-full -mb-28 opacity-65 blur-[3px]" />
+          <div className="w-56 h-56 bg-[#b82f4a] rounded-full -mb-16 opacity-75 blur-[1px]" />
+          <div className="w-72 h-72 bg-[#e0707f] rounded-full -mb-36 opacity-55 blur-[4px]" />
+          <div className="w-52 h-52 bg-[#c23d55] rounded-full -mb-20 opacity-70 blur-[2px]" />
+        </div>
       </div>
 
       {/* Title */}
