@@ -74,12 +74,11 @@ export default function ProceduralChromeBackground() {
           
           vec3 normal = normalize(vec3(-gradX * 13.0, -gradY * 13.0, 0.012));
 
-          // STEP 1: Adjusting light direction vectors to cascade diagonally across the folds
-          vec3 lightDir1 = normalize(vec3(1.1, 1.1, 0.4));  // Main highlight position
-          vec3 lightDir2 = normalize(vec3(-1.1, -0.9, 0.3)); // Shadow fill position
+          // Lowered main light position for better cascade across the horizontal folds
+          vec3 lightDir1 = normalize(vec3(1.1, 0.85, 0.4));  
+          vec3 lightDir2 = normalize(vec3(-1.1, -0.75, 0.3)); 
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          // Stock exponents left completely untouched for tracking
           float spec1 = pow(max(dot(normal, lightDir1), 0.0), 320.0);
           float spec2 = pow(max(dot(normal, lightDir2), 0.0), 200.0);
           vec3 specular = (vec3(1.0) * spec1 * 12.0) + (vec3(0.8) * spec2 * 5.0);
