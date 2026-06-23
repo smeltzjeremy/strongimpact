@@ -100,6 +100,11 @@ export default function ProceduralChromeBackground() {
           vec3 base = vec3(0.0, 0.0, 0.0005);
           vec3 color = base + specular + rim;
 
+          // Geometric Ambient Occlusion for deeper valleys
+          float ambientOcclusion = smoothstep(0.15, 0.75, normal.z);
+          color *= mix(0.12, 1.0, ambientOcclusion);
+
+          // Locked-in contrast
           color = smoothstep(0.16, 0.72, color);
           color = pow(color, vec3(1.10)); 
           
