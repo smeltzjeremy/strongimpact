@@ -30,47 +30,43 @@ export default function PhotosPage() {
               <ProceduralChromeBackground />
             </group>
 
-            {/* UNIFIED PAPERCUT SCENE ANCHOR
-                - Baseline safely dropped to Y = -2.75 to mask the flat geometry bases across all aspect ratios
+            {/* UNIFIED PAPERCUT SCENE ANCHOR 
+                - Dropped slightly to Y = -2.8 to seal the baseline completely
             */}
-            <group position={[0, -2.75, 0]}>
+            <group position={[0, -2.8, 0]}>
               
-              {/* LAYER 2: BACK CLOUDS (Deep Maroon Cutout) */}
+              {/* LAYER 2: BACK CLOUDS (Darkest Crimson Shadow Plane) */}
               <VectorCloudLayer 
                 zPos={-2.5} 
-                colorTop="#300106" 
-                colorBottom="#120002" 
-                opacity={0.85} 
+                solidColor="#1c0004" 
+                shadowOpacity={0.6} // Heavier shadow over the chrome background
                 parallaxFactor={0.15} 
                 seed={5.2}
               />
 
-              {/* LAYER 3: MID-BACK CLOUDS (Rich Burgundy Cutout) */}
+              {/* LAYER 3: MID-BACK CLOUDS (Deep Blood Crimson) */}
               <VectorCloudLayer 
                 zPos={-0.8} 
-                colorTop="#5c0714" 
-                colorBottom="#240105" 
-                opacity={0.75} 
+                solidColor="#3d020b" 
+                shadowOpacity={0.5}
                 parallaxFactor={0.35} 
                 seed={3.4}
               />
 
-              {/* LAYER 4: MID-FRONT CLOUDS (Vivid Crimson Cutout) */}
+              {/* LAYER 4: MID-FRONT CLOUDS (Rich Velvet Red) */}
               <VectorCloudLayer 
                 zPos={0.8} 
-                colorTop="#911428" 
-                colorBottom="#42020a" 
-                opacity={0.65} 
+                solidColor="#730a1a" 
+                shadowOpacity={0.45}
                 parallaxFactor={0.6} 
                 seed={1.8}
               />
 
-              {/* LAYER 5: ABSOLUTE FOREGROUND (Bright Translucent Ruby Cutout) */}
+              {/* LAYER 5: ABSOLUTE FOREGROUND (Lightest Vivid Ruby) */}
               <VectorCloudLayer 
                 zPos={2.2} 
-                colorTop="#c23d55" 
-                colorBottom="#590511" 
-                opacity={0.5} 
+                solidColor="#ba233b" 
+                shadowOpacity={0.4}
                 parallaxFactor={0.85} 
                 seed={0.6}
               />
