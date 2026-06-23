@@ -84,7 +84,6 @@ export default function ProceduralChromeBackground() {
           vec3 lightDir2 = normalize(vec3(-1.1, -0.6, 0.32)); 
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          // Partner's split-intensity fix: Spread highlights + restore elegant shading
           float spec1 = pow(max(dot(normal, lightDir1), 0.0), 180.0);
           float spec2 = pow(max(dot(normal, lightDir2), 0.0), 120.0);
           vec3 specular = (vec3(1.0) * spec1 * 16.0) + (vec3(0.85) * spec2 * 8.0);
@@ -95,9 +94,9 @@ export default function ProceduralChromeBackground() {
           vec3 base = vec3(0.0, 0.0, 0.001);
           vec3 color = base + specular + rim;
 
-          // Re-opened contrast gate for smooth metallic gradients
-          color = smoothstep(0.05, 0.75, color);
-          color = pow(color, vec3(1.22)); 
+          // Gunmetal chisel: Pulls mid-grays into rich dark shadows for better definition
+          color = smoothstep(0.12, 0.78, color);
+          color = pow(color, vec3(1.05)); 
           
           gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
         }
