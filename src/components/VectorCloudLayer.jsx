@@ -11,16 +11,15 @@ export default function VectorCloudLayer({
 }) {
   const containerRef = useRef();
 
-  // 1. Procedural Shape Creation (Stretched ultra-wide to completely anchor the left corner)
+  // 1. Procedural Shape Creation
   const [geometry, outlineGeometry] = useMemo(() => {
     const shape = new THREE.Shape();
-    shape.moveTo(-15, -6); // Pushed extra deep left and down to guarantee zero baseline leak
+    shape.moveTo(-15, -6);
     
     const h1 = -0.1 + Math.sin(seed) * 0.3;
     const h2 = 0.2 + Math.cos(seed) * 0.4;
     const h3 = 0.0 + Math.sin(seed * 2.5) * 0.25;
 
-    // The identical billowy vector path curves
     shape.bezierCurveTo(-10.0, h1 - 0.1, -7.5, h1 + 0.9, -5.0, h2);
     shape.bezierCurveTo(-2.5, h2 + 0.7, -1.0, h2 + 0.6, 0.5, h3);
     shape.bezierCurveTo(2.5, h3 + 1.0, 4.5, h1 + 0.8, 6.5, h2 - 0.1);
@@ -32,14 +31,13 @@ export default function VectorCloudLayer({
 
     const shapeGeo = new THREE.ShapeGeometry(shape);
     
-    // 2. SAFE WEBGL OUTLINES: Uses the true shape outline to prevent criss-cross artifact strings
-    const points = shape.getPoints(60);
+    // Generate perimeter points array for a clean continuous line loops
+    const points = shape.getPoints(80); // Increased resolution for smooth curves
     const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
 
     return [shapeGeo, lineGeo];
   }, [seed]);
 
-  // Completely opaque solid color card mesh
   const colorMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: new THREE.Color(solidColor),
@@ -50,19 +48,17 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  // Clean, thin card-lip accent highlight line
+  // Premium, thicker-looking edge line using an emissive color tint
   const outlineMaterial = useMemo(() => {
     return new THREE.LineBasicMaterial({
-      color: new THREE.Color('#ffa6b5'), // Clean, illuminated coral white outline
-      linewidth: 2,
+      color: new THREE.Color('#ffe1e6'), // Brighter, crisp white-pink light accent
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.85, // Pushed up visibility
       depthTest: true,
       depthWrite: false
     });
   }, []);
 
-  // Soft drop shadow backdrop
   const shadowMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: '#000000',
@@ -74,7 +70,6 @@ export default function VectorCloudLayer({
     });
   }, [shadowOpacity]);
 
-  // Motion engine tracking
   useFrame((state) => {
     if (!containerRef.current) return;
     const targetX = state.pointer.x * parallaxFactor * 0.7;
@@ -86,25 +81,25 @@ export default function VectorCloudLayer({
 
   return (
     <group ref={containerRef}>
-      {/* SHADOW BACKER */}
+      {/* SHADOW */}
       <mesh 
         geometry={geometry} 
         material={shadowMaterial} 
         position={[0, -0.16, zPos - 0.05]} 
       />
 
-      {/* OPAQUE COLOR CARD FACE */}
+      {/* CLOUD BLOCK */}
       <mesh 
         geometry={geometry} 
         material={colorMaterial} 
         position={[0, 0, zPos]} 
       />
 
-      {/* HIGHLIGHT RIM LINE (Traced directly around the cloud face perimeter) */}
-      <line 
+      {/* THICKER LOOKING EDGE HIGHLIGHT LOOP */}
+      <lineLoop 
         geometry={outlineGeometry} 
         material={outlineMaterial} 
-        position={[0, 0, zPos + 0.01]} 
+        position={[0, 0, zPos + 0.02]} // Layered cleanly forward
       />
     </group>
   );
