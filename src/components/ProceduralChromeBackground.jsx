@@ -72,17 +72,17 @@ export default function ProceduralChromeBackground() {
           float gradX = liquidSilkTopology((distortedUV.yx + epsX) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsX) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV.yx + epsY) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsY) * topologyScale);
           
-          // SHARPENING: Increased gradient force for steeper curves + stronger contrast
-          vec3 normal = normalize(vec3(-gradX * 20.0, -gradY * 20.0, 0.012));
+          // OPTION 1: Steeper curves for more dramatic peaks/valleys
+          vec3 normal = normalize(vec3(-gradX * 24.0, -gradY * 24.0, 0.012));
 
-          vec3 lightDir1 = normalize(vec3(0.95, 0.7, 0.45));  
-          vec3 lightDir2 = normalize(vec3(-0.95, -0.65, 0.35)); 
+          // OPTION 2: Light tweak for better shadow casting and spread
+          vec3 lightDir1 = normalize(vec3(0.9, 0.65, 0.5));  
+          vec3 lightDir2 = normalize(vec3(-1.0, -0.7, 0.35)); 
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          // Tighter specular for razor-sharp highlights
-          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 650.0);
-          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 380.0);
-          vec3 specular = (vec3(1.0) * spec1 * 12.0) + (vec3(0.8) * spec2 * 5.0);
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 680.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 400.0);
+          vec3 specular = (vec3(1.0) * spec1 * 13.0) + (vec3(0.75) * spec2 * 6.0);
 
           float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.8);
           vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 0.3;
