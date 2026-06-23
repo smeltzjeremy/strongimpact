@@ -6,14 +6,40 @@ import ProceduralChromeBackground from '../components/ProceduralChromeBackground
 export default function PhotosPage() {
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
-      {/* Back Link */}
+      {/* 1. BUTTON LEVEL (Z-50) */}
       <div className="fixed top-6 left-6 z-50">
         <Link to="/gallery" className="px-5 py-3 bg-black/60 hover:bg-black/80 border border-white/20 rounded-2xl text-sm transition">
           ← Back to Gallery
         </Link>
       </div>
 
-      {/* Chrome Background */}
+      {/* =========================================================================
+          LAYER 1: THE BACKSTAGE PAPER-CUT CLOUD HORIZON (Z-20)
+          - Deep, rich carmine crimson base.
+          - Uses substantial, massive widths so the bubbles slam into each other.
+          - Drops a heavy, soft pocket shadow onto the liquid chrome behind it.
+         ========================================================================= */}
+      <div className="absolute inset-x-0 bottom-0 h-[38vh] z-20 pointer-events-none filter drop-shadow-[0_-20px_35px_rgba(0,0,0,0.95)]">
+        {/* Soft atmospheric ambient glow behind the cutout cluster */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#2c0106]/95 via-[#570a18]/70 to-transparent" />
+        
+        {/* Master Hand-Packed Cutout Shapes */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden">
+          {/* Puffy Cluster Left */}
+          <div className="absolute -bottom-[15%] -left-[5%] w-[45vw] h-[45vw] bg-[#6e0b1b] rounded-full opacity-80 blur-[2px] border-t border-white/5" />
+          
+          {/* Main Towering Center Peak */}
+          <div className="absolute -bottom-[25%] left-[20%] w-[55vw] h-[55vw] bg-[#540612] rounded-full opacity-90 blur-[1px] border-t border-white/5" />
+          
+          {/* Overlapping Mid-Right Peak */}
+          <div className="absolute -bottom-[20%] left-[50%] w-[48vw] h-[48vw] bg-[#610815] rounded-full opacity-85 blur-[2px] border-t border-white/5" />
+          
+          {/* Puffy Cluster Far Right */}
+          <div className="absolute -bottom-[10%] left-[75%] w-[38vw] h-[38vw] bg-[#4f040f] rounded-full opacity-90 blur-[3px] border-t border-white/5" />
+        </div>
+      </div>
+
+      {/* BASE CHROMATIC VISUAL CANVASES (Z-10) */}
       <div className="absolute inset-0 z-10">
         <Canvas camera={{ position: [0, 0, 1], fov: 50 }} style={{ background: '#05050f' }}>
           <Suspense fallback={null}>
@@ -22,22 +48,7 @@ export default function PhotosPage() {
         </Canvas>
       </div>
 
-      {/* Fluffy Red Translucent Cloud Layer - HTML Bubbles */}
-      <div className="absolute inset-x-0 bottom-0 h-[42vh] z-20 pointer-events-none overflow-hidden drop-shadow-[0_-25px_35px_rgba(0,0,0,0.9)]">
-        {/* Color base */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#3a020a] via-[#7a0f22] to-transparent" />
-        
-        {/* Overlapping fluffy cloud puffs */}
-        <div className="absolute bottom-0 left-0 w-full h-full flex items-end justify-around">
-          <div className="w-64 h-64 bg-[#c23d55] rounded-full -mb-20 -ml-12 opacity-70 blur-[2px]" />
-          <div className="w-80 h-80 bg-[#d15a6a] rounded-full -mb-28 opacity-65 blur-[3px]" />
-          <div className="w-56 h-56 bg-[#b82f4a] rounded-full -mb-16 opacity-75 blur-[1px]" />
-          <div className="w-72 h-72 bg-[#e0707f] rounded-full -mb-36 opacity-55 blur-[4px]" />
-          <div className="w-52 h-52 bg-[#c23d55] rounded-full -mb-20 opacity-70 blur-[2px]" />
-        </div>
-      </div>
-
-      {/* Title */}
+      {/* 5. TITLE TEXT ELEMENT (Z-50) */}
       <div className="absolute top-8 left-1/2 -translate-x-1/2 z-50 text-center pointer-events-none">
         <h1 className="text-6xl font-bold tracking-tighter text-white">PHOTOS</h1>
       </div>
