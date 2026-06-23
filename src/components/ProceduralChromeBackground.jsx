@@ -48,11 +48,19 @@ export default function ProceduralChromeBackground() {
           for (int i = 0; i < 3; i++) {
             p *= rot(0.95);
             float warpFactor = 1.35;
-            p += vec2(sin(p.y * 1.2 + 0.5), cos(p.x * 0.75 - 0.45)) * warpFactor;
+            p += vec2(sin(p.y * 1.1 + 0.5), cos(p.x * 0.75 - 0.45)) * warpFactor;
             
             float layerNoise = noise(p * freq);
-            layerNoise = smoothstep(-0.6, 0.6, layerNoise);
-            layerNoise = pow(abs(layerNoise), 1.4) * sign(layerNoise);
+            
+            if (i == 2) {
+              // Controlled ridge sharpener - only on final layer for selective crisp edges
+              layerNoise = 1.0 - abs(layerNoise);
+              layerNoise = smoothstep(0.2, 0.8, layerNoise);
+            } else {
+              // Keep first two layers smooth for premium gunmetal shading
+              layerNoise = smoothstep(-0.6, 0.6, layerNoise);
+              layerNoise = pow(abs(layerNoise), 1.4) * sign(layerNoise);
+            }
             
             value += layerNoise * amp;
             freq *= 1.5;
@@ -94,7 +102,7 @@ export default function ProceduralChromeBackground() {
           vec3 base = vec3(0.0, 0.0, 0.001);
           vec3 color = base + specular + rim;
 
-          // Gunmetal chisel: Pulls mid-grays into rich dark shadows for better definition
+          // Gunmetal chisel contrast
           color = smoothstep(0.12, 0.78, color);
           color = pow(color, vec3(1.05)); 
           
