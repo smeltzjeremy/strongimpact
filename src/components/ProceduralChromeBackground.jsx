@@ -53,9 +53,13 @@ export default function ProceduralChromeBackground() {
             float layerNoise = noise(p * freq);
             
             if (i == 2) {
-              // Sharper pinched crease on final layer
+              // Consistent sharp ridges
               layerNoise = 1.0 - abs(layerNoise);
-              layerNoise = smoothstep(0.35, 0.65, layerNoise);
+              layerNoise = smoothstep(0.25, 0.75, layerNoise);
+            } else if (i == 1) {
+              // Light ridge support on middle layer for better uniformity
+              layerNoise = 1.0 - abs(layerNoise) * 0.6;
+              layerNoise = smoothstep(-0.4, 0.9, layerNoise);
             } else {
               layerNoise = smoothstep(-0.6, 0.6, layerNoise);
               layerNoise = pow(abs(layerNoise), 1.4) * sign(layerNoise);
@@ -85,17 +89,16 @@ export default function ProceduralChromeBackground() {
           float gradX = liquidSilkTopology((distortedUV.yx + epsX) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsX) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV.yx + epsY) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsY) * topologyScale);
           
-          // Massive normal multiplier for steep cliffs
-          vec3 normal = normalize(vec3(-gradX * 55.0, -gradY * 55.0, 0.005));
+          // Balanced high normal strength
+          vec3 normal = normalize(vec3(-gradX * 48.0, -gradY * 48.0, 0.005));
 
           vec3 lightDir1 = normalize(vec3(1.05, 0.75, 0.48));  
           vec3 lightDir2 = normalize(vec3(-1.1, -0.6, 0.32)); 
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          // Tighter, brighter specular
-          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 280.0);
-          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 160.0);
-          vec3 specular = (vec3(1.1) * spec1 * 26.0) + (vec3(0.85) * spec2 * 12.0);
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 260.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 150.0);
+          vec3 specular = (vec3(1.1) * spec1 * 24.0) + (vec3(0.85) * spec2 * 11.0);
 
           float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.0);
           vec3 rim = vec3(0.88, 0.92, 0.96) * fresnel * 0.48;
@@ -103,7 +106,6 @@ export default function ProceduralChromeBackground() {
           vec3 base = vec3(0.0, 0.0, 0.0005);
           vec3 color = base + specular + rim;
 
-          // Modest contrast lift
           color = smoothstep(0.14, 0.82, color);
           color = pow(color, vec3(1.04)); 
           
