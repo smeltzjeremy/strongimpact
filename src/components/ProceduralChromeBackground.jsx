@@ -57,7 +57,7 @@ export default function ProceduralChromeBackground() {
               layerNoise = 1.0 - abs(layerNoise);
               layerNoise = smoothstep(0.2, 0.8, layerNoise);
             } else {
-              // Smooth layers for natural shading
+              // Smooth layers for premium gunmetal shading
               layerNoise = smoothstep(-0.6, 0.6, layerNoise);
               layerNoise = pow(abs(layerNoise), 1.4) * sign(layerNoise);
             }
@@ -102,11 +102,11 @@ export default function ProceduralChromeBackground() {
           vec3 base = vec3(0.0, 0.0, 0.001);
           vec3 color = base + specular + rim;
 
-          // Pure physics: Reinhard tone mapping for natural gradient falloff
-          color = color / (color + vec3(1.0));
-          color = pow(color, vec3(1.0 / 2.2)); // sRGB gamma
+          // Gunmetal chisel contrast
+          color = smoothstep(0.12, 0.78, color);
+          color = pow(color, vec3(1.05)); 
           
-          gl_FragColor = vec4(color, 1.0);
+          gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
         }
       `,
       depthWrite: false,
