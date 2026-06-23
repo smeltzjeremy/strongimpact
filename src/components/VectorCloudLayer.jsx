@@ -11,49 +11,35 @@ export default function VectorCloudLayer({
 }) {
   const containerRef = useRef();
 
-  // 1. Structural Bezier Path Geometry (Stretched wide to secure ultra-wide screen bounds)
-  const [geometry, lineGeometry] = useMemo(() => {
+  // 1. Procedural Shape Creation (Stretched ultra-wide to completely anchor the left corner)
+  const [geometry, outlineGeometry] = useMemo(() => {
     const shape = new THREE.Shape();
-    shape.moveTo(-14, -5); // Shifted even further left to permanently block corner leakage
+    shape.moveTo(-15, -6); // Pushed extra deep left and down to guarantee zero baseline leak
     
     const h1 = -0.1 + Math.sin(seed) * 0.3;
     const h2 = 0.2 + Math.cos(seed) * 0.4;
     const h3 = 0.0 + Math.sin(seed * 2.5) * 0.25;
 
-    shape.bezierCurveTo(-9.0, h1 - 0.1, -7.0, h1 + 0.9, -5.0, h2);
+    // The identical billowy vector path curves
+    shape.bezierCurveTo(-10.0, h1 - 0.1, -7.5, h1 + 0.9, -5.0, h2);
     shape.bezierCurveTo(-2.5, h2 + 0.7, -1.0, h2 + 0.6, 0.5, h3);
     shape.bezierCurveTo(2.5, h3 + 1.0, 4.5, h1 + 0.8, 6.5, h2 - 0.1);
-    shape.bezierCurveTo(8.5, h2 + 0.6, 10.5, h3 + 0.7, 14, -0.2);
+    shape.bezierCurveTo(9.0, h2 + 0.6, 11.5, h3 + 0.7, 15, -0.2);
     
-    // Bottom bounding lines for the solid fill mesh
-    shape.lineTo(14, -5);
-    shape.lineTo(-14, -5);
+    shape.lineTo(15, -6);
+    shape.lineTo(-15, -6);
     shape.closePath();
 
-    // 2. Isolate the top ridge path to generate a clean outline vector thread
-    const points = [];
-    points.push(new THREE.Vector3(-14, -0.2, 0));
-    
-    // Smoothly step across the curve function to draw a matching high-resolution rim line
-    for (let i = 0; i <= 50; i++) {
-      const t = i / 50;
-      // Re-map the exact bezier profile calculation
-      const x = -14 + t * 28;
-      let y = 0;
-      if (x < -5.0) y = THREE.MathUtils.lerp(-0.2, h2, (x + 14) / 9);
-      else if (x < 0.5) y = THREE.MathUtils.lerp(h2, h3, (x + 5.0) / 5.5);
-      else if (x < 6.5) y = THREE.MathUtils.lerp(h3, h2 - 0.1, (x - 0.5) / 6.0);
-      else y = THREE.MathUtils.lerp(h2 - 0.1, -0.2, (x - 6.5) / 7.5);
-      points.push(new THREE.Vector3(x, y + 0.01, 0)); // Nudged up slightly to sit on top edge
-    }
-
     const shapeGeo = new THREE.ShapeGeometry(shape);
+    
+    // 2. SAFE WEBGL OUTLINES: Uses the true shape outline to prevent criss-cross artifact strings
+    const points = shape.getPoints(60);
     const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
 
     return [shapeGeo, lineGeo];
   }, [seed]);
 
-  // Clean, opaque solid color block material
+  // Completely opaque solid color card mesh
   const colorMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: new THREE.Color(solidColor),
@@ -64,18 +50,19 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  // Crisp, light cutout outline line rim
-  const rimLineMaterial = useMemo(() => {
+  // Clean, thin card-lip accent highlight line
+  const outlineMaterial = useMemo(() => {
     return new THREE.LineBasicMaterial({
-      color: new THREE.Color('#ffb3be'), // Light, glowing coral white outline tone
-      linewidth: 2, // Enhances vector edge presence
+      color: new THREE.Color('#ffa6b5'), // Clean, illuminated coral white outline
+      linewidth: 2,
       transparent: true,
-      opacity: 0.6,
-      blending: THREE.NormalBlending
+      opacity: 0.65,
+      depthTest: true,
+      depthWrite: false
     });
   }, []);
 
-  // Drop Shadow Material
+  // Soft drop shadow backdrop
   const shadowMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: '#000000',
@@ -87,7 +74,7 @@ export default function VectorCloudLayer({
     });
   }, [shadowOpacity]);
 
-  // Parallax tracking
+  // Motion engine tracking
   useFrame((state) => {
     if (!containerRef.current) return;
     const targetX = state.pointer.x * parallaxFactor * 0.7;
@@ -99,25 +86,25 @@ export default function VectorCloudLayer({
 
   return (
     <group ref={containerRef}>
-      {/* PASS 1: TRANS-BLACK DROP SHADOW MESH */}
+      {/* SHADOW BACKER */}
       <mesh 
         geometry={geometry} 
         material={shadowMaterial} 
         position={[0, -0.16, zPos - 0.05]} 
       />
 
-      {/* PASS 2: SOLID OPAQUE COLOR SHEET */}
+      {/* OPAQUE COLOR CARD FACE */}
       <mesh 
         geometry={geometry} 
         material={colorMaterial} 
         position={[0, 0, zPos]} 
       />
 
-      {/* PASS 3: CRISP LIGHT PAPERCUT OUTLINE RIM */}
+      {/* HIGHLIGHT RIM LINE (Traced directly around the cloud face perimeter) */}
       <line 
-        geometry={lineGeometry} 
-        material={rimLineMaterial} 
-        position={[0, 0, zPos + 0.01]} // Layered cleanly over the color mesh
+        geometry={outlineGeometry} 
+        material={outlineMaterial} 
+        position={[0, 0, zPos + 0.01]} 
       />
     </group>
   );
