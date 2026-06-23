@@ -72,23 +72,23 @@ export default function ProceduralChromeBackground() {
           float gradX = liquidSilkTopology((distortedUV.yx + epsX) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsX) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV.yx + epsY) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsY) * topologyScale);
           
-          vec3 normal = normalize(vec3(-gradX * 26.5, -gradY * 26.5, 0.008));
+          // Deeper valleys
+          vec3 normal = normalize(vec3(-gradX * 27.5, -gradY * 27.5, 0.008));
 
           vec3 lightDir1 = normalize(vec3(1.05, 0.75, 0.48));  
           vec3 lightDir2 = normalize(vec3(-1.1, -0.6, 0.32)); 
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          // Stronger, wetter specular for glassmorphism gloss
-          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 1050.0);
-          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 580.0);
-          vec3 specular = (vec3(1.1) * spec1 * 16.0) + (vec3(0.95) * spec2 * 9.0);
+          // More intense metallic shine
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 1150.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 620.0);
+          vec3 specular = (vec3(1.12) * spec1 * 17.0) + (vec3(0.95) * spec2 * 10.0);
 
-          // Enhanced glassy fresnel
-          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 5.0);
-          vec3 rim = vec3(0.82, 0.88, 0.95) * fresnel * 0.55;
+          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.8);
+          vec3 rim = vec3(0.85, 0.9, 0.96) * fresnel * 0.4;
 
-          // Slightly lighter + cooler base for glass depth
-          vec3 base = vec3(0.022, 0.024, 0.035);
+          // Deeper black base for contrast
+          vec3 base = vec3(0.006, 0.006, 0.012);
           vec3 color = base + specular + rim;
 
           gl_FragColor = vec4(pow(color, vec3(1.0 / 2.1)), 1.0);
