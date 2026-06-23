@@ -72,21 +72,22 @@ export default function ProceduralChromeBackground() {
           float gradX = liquidSilkTopology((distortedUV.yx + epsX) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsX) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV.yx + epsY) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsY) * topologyScale);
           
-          vec3 normal = normalize(vec3(-gradX * 24.0, -gradY * 24.0, 0.012));
+          // Sharper cutting edges
+          vec3 normal = normalize(vec3(-gradX * 26.0, -gradY * 26.0, 0.01));
 
-          // Your requested direction: slightly over the top, angling down toward bottom-left
-          vec3 lightDir1 = normalize(vec3(1.05, 0.75, 0.48));   // Main light from upper-right
-          vec3 lightDir2 = normalize(vec3(-1.1, -0.6, 0.32));   // Fill from opposite side
+          vec3 lightDir1 = normalize(vec3(1.05, 0.75, 0.48));  
+          vec3 lightDir2 = normalize(vec3(-1.1, -0.6, 0.32)); 
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 680.0);
-          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 400.0);
-          vec3 specular = (vec3(1.0) * spec1 * 13.0) + (vec3(0.75) * spec2 * 6.0);
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 820.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 480.0);
+          vec3 specular = (vec3(1.0) * spec1 * 14.0) + (vec3(0.85) * spec2 * 7.0);
 
-          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.8);
-          vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 0.3;
+          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.2);
+          vec3 rim = vec3(0.78, 0.82, 0.88) * fresnel * 0.35;
 
-          vec3 base = vec3(0.012, 0.012, 0.02);
+          // Slightly richer base color for better metallic feel
+          vec3 base = vec3(0.018, 0.018, 0.028);
           vec3 color = base + specular + rim;
 
           gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
