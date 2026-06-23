@@ -72,18 +72,17 @@ export default function ProceduralChromeBackground() {
           float gradX = liquidSilkTopology((distortedUV + eps.xy) * topologyScale) - liquidSilkTopology((distortedUV - eps.xy) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV + eps.yx) * topologyScale) - liquidSilkTopology((distortedUV - eps.yx) * topologyScale);
 
-          // Balanced gradient amplification for the larger topologyScale
-          vec3 normal = normalize(vec3(-gradX * 12.0, -gradY * 12.0, 0.045));
+          // Relaxed gradients + higher Z for natural volumetric curvature
+          vec3 normal = normalize(vec3(-gradX * 6.5, -gradY * 6.5, 0.085));
 
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
           vec3 r = reflect(viewDir, normal);
 
-          // Re-aligned softbox directions to match the rotated coordinate system
           float box1 = smoothstep(-0.2, 0.8, max(0.0, dot(r, normalize(vec3(0.5, 0.5, 0.7)))));
           float spec1 = pow(box1, 35.0) * 3.5;
 
           float box2 = smoothstep(0.1, 0.9, max(0.0, dot(r, normalize(vec3(-0.5, 0.8, 0.4)))));
-          float spec2 = pow(box2, 280.0) * 8.5;
+          float spec2 = pow(box2, 650.0) * 12.5;
 
           vec3 specular = vec3(1.0) * spec1 + vec3(0.92, 0.94, 0.98) * spec2;
 
@@ -93,8 +92,7 @@ export default function ProceduralChromeBackground() {
           vec3 base = vec3(0.005, 0.005, 0.01);
           vec3 color = base + specular + rim;
 
-          color = smoothstep(0.02, 0.98, color);
-          
+          // No artificial contrast clamping — let the physics render naturally
           gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
         }
       `,
