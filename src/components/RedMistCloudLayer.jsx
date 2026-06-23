@@ -1,4 +1,3 @@
-// src/components/RedMistCloudLayer.jsx
 import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -34,19 +33,26 @@ export default function RedMistCloudLayer({ intensity = 0.22 }) {
         }
 
         void main() {
-          vec2 uv = vUv * 1.6;
-          float t = uTime * 0.035;
+          vec2 uv = vUv;
+          float t = uTime * 0.25;
           
-          float n1 = noise(uv * 0.65 + vec2(t*0.18, t*0.12));
-          float n2 = noise(uv * 1.35 + vec2(t*0.4, -t*0.08));
+          float warp = noise(uv * 2.5 + vec2(t * 0.15, 0.0));
+          vec2 cloudUV = uv * vec2(2.0, 3.5) + vec2(t * 0.2, warp * 0.35);
           
-          float clouds = n1 * 0.65 + n2 * 0.35;
-          clouds = smoothstep(0.32, 0.78, clouds);
+          float n1 = noise(cloudUV * 0.85);
+          float n2 = noise(cloudUV * 2.15);
+          float cloudDensity = n1 * 0.68 + n2 * 0.32;
           
-          vec3 redMist = vec3(0.72, 0.12, 0.18);
-          vec3 color = redMist * clouds * uIntensity;
+          // Vertical mask - stronger in lower half
+          float verticalMask = smoothstep(0.52, 0.08, uv.y);
           
-          gl_FragColor = vec4(color, clouds * 0.48);
+          cloudDensity = smoothstep(0.25, 0.75, cloudDensity) * verticalMask;
+          
+          vec3 redMist = vec3(0.68, 0.08, 0.12);
+          float finalAlpha = cloudDensity * uIntensity * 0.55;
+          vec3 finalColor = redMist * finalAlpha;
+          
+          gl_FragColor = vec4(finalColor, finalAlpha);
         }
       `,
       transparent: true,
@@ -60,7 +66,7 @@ export default function RedMistCloudLayer({ intensity = 0.22 }) {
   });
 
   return (
-    <mesh ref={meshRef} position={[0, 0, 0.2]}>
+    <mesh ref={meshRef} position={[0, 0, 0.25]}>
       <planeGeometry args={[2, 2]} />
       <primitive object={material} attach="material" />
     </mesh>
