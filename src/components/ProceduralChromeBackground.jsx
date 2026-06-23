@@ -84,10 +84,10 @@ export default function ProceduralChromeBackground() {
           vec3 lightDir2 = normalize(vec3(-1.1, -0.6, 0.32)); 
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          // THE 3D POP FIX: Dropping exponents spreads the white ribbons; blasting multipliers maximizes glow
-          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 450.0);
-          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 220.0);
-          vec3 specular = (vec3(1.3) * spec1 * 48.0) + (vec3(0.96) * spec2 * 22.0);
+          // Partner's split-intensity fix: Spread highlights + restore elegant shading
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 180.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 120.0);
+          vec3 specular = (vec3(1.0) * spec1 * 16.0) + (vec3(0.85) * spec2 * 8.0);
 
           float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.0);
           vec3 rim = vec3(0.88, 0.92, 0.96) * fresnel * 0.48;
@@ -95,9 +95,9 @@ export default function ProceduralChromeBackground() {
           vec3 base = vec3(0.0, 0.0, 0.001);
           vec3 color = base + specular + rim;
 
-          // THE RAZOR EDGE FIX: Squeezing the gate slices out dull grays and forces harsh transitions
-          color = smoothstep(0.15, 0.55, color);
-          color = pow(color, vec3(1.35)); 
+          // Re-opened contrast gate for smooth metallic gradients
+          color = smoothstep(0.05, 0.75, color);
+          color = pow(color, vec3(1.22)); 
           
           gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
         }
