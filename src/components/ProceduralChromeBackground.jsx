@@ -42,15 +42,15 @@ export default function ProceduralChromeBackground() {
 
         float liquidSilkTopology(vec2 p) {
           float value = 0.0;
-          float amp = 0.55;
-          float freq = 1.2;
-          
-          for (int i = 0; i < 5; i++) {
-            p *= rot(0.85);
-            p += vec2(sin(p.y * 0.9 + 0.5), cos(p.x * 0.9 - 0.5)) * 0.42;
+          float amp = 0.7;
+          float freq = 1.0;
+          for (int i = 0; i < 3; i++) {
+            p *= rot(0.95);
+            float warpFactor = 1.4;
+            p += vec2(sin(p.y * 1.2 + 0.5), cos(p.x * 0.8 - 0.5)) * warpFactor;
             value += noise(p * freq) * amp;
-            freq *= 1.68;
-            amp *= 0.48;
+            freq *= 1.45;
+            amp *= 0.52;
           }
           return value;
         }
@@ -60,47 +60,34 @@ export default function ProceduralChromeBackground() {
           uv = uv * 2.0 - 1.0;
           uv.x *= uResolution.x / uResolution.y;
 
-          float currentRotation = 1.15;
-          vec2 twistedUV = rot(currentRotation) * uv;
+          vec2 distortedUV = uv;
+          distortedUV.y *= 0.8;
+          distortedUV.x *= 1.1;
 
-          vec2 distortedUV = twistedUV;
-          distortedUV.y *= 0.85;
-          distortedUV.x *= 1.15;
+          float topologyScale = 0.58;
 
-          float topologyScale = 0.55;
+          vec2 epsX = vec2(0.003 * 1.1, 0.0);
+          vec2 epsY = vec2(0.0, 0.003 * 0.8);
 
-          vec2 eps = vec2(0.0015, 0.0);
-          float gradX = liquidSilkTopology((distortedUV + eps.xy) * topologyScale) - liquidSilkTopology((distortedUV - eps.xy) * topologyScale);
-          float gradY = liquidSilkTopology((distortedUV + eps.yx) * topologyScale) - liquidSilkTopology((distortedUV - eps.yx) * topologyScale);
+          float gradX = liquidSilkTopology((distortedUV + epsX) * topologyScale) - liquidSilkTopology((distortedUV - epsX) * topologyScale);
+          float gradY = liquidSilkTopology((distortedUV + epsY) * topologyScale) - liquidSilkTopology((distortedUV - epsY) * topologyScale);
+          
+          vec3 normal = normalize(vec3(-gradX * 13.0, -gradY * 13.0, 0.012));
 
-          vec3 normal = normalize(vec3(-gradX * 16.0, -gradY * 16.0, 0.045));
-
+          vec3 lightDir1 = normalize(vec3(1.4, 0.6, 0.25));
+          vec3 lightDir2 = normalize(vec3(-1.4, 0.4, 0.3));
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
-          vec3 r = reflect(viewDir, normal);
 
-          // Dynamic lights that rotate with the coordinate system
-          vec2 lightRot1 = rot(currentRotation) * vec2(0.0, 1.0);
-          vec3 lightDir1 = normalize(vec3(lightRot1.x, lightRot1.y, 0.6));
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 320.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 200.0);
+          vec3 specular = (vec3(1.0) * spec1 * 12.0) + (vec3(0.8) * spec2 * 5.0);
 
-          vec2 lightRot2 = rot(currentRotation) * vec2(-1.0, -0.5);
-          vec3 lightDir2 = normalize(vec3(lightRot2.x, lightRot2.y, 0.4));
+          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.8);
+          vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 0.3;
 
-          float box1 = smoothstep(0.1, 0.8, max(0.0, dot(r, lightDir1)));
-          float spec1 = pow(box1, 60.0) * 5.0;
-
-          float box2 = smoothstep(0.2, 0.85, max(0.0, dot(r, lightDir2)));
-          float spec2 = pow(box2, 320.0) * 12.0;
-
-          vec3 specular = vec3(1.0) * spec1 + vec3(0.92, 0.95, 0.99) * spec2;
-
-          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.2);
-          vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 0.5;
-
-          vec3 base = vec3(0.002, 0.002, 0.005);
+          vec3 base = vec3(0.012, 0.012, 0.02);
           vec3 color = base + specular + rim;
 
-          color = smoothstep(0.02, 0.98, color);
-          
           gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
         }
       `,
