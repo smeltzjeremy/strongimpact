@@ -69,13 +69,15 @@ export default function ProceduralChromeBackground() {
           vec2 epsX = vec2(0.003 * 1.1, 0.0);
           vec2 epsY = vec2(0.0, 0.003 * 0.8);
 
-          float gradX = liquidSilkTopology((distortedUV + epsX) * topologyScale) - liquidSilkTopology((distortedUV - epsX) * topologyScale);
-          float gradY = liquidSilkTopology((distortedUV + epsY) * topologyScale) - liquidSilkTopology((distortedUV - epsY) * topologyScale);
+          // THE SIMPLE TWIST: Flipped distortedUV components from .xy to .yx to lay the ribbons horizontally
+          float gradX = liquidSilkTopology((distortedUV.yx + epsX) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsX) * topologyScale);
+          float gradY = liquidSilkTopology((distortedUV.yx + epsY) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsY) * topologyScale);
           
           vec3 normal = normalize(vec3(-gradX * 13.0, -gradY * 13.0, 0.012));
 
-          vec3 lightDir1 = normalize(vec3(1.4, 0.6, 0.25));
-          vec3 lightDir2 = normalize(vec3(-1.4, 0.4, 0.3));
+          // THE ADJUSTMENT ZONE: Move these numbers to slide the lights around to catch the horizontal crests
+          vec3 lightDir1 = normalize(vec3(0.5, 1.4, 0.4));  // Main highlight position
+          vec3 lightDir2 = normalize(vec3(-0.5, -1.4, 0.3)); // Shadow fill position
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
           float spec1 = pow(max(dot(normal, lightDir1), 0.0), 320.0);
