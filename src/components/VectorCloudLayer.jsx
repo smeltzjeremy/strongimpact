@@ -5,24 +5,21 @@ import * as THREE from 'three';
 export default function VectorCloudLayer({ 
   zPos = 0, 
   solidColor = '#c23d55', 
-  shadowOpacity = 0.35,
+  shadowOpacity = 0.4,
   parallaxFactor = 0.05,
   seed = 1.0 
 }) {
   const containerRef = useRef();
 
-  // 1. Expanded horizontal layout (-12 to 12) to forcefully lock down the left/right viewports
+  // 1. Structural Bezier Path Geometry (Wide overflow bounds)
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
-    
-    // Massive safety margin to guarantee the left corner is 100% covered during parallax shifts
     shape.moveTo(-12, -5);
     
     const h1 = -0.1 + Math.sin(seed) * 0.3;
     const h2 = 0.2 + Math.cos(seed) * 0.4;
     const h3 = 0.0 + Math.sin(seed * 2.5) * 0.25;
 
-    // Chain clean, highly defined interlocking papercut humps
     shape.bezierCurveTo(-8.0, h1 - 0.1, -6.0, h1 + 0.9, -4.5, h2);
     shape.bezierCurveTo(-2.5, h2 + 0.7, -1.0, h2 + 0.6, 0.5, h3);
     shape.bezierCurveTo(2.0, h3 + 1.0, 4.0, h1 + 0.8, 6.0, h2 - 0.1);
@@ -35,27 +32,33 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
+  // 2. FORCE OPAQUE MATERIAL (Blocks out everything behind it like wood/paper)
   const colorMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: new THREE.Color(solidColor),
-      transparent: false,
-      depthWrite: false
+      transparent: false, // HARD COATED OPAQUE
+      opacity: 1.0,       // FULL STRENGTH
+      depthTest: true,    // Evaluates 3D spacing
+      depthWrite: true,   // Blocks hidden pixels from rendering
+      blending: THREE.NormalBlending // Reverts to basic, non-translucent sorting
     });
   }, [solidColor]);
 
+  // 3. Drop Shadow Material (Kept translucent so it can darken the solid layer beneath it)
   const shadowMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: '#000000',
       transparent: true,
       opacity: shadowOpacity,
-      depthWrite: false,
+      depthTest: true,
+      depthWrite: false, // Allows the shadow overlay to rest gently on the next plane
       blending: THREE.NormalBlending
     });
   }, [shadowOpacity]);
 
+  // 4. Parallax calculations
   useFrame((state) => {
     if (!containerRef.current) return;
-    
     const targetX = state.pointer.x * parallaxFactor * 0.7;
     const targetY = state.pointer.y * parallaxFactor * 0.35;
 
@@ -65,14 +68,14 @@ export default function VectorCloudLayer({
 
   return (
     <group ref={containerRef}>
-      {/* SHADOW OBJECT: Offset down and back */}
+      {/* SHADOW BASE */}
       <mesh 
         geometry={geometry} 
         material={shadowMaterial} 
-        position={[0, -0.15, zPos - 0.1]} 
+        position={[0, -0.15, zPos - 0.05]} // Pushed slightly closer behind to sharpen the shadow lip
       />
 
-      {/* CLOUD OBJECT */}
+      {/* SOLID COLOR TOP */}
       <mesh 
         geometry={geometry} 
         material={colorMaterial} 
