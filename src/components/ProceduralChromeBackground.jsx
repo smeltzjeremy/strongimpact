@@ -72,16 +72,18 @@ export default function ProceduralChromeBackground() {
           float gradX = liquidSilkTopology((distortedUV + eps.xy) * topologyScale) - liquidSilkTopology((distortedUV - eps.xy) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV + eps.yx) * topologyScale) - liquidSilkTopology((distortedUV - eps.yx) * topologyScale);
 
-          vec3 normal = normalize(vec3(-gradX, -gradY, 0.065));
+          // Balanced gradient amplification for the larger topologyScale
+          vec3 normal = normalize(vec3(-gradX * 12.0, -gradY * 12.0, 0.045));
 
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
           vec3 r = reflect(viewDir, normal);
 
-          float box1 = smoothstep(0.1, 0.9, max(0.0, r.y * 0.5 + 0.5));
-          float spec1 = pow(box1, 60.0) * 5.0;
+          // Re-aligned softbox directions to match the rotated coordinate system
+          float box1 = smoothstep(-0.2, 0.8, max(0.0, dot(r, normalize(vec3(0.5, 0.5, 0.7)))));
+          float spec1 = pow(box1, 35.0) * 3.5;
 
-          float box2 = smoothstep(0.15, 0.85, max(0.0, dot(r, normalize(vec3(-0.7, 0.6, 0.5)))));
-          float spec2 = pow(box2, 380.0) * 9.5;
+          float box2 = smoothstep(0.1, 0.9, max(0.0, dot(r, normalize(vec3(-0.5, 0.8, 0.4)))));
+          float spec2 = pow(box2, 280.0) * 8.5;
 
           vec3 specular = vec3(1.0) * spec1 + vec3(0.92, 0.94, 0.98) * spec2;
 
