@@ -13,40 +13,48 @@ export default function PhotosPage() {
         </Link>
       </div>
 
-      {/* LAYER 1: Background Cardboard Cutout Cloud */}
-      <div
-        className="absolute inset-x-0 bottom-0 h-[32vh] z-20 pointer-events-none filter drop-shadow-[0_-20px_30px_rgba(0,0,0,0.95)] blur-[2px]"
-      >
-        <svg viewBox="0 0 1440 300" preserveAspectRatio="none" className="w-full h-full">
-          <defs>
-            <linearGradient id="backCloudGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#7a0c17" stopOpacity="0.65" />
-              <stop offset="40%" stopColor="#4a040b" stopOpacity="0.85" />
-              <stop offset="100%" stopColor="#1f0104" stopOpacity="0.98" />
-            </linearGradient>
-          </defs>
-          <path
-            fill="url(#backCloudGrad)"
-            stroke="rgba(255, 255, 255, 0.08)"
-            strokeWidth="1"
-            d="M0,150
-               C120,90 220,190 340,160
-               C460,130 520,70 660,110
-               C800,150 880,210 1020,170
-               C1160,130 1260,80 1360,120
-               C1410,140 1425,145 1440,150
-               L1440,300 L0,300 Z"
-          />
-        </svg>
-      </div>
-
-      {/* Chrome Background */}
+      {/* Background Chrome */}
       <div className="absolute inset-0 z-10">
         <Canvas camera={{ position: [0, 0, 1], fov: 50 }} style={{ background: '#05050f' }}>
           <Suspense fallback={null}>
             <ProceduralChromeBackground />
           </Suspense>
         </Canvas>
+      </div>
+
+      {/* Fluffy Red Translucent Cloud Layer */}
+      <div className="absolute inset-x-0 bottom-0 h-[45vh] z-20 pointer-events-none">
+        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="w-full h-full opacity-80">
+          <defs>
+            <linearGradient id="redCloud" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#4a020c" stopOpacity="0.95" />
+              <stop offset="45%" stopColor="#8c1a2e" stopOpacity="0.75" />
+              <stop offset="100%" stopColor="#c23d55" stopOpacity="0.35" />
+            </linearGradient>
+          </defs>
+          <path
+            fill="url(#redCloud)"
+            d="M0,280 
+               Q180,220 320,245 
+               Q480,180 620,225 
+               Q780,160 920,210 
+               Q1080,190 1180,245 
+               Q1300,200 1440,260 
+               L1440,320 L0,320 Z"
+          />
+          {/* Extra puff layer for more fluff */}
+          <path
+            fill="url(#redCloud)"
+            opacity="0.65"
+            d="M0,265 
+               Q150,200 280,230 
+               Q450,165 590,200 
+               Q750,175 880,215 
+               Q1050,180 1200,225 
+               Q1350,195 1440,245 
+               L1440,320 L0,320 Z"
+          />
+        </svg>
       </div>
 
       {/* Title */}
