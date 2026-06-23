@@ -11,7 +11,7 @@ export default function VectorCloudLayer({
 }) {
   const containerRef = useRef();
 
-  // 1. Procedural Shape and Outline Creation
+  // 1. Procedural Shape and Outline Creation (Wide horizontal padding)
   const [geometry, outlineGeometry] = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-15, -6);
@@ -31,13 +31,9 @@ export default function VectorCloudLayer({
 
     const shapeGeo = new THREE.ShapeGeometry(shape);
     
-    // Extract a high-fidelity perimeter sequence
+    // Extract precise high-resolution perimeter vertices
     const points = shape.getPoints(90);
-    
-    // Convert the edge path into an extruded, thick ribbon geometry to bypass browser constraints
-    const extrudeSettings = { steps: 1, depth: 0.04, bevelEnabled: false };
-    const edgeShape = new THREE.Shape(points);
-    const lineGeo = new THREE.ShapeGeometry(edgeShape);
+    const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
 
     return [shapeGeo, lineGeo];
   }, [seed]);
@@ -52,14 +48,14 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  // 2. Dynamic Monochromatic Shading (Generates a distinct, slightly darker red outline)
+  // 2. MONOCHROMATIC LIGHT RIM: Scaled slightly upward to create a bright vector border
   const outlineMaterial = useMemo(() => {
     const baseColor = new THREE.Color(solidColor);
     
-    // Scale color values down to create a matching darker shade for the edge accent
-    baseColor.multiplyScalar(0.72); 
+    // Programmatically step the color value UP to act as a lighter red accent line
+    baseColor.addScalar(0.18); 
 
-    return new THREE.MeshBasicMaterial({
+    return new THREE.LineBasicMaterial({
       color: baseColor,
       transparent: false,
       depthTest: true,
@@ -89,26 +85,26 @@ export default function VectorCloudLayer({
 
   return (
     <group ref={containerRef}>
-      {/* SHADOW */}
+      {/* PASS 1: TRANS-BLACK DROP SHADOW */}
       <mesh 
         geometry={geometry} 
         material={shadowMaterial} 
         position={[0, -0.16, zPos - 0.05]} 
       />
 
-      {/* SOLID CLOUD BLOCK */}
+      {/* PASS 2: OPAQUE COLOR CARD */}
       <mesh 
         geometry={geometry} 
         material={colorMaterial} 
         position={[0, 0, zPos]} 
       />
 
-      {/* THICK EXTENDED MONOCHROMATIC OUTLINE */}
-      <mesh 
+      {/* PASS 3: EXTRA-THICK BRIGHT RED PERIMETER OUTLINE ACCENT */}
+      <lineLoop 
         geometry={outlineGeometry} 
         material={outlineMaterial} 
-        position={[0, 0.02, zPos + 0.02]} // Lifted slightly upward to trace the lip explicitly
-        scale={[1.002, 1.002, 1]}         // Nudged out to ensure high-visibility thickness
+        position={[0, 0.02, zPos + 0.02]} // Layered forward to highlight upper ridge
+        scale={[1.006, 1.006, 1]}         // Uniform vector scaling to make the line visibly thicker
       />
     </group>
   );
