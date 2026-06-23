@@ -5,47 +5,44 @@ import * as THREE from 'three';
 export default function VectorCloudLayer({ 
   zPos = 0, 
   solidColor = '#c23d55', 
-  shadowOpacity = 0.45,
+  shadowOpacity = 0.35,
   parallaxFactor = 0.05,
   seed = 1.0 
 }) {
   const containerRef = useRef();
 
-  // 1. Procedurally generate extra-wide papercut curves with guaranteed bottom anchoring
+  // 1. Expanded horizontal layout (-12 to 12) to forcefully lock down the left/right viewports
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     
-    // Extended well past screen edges (-10 to 10) to secure ultra-widescreen viewports
-    shape.moveTo(-10, -5);
+    // Massive safety margin to guarantee the left corner is 100% covered during parallax shifts
+    shape.moveTo(-12, -5);
     
-    const h1 = -0.2 + Math.sin(seed) * 0.25;
-    const h2 = 0.1 + Math.cos(seed) * 0.35;
-    const h3 = -0.1 + Math.sin(seed * 2.5) * 0.2;
+    const h1 = -0.1 + Math.sin(seed) * 0.3;
+    const h2 = 0.2 + Math.cos(seed) * 0.4;
+    const h3 = 0.0 + Math.sin(seed * 2.5) * 0.25;
 
-    // Chain overlapping loops to form the distinct paper-cut cloud layers
-    shape.bezierCurveTo(-7.0, h1 - 0.2, -5.5, h1 + 0.8, -4.0, h2);
-    shape.bezierCurveTo(-2.0, h2 + 0.6, -1.0, h2 + 0.5, 0.0, h3);
-    shape.bezierCurveTo(1.0, h3 + 0.9, 2.5, h1 + 0.7, 4.0, h2 - 0.1);
-    shape.bezierCurveTo(5.5, h2 + 0.5, 7.5, h3 + 0.6, 10, -0.4);
+    // Chain clean, highly defined interlocking papercut humps
+    shape.bezierCurveTo(-8.0, h1 - 0.1, -6.0, h1 + 0.9, -4.5, h2);
+    shape.bezierCurveTo(-2.5, h2 + 0.7, -1.0, h2 + 0.6, 0.5, h3);
+    shape.bezierCurveTo(2.0, h3 + 1.0, 4.0, h1 + 0.8, 6.0, h2 - 0.1);
+    shape.bezierCurveTo(8.0, h2 + 0.6, 10.0, h3 + 0.7, 12, -0.2);
     
-    // Drop down and form a massive solid block underneath to guarantee zero corner gaps
-    shape.lineTo(10, -5);
-    shape.lineTo(-10, -5);
+    shape.lineTo(12, -5);
+    shape.lineTo(-12, -5);
     shape.closePath();
 
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
-  // 2. Solid Color Material (No translucency, no muddy blending bugs)
   const colorMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: new THREE.Color(solidColor),
-      transparent: false, // Opaque solid color blocks out everything behind it cleanly
+      transparent: false,
       depthWrite: false
     });
   }, [solidColor]);
 
-  // 3. Drop Shadow Material to physically separate the solid layers
   const shadowMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: '#000000',
@@ -56,7 +53,6 @@ export default function VectorCloudLayer({
     });
   }, [shadowOpacity]);
 
-  // 4. Parallax physics interpolation loop
   useFrame((state) => {
     if (!containerRef.current) return;
     
@@ -69,14 +65,14 @@ export default function VectorCloudLayer({
 
   return (
     <group ref={containerRef}>
-      {/* THE SHADOW: Casts a crisp silhouette onto the layer behind it */}
+      {/* SHADOW OBJECT: Offset down and back */}
       <mesh 
         geometry={geometry} 
         material={shadowMaterial} 
-        position={[0, -0.12, zPos - 0.1]} 
+        position={[0, -0.15, zPos - 0.1]} 
       />
 
-      {/* THE CLOUD: Flat, clean vector cutout fill */}
+      {/* CLOUD OBJECT */}
       <mesh 
         geometry={geometry} 
         material={colorMaterial} 
