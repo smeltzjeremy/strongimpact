@@ -66,33 +66,37 @@ export default function ProceduralChromeBackground() {
           distortedUV.y *= 0.85;
           distortedUV.x *= 1.15;
 
-          float topologyScale = 1.35;
+          // Zoomed in to turn micro-droplets into giant sweeping rivers
+          float topologyScale = 0.45;
 
           vec2 eps = vec2(0.002, 0.0);
           float gradX = liquidSilkTopology((distortedUV + eps.xy) * topologyScale) - liquidSilkTopology((distortedUV - eps.xy) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV + eps.yx) * topologyScale) - liquidSilkTopology((distortedUV - eps.yx) * topologyScale);
 
-          // Relaxed gradients + higher Z for natural volumetric curvature
-          vec3 normal = normalize(vec3(-gradX * 6.5, -gradY * 6.5, 0.085));
+          // Aggressive gradient amplification for wide light coverage
+          vec3 normal = normalize(vec3(-gradX * 22.0, -gradY * 22.0, 0.025));
 
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
           vec3 r = reflect(viewDir, normal);
 
-          float box1 = smoothstep(-0.2, 0.8, max(0.0, dot(r, normalize(vec3(0.5, 0.5, 0.7)))));
-          float spec1 = pow(box1, 35.0) * 3.5;
+          // Widened softbox windows to flood the large waves with silver
+          float box1 = smoothstep(-0.4, 0.6, max(0.0, dot(r, normalize(vec3(0.3, 0.6, 0.7)))));
+          float spec1 = pow(box1, 22.0) * 4.0;
 
-          float box2 = smoothstep(0.1, 0.9, max(0.0, dot(r, normalize(vec3(-0.5, 0.8, 0.4)))));
-          float spec2 = pow(box2, 650.0) * 12.5;
+          float box2 = smoothstep(0.0, 0.8, max(0.0, dot(r, normalize(vec3(-0.4, 0.7, 0.5)))));
+          float spec2 = pow(box2, 180.0) * 14.0;
 
-          vec3 specular = vec3(1.0) * spec1 + vec3(0.92, 0.94, 0.98) * spec2;
+          vec3 specular = vec3(1.0) * spec1 + vec3(0.94, 0.96, 0.98) * spec2;
 
-          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.2);
-          vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 1.5;
+          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.5);
+          vec3 rim = vec3(0.75, 0.8, 0.85) * fresnel * 0.8;
 
           vec3 base = vec3(0.005, 0.005, 0.01);
           vec3 color = base + specular + rim;
 
-          // No artificial contrast clamping — let the physics render naturally
+          // Natural filmic tone curve
+          color = smoothstep(0.0, 1.0, color);
+          
           gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
         }
       `,
