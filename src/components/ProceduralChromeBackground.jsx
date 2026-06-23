@@ -74,9 +74,9 @@ export default function ProceduralChromeBackground() {
           
           vec3 normal = normalize(vec3(-gradX * 13.0, -gradY * 13.0, 0.012));
 
-          // Lowered main light position for better cascade across the horizontal folds
-          vec3 lightDir1 = normalize(vec3(1.1, 0.85, 0.4));  
-          vec3 lightDir2 = normalize(vec3(-1.1, -0.75, 0.3)); 
+          // Adjusted light position: lower + slightly more side angle for better spread
+          vec3 lightDir1 = normalize(vec3(0.95, 0.7, 0.45));  
+          vec3 lightDir2 = normalize(vec3(-0.95, -0.65, 0.35)); 
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
           float spec1 = pow(max(dot(normal, lightDir1), 0.0), 320.0);
