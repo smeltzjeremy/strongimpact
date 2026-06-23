@@ -11,7 +11,7 @@ export default function VectorCloudLayer({
 }) {
   const containerRef = useRef();
 
-  // 1. Procedural Shape Creation
+  // 1. Procedural Shape and Outline Creation
   const [geometry, outlineGeometry] = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-15, -6);
@@ -31,9 +31,13 @@ export default function VectorCloudLayer({
 
     const shapeGeo = new THREE.ShapeGeometry(shape);
     
-    // Generate perimeter points array for a clean continuous line loops
-    const points = shape.getPoints(80); // Increased resolution for smooth curves
-    const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+    // Extract a high-fidelity perimeter sequence
+    const points = shape.getPoints(90);
+    
+    // Convert the edge path into an extruded, thick ribbon geometry to bypass browser constraints
+    const extrudeSettings = { steps: 1, depth: 0.04, bevelEnabled: false };
+    const edgeShape = new THREE.Shape(points);
+    const lineGeo = new THREE.ShapeGeometry(edgeShape);
 
     return [shapeGeo, lineGeo];
   }, [seed]);
@@ -48,16 +52,20 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  // Premium, thicker-looking edge line using an emissive color tint
+  // 2. Dynamic Monochromatic Shading (Generates a distinct, slightly darker red outline)
   const outlineMaterial = useMemo(() => {
-    return new THREE.LineBasicMaterial({
-      color: new THREE.Color('#ffe1e6'), // Brighter, crisp white-pink light accent
-      transparent: true,
-      opacity: 0.85, // Pushed up visibility
+    const baseColor = new THREE.Color(solidColor);
+    
+    // Scale color values down to create a matching darker shade for the edge accent
+    baseColor.multiplyScalar(0.72); 
+
+    return new THREE.MeshBasicMaterial({
+      color: baseColor,
+      transparent: false,
       depthTest: true,
       depthWrite: false
     });
-  }, []);
+  }, [solidColor]);
 
   const shadowMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
@@ -88,18 +96,19 @@ export default function VectorCloudLayer({
         position={[0, -0.16, zPos - 0.05]} 
       />
 
-      {/* CLOUD BLOCK */}
+      {/* SOLID CLOUD BLOCK */}
       <mesh 
         geometry={geometry} 
         material={colorMaterial} 
         position={[0, 0, zPos]} 
       />
 
-      {/* THICKER LOOKING EDGE HIGHLIGHT LOOP */}
-      <lineLoop 
+      {/* THICK EXTENDED MONOCHROMATIC OUTLINE */}
+      <mesh 
         geometry={outlineGeometry} 
         material={outlineMaterial} 
-        position={[0, 0, zPos + 0.02]} // Layered cleanly forward
+        position={[0, 0.02, zPos + 0.02]} // Lifted slightly upward to trace the lip explicitly
+        scale={[1.002, 1.002, 1]}         // Nudged out to ensure high-visibility thickness
       />
     </group>
   );
