@@ -72,12 +72,11 @@ export default function ProceduralChromeBackground() {
           float gradX = liquidSilkTopology((distortedUV.yx + epsX) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsX) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV.yx + epsY) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsY) * topologyScale);
           
-          // OPTION 1: Steeper curves for more dramatic peaks/valleys
           vec3 normal = normalize(vec3(-gradX * 24.0, -gradY * 24.0, 0.012));
 
-          // OPTION 2: Light tweak for better shadow casting and spread
-          vec3 lightDir1 = normalize(vec3(0.9, 0.65, 0.5));  
-          vec3 lightDir2 = normalize(vec3(-1.0, -0.7, 0.35)); 
+          // Your requested direction: slightly over the top, angling down toward bottom-left
+          vec3 lightDir1 = normalize(vec3(1.05, 0.75, 0.48));   // Main light from upper-right
+          vec3 lightDir2 = normalize(vec3(-1.1, -0.6, 0.32));   // Fill from opposite side
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
           float spec1 = pow(max(dot(normal, lightDir1), 0.0), 680.0);
