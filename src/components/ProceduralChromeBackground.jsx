@@ -48,7 +48,7 @@ export default function ProceduralChromeBackground() {
           for (int i = 0; i < 3; i++) {
             p *= rot(0.95);
             float warpFactor = 1.35;
-            p += vec2(sin(p.y * 1.1 + 0.5), cos(p.x * 0.75 - 0.45)) * warpFactor;
+            p += vec2(sin(p.y * 1.2 + 0.5), cos(p.x * 0.75 - 0.45)) * warpFactor;
             
             float layerNoise = noise(p * freq);
             layerNoise = smoothstep(-0.6, 0.6, layerNoise);
@@ -72,33 +72,32 @@ export default function ProceduralChromeBackground() {
 
           float topologyScale = 0.55;
 
-          vec2 epsX = vec2(0.002, 0.0);
-          vec2 epsY = vec2(0.0, 0.002);
+          vec2 epsX = vec2(0.0018, 0.0);
+          vec2 epsY = vec2(0.0, 0.0018);
 
           float gradX = liquidSilkTopology((distortedUV.yx + epsX) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsX) * topologyScale);
           float gradY = liquidSilkTopology((distortedUV.yx + epsY) * topologyScale) - liquidSilkTopology((distortedUV.yx - epsY) * topologyScale);
           
-          vec3 normal = normalize(vec3(-gradX * 31.0, -gradY * 31.0, 0.008));
+          vec3 normal = normalize(vec3(-gradX * 36.0, -gradY * 36.0, 0.007));
 
           vec3 lightDir1 = normalize(vec3(1.05, 0.75, 0.48));  
           vec3 lightDir2 = normalize(vec3(-1.1, -0.6, 0.32)); 
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 1250.0);
-          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 680.0);
-          
-          // CRITICAL ADJUSTMENT: Drastically ramped up the white highlights to blast the ribbon tops
-          vec3 specular = (vec3(1.3) * spec1 * 34.0) + (vec3(0.95) * spec2 * 15.0);
+          // THE 3D POP FIX: Dropping exponents spreads the white ribbons; blasting multipliers maximizes glow
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 450.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 220.0);
+          vec3 specular = (vec3(1.3) * spec1 * 48.0) + (vec3(0.96) * spec2 * 22.0);
 
-          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.2);
-          vec3 rim = vec3(0.85, 0.9, 0.95) * fresnel * 0.45;
+          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.0);
+          vec3 rim = vec3(0.88, 0.92, 0.96) * fresnel * 0.48;
 
           vec3 base = vec3(0.0, 0.0, 0.001);
           vec3 color = base + specular + rim;
 
-          // CRITICAL ADJUSTMENT: Lowered upper limit from 0.90 to 0.74 to force the whites to clip into pure mirror pop
-          color = smoothstep(0.035, 0.74, color);
-          color = pow(color, vec3(1.22)); 
+          // THE RAZOR EDGE FIX: Squeezing the gate slices out dull grays and forces harsh transitions
+          color = smoothstep(0.15, 0.55, color);
+          color = pow(color, vec3(1.35)); 
           
           gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
         }
