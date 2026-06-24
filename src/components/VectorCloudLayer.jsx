@@ -11,8 +11,7 @@ export default function VectorCloudLayer({
 }) {
   const containerRef = useRef();
 
-  // 1. Procedural Shape and True 3D Highlight Border Creation
-  const [geometry, borderGeometry] = useMemo(() => {
+  const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-15, -6);
     
@@ -29,44 +28,12 @@ export default function VectorCloudLayer({
     shape.lineTo(-15, -6);
     shape.closePath();
 
-    const shapeGeo = new THREE.ShapeGeometry(shape);
-    
-    // Isolate the upper ridge points for a true physical highlight border mesh
-    const points = [];
-    for (let i = 0; i <= 100; i++) {
-      const t = i / 100;
-      const x = -15 + t * 30;
-      let y = 0;
-      if (x < -5.0) y = THREE.MathUtils.lerp(-0.2, h2, (x + 15) / 10);
-      else if (x < 0.5) y = THREE.MathUtils.lerp(h2, h3, (x + 5.0) / 5.5);
-      else if (x < 6.5) y = THREE.MathUtils.lerp(h3, h2 - 0.1, (x - 0.5) / 6.0);
-      else y = THREE.MathUtils.lerp(h2 - 0.1, -0.2, (x - 6.5) / 8.5);
-      points.push(new THREE.Vector3(x, y, 0));
-    }
-    
-    // Create a physical thick ribbon shape along the top crest path
-    const curve = new THREE.CatmullRomCurve3(points);
-    const lineGeo = new THREE.TubeGeometry(curve, 100, 0.04, 6, false); // 0.04 radius guarantees visible thickness
-
-    return [shapeGeo, lineGeo];
+    return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
   const colorMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: new THREE.Color(solidColor),
-      transparent: false,
-      depthTest: true,
-      depthWrite: true
-    });
-  }, [solidColor]);
-
-  // 2. MONOCHROMATIC STEPPED LIGHT: Pure color + value jump
-  const borderMaterial = useMemo(() => {
-    const highlightColor = new THREE.Color(solidColor);
-    highlightColor.addScalar(0.25); // Explicitly lightens the red value by a step
-
-    return new THREE.MeshBasicMaterial({
-      color: highlightColor,
       transparent: false,
       depthTest: true,
       depthWrite: true
@@ -94,25 +61,15 @@ export default function VectorCloudLayer({
 
   return (
     <group ref={containerRef}>
-      {/* PASS 1: DROP SHADOW */}
       <mesh 
         geometry={geometry} 
         material={shadowMaterial} 
         position={[0, -0.18, zPos - 0.05]} 
       />
-
-      {/* PASS 2: SOLID OPAQUE CLOUD CARD */}
       <mesh 
         geometry={geometry} 
         material={colorMaterial} 
         position={[0, 0, zPos]} 
-      />
-
-      {/* PASS 3: PHYSICAL THICK BORDER RIBBON */}
-      <mesh 
-        geometry={borderGeometry} 
-        material={borderMaterial} 
-        position={[0, 0.02, zPos + 0.05]} // Layered safely forward along the Z-axis to prevent clipping
       />
     </group>
   );
