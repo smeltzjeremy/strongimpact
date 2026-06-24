@@ -30,10 +30,34 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
-  // 2. Pure, flat crimson baseline color
+  // 2. Custom internal depth shading shader (Your exact golden material setup)
   const colorMaterial = useMemo(() => {
-    return new THREE.MeshBasicMaterial({
-      color: new THREE.Color(solidColor),
+    const shadedBaseColor = new THREE.Color(solidColor).clone().multiplyScalar(0.45);
+
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uColorTop: { value: new THREE.Color(solidColor) },
+        uColorBottom: { value: shadedBaseColor }
+      },
+      vertexShader: `
+        varying vec3 vLocalPosition;
+        void main() {
+          vLocalPosition = position;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 uColorTop;
+        uniform vec3 uColorBottom;
+        varying vec3 vLocalPosition;
+
+        void main() {
+          float normalizedY = clamp((vLocalPosition.y + 4.5) / 5.5, 0.0, 1.0);
+          float shadeCurve = pow(normalizedY, 0.75);
+          vec3 finalColor = mix(uColorBottom, uColorTop, shadeCurve);
+          gl_FragColor = vec4(finalColor, 1.0);
+        }
+      `,
       transparent: false,
       depthWrite: true
     });
@@ -51,7 +75,6 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  // 4. Ambient Background Drop Shadow
   const shadowMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: '#000000',
@@ -64,13 +87,8 @@ export default function VectorCloudLayer({
 
   return (
     <group ref={containerRef}>
-      {/* Mesh 1: Ambient Drop Shadow Backer */}
       <mesh geometry={geometry} material={shadowMaterial} position={[0, -0.12, zPos - 0.08]} />
-      
-      {/* Mesh 2: Dark Rim Outline Lip */}
       <mesh geometry={geometry} material={rimMaterial} position={[0, 0, zPos]} />
-      
-      {/* Mesh 3: Main Base Red Face Sheet */}
       <mesh geometry={geometry} material={colorMaterial} position={[0, -0.045, zPos + 0.02]} />
     </group>
   );
