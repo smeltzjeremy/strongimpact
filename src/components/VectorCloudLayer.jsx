@@ -9,9 +9,9 @@ export default function VectorCloudLayer({
 }) {
   const containerRef = useRef();
 
-  // Your exact, locked geometric curves
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
+    
     shape.moveTo(-12.0, -4.5);
     
     const h1 = -0.2 + Math.sin(seed) * 0.25;
@@ -30,26 +30,26 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
-  // Restored to pure, unshaded flat basic color
   const colorMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: new THREE.Color(solidColor),
       transparent: true,
       opacity: 0.95,
-      depthWrite: false
+      depthWrite: false,
+      blending: THREE.NormalBlending
     });
   }, [solidColor]);
 
-  // Restored to the clean, step-darker red outline lip backer
   const rimMaterial = useMemo(() => {
-    const darkEdgeColor = new THREE.Color(solidColor).clone();
-    darkEdgeColor.multiplyScalar(0.65);
+    const rimColor = new THREE.Color(solidColor);
+    rimColor.addScalar(0.22);
     
     return new THREE.MeshBasicMaterial({
-      color: darkEdgeColor,
+      color: rimColor,
       transparent: true,
       opacity: 0.95,
-      depthWrite: false
+      depthWrite: false,
+      blending: THREE.NormalBlending
     });
   }, [solidColor]);
 
@@ -65,14 +65,23 @@ export default function VectorCloudLayer({
 
   return (
     <group ref={containerRef}>
-      {/* 1. SOFT DROP SHADOW */}
-      <mesh geometry={geometry} material={shadowMaterial} position={[0, -0.15, zPos - 0.08]} />
-      
-      {/* 2. RECESSED DARK RIM BACKER */}
-      <mesh geometry={geometry} material={rimMaterial} position={[0, 0, zPos]} />
-      
-      {/* 3. PURE SOLID COLOR FACE SHEET */}
-      <mesh geometry={geometry} material={colorMaterial} position={[0, -0.045, zPos + 0.02]} />
+      <mesh 
+        geometry={geometry} 
+        material={shadowMaterial} 
+        position={[0, -0.08, zPos - 0.12]} 
+      />
+
+      <mesh 
+        geometry={geometry} 
+        material={rimMaterial} 
+        position={[0, 0, zPos]} 
+      />
+
+      <mesh 
+        geometry={geometry} 
+        material={colorMaterial} 
+        position={[0, -0.032, zPos + 0.02]} 
+      />
     </group>
   );
 }
