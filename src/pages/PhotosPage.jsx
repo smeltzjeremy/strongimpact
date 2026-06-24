@@ -27,19 +27,22 @@ export default function PhotosPage() {
               <ProceduralChromeBackground />
             </group>
 
-            <group position={[-1.1, -2.5, 0]}>
+            {/* HIGH-CONTRAST VIBRANT BACKDROP */}
+            <group position={[-0.1, -2.5, 0]}>
               
-              {/* 1 & 2 - Darkest Back */}
-              <VectorCloudLayer zPos={-2.6} solidColor="#9c1a2f" shadowOpacity={0.45} seed={5.2} />
-              <VectorCloudLayer zPos={-2.35} solidColor="#a82237" shadowOpacity={0.43} seed={6.7} />
+              {/* Layers 1 & 2: Vibrant Crimson Bases (Behind the upcoming photo wheel) */}
+              <VectorCloudLayer zPos={-2.6} solidColor="#8c1224" shadowOpacity={0.5} seed={5.2} />
+              <VectorCloudLayer zPos={-2.35} solidColor="#b31931" shadowOpacity={0.46} seed={6.7} />
 
-              {/* 3 & 4 - Mid */}
-              <VectorCloudLayer zPos={-1.05} solidColor="#d12f4a" shadowOpacity={0.37} seed={3.4} />
-              <VectorCloudLayer zPos={-0.8} solidColor="#e03d5a" shadowOpacity={0.34} seed={4.1} />
+              {/* [PHOTO WHEEL SLOT WILL SIT HERE AT Z = -1.50] */}
 
-              {/* 5 & 6 - Front / Lightest */}
-              <VectorCloudLayer zPos={0.65} solidColor="#f15a73" shadowOpacity={0.28} seed={1.8} />
-              <VectorCloudLayer zPos={0.95} solidColor="#ff7a90" shadowOpacity={0.18} seed={0.9} />
+              {/* Layers 3 & 4: Radiant Ruby Midgrounds */}
+              <VectorCloudLayer zPos={-1.05} solidColor="#d92341" shadowOpacity={0.38} seed={3.4} />
+              <VectorCloudLayer zPos={-0.8} solidColor="#f03a58" shadowOpacity={0.34} seed={4.1} />
+
+              {/* Layers 5 & 6: Crisp Coral-Ruby Foreground Sheets */}
+              <VectorCloudLayer zPos={0.65} solidColor="#ff5774" shadowOpacity={0.25} seed={1.8} />
+              <VectorCloudLayer zPos={0.95} solidColor="#ff7a93" shadowOpacity={0.15} seed={0.9} />
 
             </group>
 
