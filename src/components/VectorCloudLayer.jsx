@@ -35,15 +35,8 @@ export default function VectorCloudLayer({
     return new THREE.MeshBasicMaterial({
       color: new THREE.Color(solidColor),
       transparent: false,
-    });
-  }, [solidColor]);
-
-  const borderMaterial = useMemo(() => {
-    const borderColor = new THREE.Color(solidColor);
-    borderColor.addScalar(0.3); // Brighter red border
-    return new THREE.MeshBasicMaterial({
-      color: borderColor,
-      transparent: false,
+      depthTest: true,
+      depthWrite: true
     });
   }, [solidColor]);
 
@@ -52,7 +45,8 @@ export default function VectorCloudLayer({
       color: '#000000',
       transparent: true,
       opacity: shadowOpacity,
-      depthWrite: false,
+      depthTest: true,
+      depthWrite: false
     });
   }, [shadowOpacity]);
 
@@ -67,9 +61,16 @@ export default function VectorCloudLayer({
 
   return (
     <group ref={containerRef}>
-      <mesh geometry={geometry} material={shadowMaterial} position={[0, -0.18, zPos - 0.05]} />
-      <mesh geometry={geometry} material={colorMaterial} position={[0, 0, zPos]} />
-      <mesh geometry={geometry} material={borderMaterial} position={[0, 0.04, zPos + 0.08]} scale={[1.015, 1.02, 1]} />
+      <mesh 
+        geometry={geometry} 
+        material={shadowMaterial} 
+        position={[0, -0.18, zPos - 0.05]} 
+      />
+      <mesh 
+        geometry={geometry} 
+        material={colorMaterial} 
+        position={[0, 0, zPos]} 
+      />
     </group>
   );
 }
