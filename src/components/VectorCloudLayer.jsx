@@ -63,7 +63,7 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  // NEW: Dedicated Bottom Shading Overlay Layer
+  // Dedicated Bottom Shading Overlay Layer
   const overlayShadowMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       vertexShader: `
@@ -76,13 +76,12 @@ export default function VectorCloudLayer({
       fragmentShader: `
         varying vec3 vLocalPosition;
         void main() {
-          // Tracks height up the mesh space
           float normalizedY = clamp((vLocalPosition.y + 4.5) / 5.5, 0.0, 1.0);
           
-          // Tight power curve ensures the shading fades out rapidly as it climbs
+          // Exponent (2.5) concentrates the shadow strictly at the bottom baseline
           float fadeUp = pow(normalizedY, 2.5);
           
-          // Fades from a clean 35% black tint at the baseline to 0% transparency at the top
+          // Fades from a clean 35% black tint at the very bottom edge to 0% at the top
           float alpha = mix(0.35, 0.0, fadeUp);
           
           gl_FragColor = vec4(vec3(0.0), alpha);
@@ -116,7 +115,6 @@ export default function VectorCloudLayer({
     });
   }, [shadowOpacity]);
 
-  // Flag to check if this is our second cloud layer from the front
   const isTargetLayer = (zPos === 0.65);
 
   return (
@@ -130,12 +128,12 @@ export default function VectorCloudLayer({
       {/* Mesh 3: Main Base Red Face Sheet */}
       <mesh geometry={geometry} material={colorMaterial} position={[0, -0.045, zPos + 0.02]} />
 
-      {/* Mesh 4: NEW Separate Gradient Shading Layer (Isolated to target layer) */}
+      {/* Mesh 4: Separate Gradient Shading Layer (Incorporating your positioning fix) */}
       {isTargetLayer && (
         <mesh 
           geometry={geometry} 
           material={overlayShadowMaterial} 
-          position={[0, -0.075, zPos + 0.03]} // Shifted slightly down (Y) and forward (Z)
+          position={[0, 0, zPos + 0.04]} 
         />
       )}
     </group>
