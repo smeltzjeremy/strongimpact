@@ -11,8 +11,8 @@ export default function VectorCloudLayer({
 }) {
   const containerRef = useRef();
 
-  // 1. Procedural Shape and Outline Creation (Wide horizontal padding)
-  const [geometry, outlineGeometry] = useMemo(() => {
+  // 1. Procedural Shape and True 3D Highlight Border Creation
+  const [geometry, borderGeometry] = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-15, -6);
     
@@ -31,9 +31,22 @@ export default function VectorCloudLayer({
 
     const shapeGeo = new THREE.ShapeGeometry(shape);
     
-    // Extract precise high-resolution perimeter vertices
-    const points = shape.getPoints(90);
-    const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+    // Isolate the upper ridge points for a true physical highlight border mesh
+    const points = [];
+    for (let i = 0; i <= 100; i++) {
+      const t = i / 100;
+      const x = -15 + t * 30;
+      let y = 0;
+      if (x < -5.0) y = THREE.MathUtils.lerp(-0.2, h2, (x + 15) / 10);
+      else if (x < 0.5) y = THREE.MathUtils.lerp(h2, h3, (x + 5.0) / 5.5);
+      else if (x < 6.5) y = THREE.MathUtils.lerp(h3, h2 - 0.1, (x - 0.5) / 6.0);
+      else y = THREE.MathUtils.lerp(h2 - 0.1, -0.2, (x - 6.5) / 8.5);
+      points.push(new THREE.Vector3(x, y, 0));
+    }
+    
+    // Create a physical thick ribbon shape along the top crest path
+    const curve = new THREE.CatmullRomCurve3(points);
+    const lineGeo = new THREE.TubeGeometry(curve, 100, 0.04, 6, false); // 0.04 radius guarantees visible thickness
 
     return [shapeGeo, lineGeo];
   }, [seed]);
@@ -43,23 +56,20 @@ export default function VectorCloudLayer({
       color: new THREE.Color(solidColor),
       transparent: false,
       depthTest: true,
-      depthWrite: true,
-      blending: THREE.NormalBlending
+      depthWrite: true
     });
   }, [solidColor]);
 
-  // 2. MONOCHROMATIC LIGHT RIM: Scaled slightly upward to create a bright vector border
-  const outlineMaterial = useMemo(() => {
-    const baseColor = new THREE.Color(solidColor);
-    
-    // Programmatically step the color value UP to act as a lighter red accent line
-    baseColor.addScalar(0.18); 
+  // 2. MONOCHROMATIC STEPPED LIGHT: Pure color + value jump
+  const borderMaterial = useMemo(() => {
+    const highlightColor = new THREE.Color(solidColor);
+    highlightColor.addScalar(0.25); // Explicitly lightens the red value by a step
 
-    return new THREE.LineBasicMaterial({
-      color: baseColor,
+    return new THREE.MeshBasicMaterial({
+      color: highlightColor,
       transparent: false,
       depthTest: true,
-      depthWrite: false
+      depthWrite: true
     });
   }, [solidColor]);
 
@@ -69,8 +79,7 @@ export default function VectorCloudLayer({
       transparent: true,
       opacity: shadowOpacity,
       depthTest: true,
-      depthWrite: false,
-      blending: THREE.NormalBlending
+      depthWrite: false
     });
   }, [shadowOpacity]);
 
@@ -85,26 +94,25 @@ export default function VectorCloudLayer({
 
   return (
     <group ref={containerRef}>
-      {/* PASS 1: TRANS-BLACK DROP SHADOW */}
+      {/* PASS 1: DROP SHADOW */}
       <mesh 
         geometry={geometry} 
         material={shadowMaterial} 
-        position={[0, -0.16, zPos - 0.05]} 
+        position={[0, -0.18, zPos - 0.05]} 
       />
 
-      {/* PASS 2: OPAQUE COLOR CARD */}
+      {/* PASS 2: SOLID OPAQUE CLOUD CARD */}
       <mesh 
         geometry={geometry} 
         material={colorMaterial} 
         position={[0, 0, zPos]} 
       />
 
-      {/* PASS 3: EXTRA-THICK BRIGHT RED PERIMETER OUTLINE ACCENT */}
-      <lineLoop 
-        geometry={outlineGeometry} 
-        material={outlineMaterial} 
-        position={[0, 0.02, zPos + 0.02]} // Layered forward to highlight upper ridge
-        scale={[1.006, 1.006, 1]}         // Uniform vector scaling to make the line visibly thicker
+      {/* PASS 3: PHYSICAL THICK BORDER RIBBON */}
+      <mesh 
+        geometry={borderGeometry} 
+        material={borderMaterial} 
+        position={[0, 0.02, zPos + 0.05]} // Layered safely forward along the Z-axis to prevent clipping
       />
     </group>
   );
