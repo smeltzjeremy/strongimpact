@@ -7,7 +7,7 @@ const PhotoWheel: React.FC = () => {
   const groupRef = useRef<THREE.Group>(null!);
   const { gl, viewport } = useThree();
 
-  const isMobile = viewport.width < 5; // Rough mobile detection
+  const isMobile = viewport.width < 5;
 
   const rotationRef = useRef<number>(0);
   const targetStepRef = useRef<number>(0);
@@ -39,7 +39,7 @@ const PhotoWheel: React.FC = () => {
     new THREE.MeshStandardMaterial({ color: '#121214', metalness: 0.8, roughness: 0.25 }), []
   );
 
-  const radius = 3.8;
+  const radius = 3.4; // slightly shorter spokes
   const numFrames = 6;
 
   return (
@@ -51,7 +51,7 @@ const PhotoWheel: React.FC = () => {
 
       <group 
         ref={groupRef} 
-        position={[0, isMobile ? 1.9 : 2.0, isMobile ? -4.5 : -2.5]}
+        position={[0, isMobile ? 2.6 : 2.8, isMobile ? -4.5 : -2.5]} // moved higher
       >
         {/* Center Hub */}
         <mesh material={chromeSpokeMat}>
@@ -62,20 +62,19 @@ const PhotoWheel: React.FC = () => {
           const angle = (i * Math.PI * 2) / numFrames;
           return (
             <group key={i} rotation={[0, 0, angle]}>
-              {/* Thin polished spoke */}
-              <mesh position={[0, radius * 0.52, 0]} material={chromeSpokeMat}>
-                <cylinderGeometry args={[0.025, 0.025, radius * 1.05, 16]} />
+              {/* Shorter polished spoke */}
+              <mesh position={[0, radius * 0.48, 0]} material={chromeSpokeMat}>
+                <cylinderGeometry args={[0.025, 0.025, radius * 0.92, 16]} />
               </mesh>
 
-              {/* Photo Frame */}
+              {/* Photo Frame - aligned better */}
               <group position={[0, radius, 0]} rotation={[0, 0, -angle]}>
                 <mesh material={titaniumFrameMat}>
-                  <boxGeometry args={[2.4, 1.75, 0.18]} />
+                  <boxGeometry args={[2.35, 1.72, 0.18]} />
                 </mesh>
 
-                {/* Frosted Glass Photo Panel */}
                 <mesh position={[0, 0, 0.1]}>
-                  <planeGeometry args={[2.2, 1.55]} />
+                  <planeGeometry args={[2.15, 1.52]} />
                   <MeshTransmissionMaterial
                     backside
                     samples={4}
