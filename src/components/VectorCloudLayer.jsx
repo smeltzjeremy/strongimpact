@@ -30,7 +30,7 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
-  // 2. Main Color Face Material (Completely clean, flat baseline)
+  // 2. Pure, flat crimson baseline color
   const colorMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: new THREE.Color(solidColor),
@@ -39,36 +39,7 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  // 3. One Clean Extra Shadow Mesh Material (Simple, basic linear fade overlay)
-  const overlayShadowMaterial = useMemo(() => {
-    return new THREE.ShaderMaterial({
-      vertexShader: `
-        varying vec2 vUv;
-        void main() {
-          vUv = uv;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        varying vec2 vUv;
-        void main() {
-          // Exponent controls how fast it fades out as it moves up from the bottom (vUv.y = 0)
-          float fadeUp = pow(vUv.y, 4.0);
-          
-          // Starts at 50% black at the bottom edge, fades completely to clear (0.0) at the top
-          float alpha = mix(0.50, 0.0, fadeUp);
-          
-          gl_FragColor = vec4(vec3(0.0), alpha);
-        }
-      `,
-      transparent: true,
-      depthTest: false,
-      depthWrite: false,
-      blending: THREE.NormalBlending
-    });
-  }, []);
-
-  // 4. Crisp, step-darker red outline lip
+  // 3. Crisp, step-darker red outline lip
   const rimMaterial = useMemo(() => {
     const darkEdgeColor = new THREE.Color(solidColor).clone();
     darkEdgeColor.multiplyScalar(0.65);
@@ -80,7 +51,7 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  // 5. Ambient Background Drop Shadow
+  // 4. Ambient Background Drop Shadow
   const shadowMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: '#000000',
@@ -91,9 +62,6 @@ export default function VectorCloudLayer({
     });
   }, [shadowOpacity]);
 
-  // Target look on just the second cloud from the front
-  const isTargetLayer = (zPos === 0.65);
-
   return (
     <group ref={containerRef}>
       {/* Mesh 1: Ambient Drop Shadow Backer */}
@@ -102,18 +70,8 @@ export default function VectorCloudLayer({
       {/* Mesh 2: Dark Rim Outline Lip */}
       <mesh geometry={geometry} material={rimMaterial} position={[0, 0, zPos]} />
       
-      {/* Mesh 3: Main Base Red Face Sheet (Pure, flat color baseline) */}
+      {/* Mesh 3: Main Base Red Face Sheet */}
       <mesh geometry={geometry} material={colorMaterial} position={[0, -0.045, zPos + 0.02]} />
-
-      {/* Mesh 4: Your clean extra test shadow mesh layer */}
-      {isTargetLayer && (
-        <mesh 
-          geometry={geometry} 
-          material={overlayShadowMaterial} 
-          position={[0, -0.045, zPos + 0.04]} // Perfect alignment on top of the red face plate
-          renderOrder={1}                     // Force WebGL to draw it on top
-        />
-      )}
     </group>
   );
 }
