@@ -10,60 +10,55 @@ export default function PhotoWheel() {
   useEffect(() => {
     const handleWheel = (e) => {
       e.preventDefault();
-      const delta = e.deltaY > 0 ? -0.08 : 0.08;
-      rotationRef.current += delta * 3.5;
+      rotationRef.current += (e.deltaY > 0 ? -0.06 : 0.06) * 4;
     };
-
     const canvas = gl.domElement;
     canvas.addEventListener('wheel', handleWheel, { passive: false });
     return () => canvas.removeEventListener('wheel', handleWheel);
   }, [gl]);
 
   useFrame(() => {
-    if (groupRef.current) {
-      groupRef.current.rotation.x = rotationRef.current;
-    }
+    if (groupRef.current) groupRef.current.rotation.x = rotationRef.current;
   });
 
-  const spokeMaterial = new THREE.MeshStandardMaterial({
-    color: '#dddddd',
-    metalness: 1.0,
-    roughness: 0.12,
+  const metalMat = new THREE.MeshStandardMaterial({
+    color: '#cccccc',
+    metalness: 0.95,
+    roughness: 0.1,
   });
 
-  const frameMaterial = new THREE.MeshStandardMaterial({
-    color: '#1a1a1c',
-    metalness: 0.85,
-    roughness: 0.22,
+  const frameMat = new THREE.MeshStandardMaterial({
+    color: '#111111',
+    metalness: 0.8,
+    roughness: 0.3,
   });
 
+  const radius = 3.4;
   const numFrames = 6;
-  const radius = 3.2;   // Much smaller & balanced
 
   return (
-    <group ref={groupRef} position={[0, 0.4, -1.6]}>   {/* Tuned position + z-depth */}
-      {/* Central axle / hub */}
-      <mesh rotation={[0, 0, Math.PI / 2]} material={spokeMaterial}>
-        <cylinderGeometry args={[0.32, 0.32, 1.4, 32]} />
+    <group ref={groupRef} position={[0, 0.5, -1.55]}>
+      {/* Central hub */}
+      <mesh material={metalMat}>
+        <cylinderGeometry args={[0.4, 0.4, 1.8, 48]} />
       </mesh>
 
-      {/* Spokes + Frames */}
       {Array.from({ length: numFrames }).map((_, i) => {
         const angle = (i * Math.PI * 2) / numFrames;
         return (
           <group key={i} rotation={[angle, 0, 0]}>
-            {/* Structural spoke */}
-            <mesh position={[0, 0, radius * 0.55]} rotation={[Math.PI / 2, 0, 0]} material={spokeMaterial}>
-              <cylinderGeometry args={[0.09, 0.09, radius * 1.05, 16]} />
+            {/* Spoke */}
+            <mesh position={[0, radius * 0.55, 0]} material={metalMat}>
+              <cylinderGeometry args={[0.12, 0.12, radius * 1.1, 24]} />
             </mesh>
 
-            {/* 3D Photo Frame */}
-            <group position={[0, 0, radius]}>
-              <mesh material={frameMaterial}>
-                <boxGeometry args={[2.4, 1.75, 0.22]} />
+            {/* Photo frame with depth */}
+            <group position={[0, radius, 0]}>
+              <mesh material={frameMat}>
+                <boxGeometry args={[2.6, 1.9, 0.25]} />
               </mesh>
-              <mesh position={[0, 0, 0.13]} material={new THREE.MeshStandardMaterial({ color: '#0a0a0a' })}>
-                <planeGeometry args={[2.15, 1.55]} />
+              <mesh position={[0, 0, 0.15]} material={new THREE.MeshStandardMaterial({ color: '#222222' })}>
+                <planeGeometry args={[2.3, 1.65]} />
               </mesh>
             </group>
           </group>
