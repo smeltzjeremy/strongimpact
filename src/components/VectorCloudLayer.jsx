@@ -29,7 +29,6 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
-  // Main red material - unchanged
   const colorMaterial = useMemo(() => {
     const shadedBaseColor = new THREE.Color(solidColor).clone().multiplyScalar(0.45);
 
@@ -62,7 +61,6 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  // Subtle quick-fading black shading overlay
   const bottomShadeMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       vertexShader: `
@@ -75,8 +73,8 @@ export default function VectorCloudLayer({
       fragmentShader: `
         varying vec2 vUv;
         void main() {
-          float fadeUp = pow(vUv.y, 4.5);     // very quick fade
-          float alpha = mix(0.28, 0.0, fadeUp); // subtle darkness
+          float fadeUp = pow(vUv.y, 5.5);   // very tight to bottom
+          float alpha = mix(0.22, 0.0, fadeUp); // very subtle
           gl_FragColor = vec4(0.0, 0.0, 0.0, alpha);
         }
       `,
@@ -106,19 +104,22 @@ export default function VectorCloudLayer({
     });
   }, [shadowOpacity]);
 
+  const isTargetCloud = zPos === 0.65;
+
   return (
     <group ref={containerRef}>
       <mesh geometry={geometry} material={shadowMaterial} position={[0, -0.12, zPos - 0.08]} />
       <mesh geometry={geometry} material={rimMaterial} position={[0, 0, zPos]} />
       <mesh geometry={geometry} material={colorMaterial} position={[0, -0.045, zPos + 0.02]} />
-      
-      {/* Subtle bottom shading - on all clouds */}
-      <mesh 
-        geometry={geometry} 
-        material={bottomShadeMaterial} 
-        position={[0, -0.09, zPos + 0.05]} 
-        renderOrder={2}
-      />
+
+      {isTargetCloud && (
+        <mesh 
+          geometry={geometry} 
+          material={bottomShadeMaterial} 
+          position={[0, -0.12, zPos + 0.06]} 
+          renderOrder={3}
+        />
+      )}
     </group>
   );
 }
