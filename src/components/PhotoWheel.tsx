@@ -11,12 +11,10 @@ const PhotoWheel: React.FC = () => {
   const rotationRef = useRef<number>(0);
   const targetStepRef = useRef<number>(0);
 
-  // Improved horizontal swipe
+  // Global wheel + horizontal swipe
   useEffect(() => {
     const handleGlobalWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) > 5) {
-        targetStepRef.current += e.deltaY > 0 ? 1 : -1;
-      }
+      if (Math.abs(e.deltaY) > 5) targetStepRef.current += e.deltaY > 0 ? 1 : -1;
     };
 
     let touchStartX = 0;
@@ -31,7 +29,6 @@ const PhotoWheel: React.FC = () => {
       if (!isDragging) return;
       const currentX = e.touches[0].clientX;
       const delta = touchStartX - currentX;
-
       if (Math.abs(delta) > 40) {
         targetStepRef.current += delta > 0 ? 1 : -1;
         touchStartX = currentX;
@@ -87,14 +84,24 @@ const PhotoWheel: React.FC = () => {
           <sphereGeometry args={[0.45, 32, 32]} />
         </mesh>
 
-        {/* Left Arrow */}
-        <mesh position={[-0.75, 0, 0.1]} rotation={[0, 0, Math.PI / 2]} material={new THREE.MeshStandardMaterial({ color: '#ef4444', metalness: 0.7, roughness: 0.15 })}>
-          <coneGeometry args={[0.06, 0.16, 4]} />
+        {/* LEFT CLICKABLE ARROW */}
+        <mesh 
+          position={[-0.85, 0, 0.1]} 
+          rotation={[0, 0, Math.PI / 2]} 
+          material={new THREE.MeshStandardMaterial({ color: '#ef4444', metalness: 0.7, roughness: 0.15 })}
+          onPointerDown={() => targetStepRef.current -= 1}
+        >
+          <coneGeometry args={[0.08, 0.22, 4]} />
         </mesh>
 
-        {/* Right Arrow */}
-        <mesh position={[0.75, 0, 0.1]} rotation={[0, 0, -Math.PI / 2]} material={new THREE.MeshStandardMaterial({ color: '#ef4444', metalness: 0.7, roughness: 0.15 })}>
-          <coneGeometry args={[0.06, 0.16, 4]} />
+        {/* RIGHT CLICKABLE ARROW */}
+        <mesh 
+          position={[0.85, 0, 0.1]} 
+          rotation={[0, 0, -Math.PI / 2]} 
+          material={new THREE.MeshStandardMaterial({ color: '#ef4444', metalness: 0.7, roughness: 0.15 })}
+          onPointerDown={() => targetStepRef.current += 1}
+        >
+          <coneGeometry args={[0.08, 0.22, 4]} />
         </mesh>
 
         {/* Rotating Wheel */}
@@ -103,20 +110,24 @@ const PhotoWheel: React.FC = () => {
             const angle = (i * Math.PI * 2) / numFrames;
             return (
               <group key={i} rotation={[0, 0, angle]}>
+                {/* Mechanical Mounting Pin */}
+                <mesh position={[0, 0.46, 0.05]} material={chromeSpokeMat}>
+                  <cylinderGeometry args={[0.04, 0.04, 0.06, 16]} />
+                </mesh>
+
+                {/* Spoke */}
                 <mesh position={[0, radius * 0.48, 0]} material={chromeSpokeMat}>
                   <cylinderGeometry args={[0.025, 0.025, radius * 1.05, 16]} />
                 </mesh>
 
-                {/* UPRIGHT FRAME */}
+                {/* Upright Frame */}
                 <group position={[0, radius, 0]} rotation={[0, 0, -angle - rotationRef.current]}>
                   <mesh material={titaniumFrameMat}>
                     <boxGeometry args={[2.35, 1.72, 0.18]} />
                   </mesh>
-
                   <mesh position={[0, 0, 0.095]} material={chromeSpokeMat}>
                     <boxGeometry args={[2.19, 1.56, 0.01]} />
                   </mesh>
-
                   <mesh position={[0, 0, 0.1]}>
                     <planeGeometry args={[2.15, 1.52]} />
                     <MeshTransmissionMaterial
