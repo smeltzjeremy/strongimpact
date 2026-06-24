@@ -4,14 +4,15 @@ import * as THREE from 'three';
 
 export default function PhotoWheel() {
   const groupRef = useRef();
-  const { gl } = useThree();
+  const { gl, scene } = useThree();
   const rotationRef = useRef(0);
 
+  // Scroll control
   useEffect(() => {
     const handleWheel = (e) => {
       e.preventDefault();
-      const delta = e.deltaY > 0 ? -0.12 : 0.12;
-      rotationRef.current += delta * 6;
+      const delta = e.deltaY > 0 ? -0.08 : 0.08;
+      rotationRef.current += delta * 5.5;
     };
 
     const canvas = gl.domElement;
@@ -21,53 +22,68 @@ export default function PhotoWheel() {
 
   useFrame(() => {
     if (groupRef.current) {
-      groupRef.current.rotation.y = rotationRef.current;
+      groupRef.current.rotation.x = rotationRef.current;
     }
   });
 
-  const metalMaterial = new THREE.MeshPhongMaterial({
-    color: '#bbbbbb',
-    shininess: 120,
-    specular: '#ffffff',
-    metalness: 0.95,
-    emissive: '#111111'
+  const spokeMaterial = new THREE.MeshStandardMaterial({
+    color: '#aaaaaa',
+    metalness: 1.0,
+    roughness: 0.15,
+    envMapIntensity: 1.2
   });
 
+  const frameMaterial = new THREE.MeshStandardMaterial({
+    color: '#111111',
+    metalness: 0.9,
+    roughness: 0.3,
+    envMapIntensity: 1.0
+  });
+
+  const rimMaterial = new THREE.MeshStandardMaterial({
+    color: '#888888',
+    metalness: 1.0,
+    roughness: 0.1
+  });
+
+  const numFrames = 6;
+  const radius = 4.8;
+
   return (
-    <group 
-      ref={groupRef} 
-      position={[0, 0.8, -1.5]} 
-      rotation={[Math.PI * -0.5, 0, 0]}   // upright
-    >
-      {/* Central metallic hub */}
-      <mesh position={[0, 0, 0]} material={metalMaterial}>
-        <sphereGeometry args={[0.65, 64, 64]} />
+    <group ref={groupRef} position={[0, 0.6, -1.5]}>
+      {/* Main central axle / hub */}
+      <mesh position={[0, 0, 0]} material={spokeMaterial}>
+        <cylinderGeometry args={[0.45, 0.45, 1.2, 64]} />
       </mesh>
 
-      {/* Center dial panel */}
-      <mesh position={[0, 0, 0.7]} material={new THREE.MeshBasicMaterial({ color: '#222222' })}>
-        <planeGeometry args={[1.3, 0.4]} />
+      {/* Outer rim ring (for structural feel) */}
+      <mesh position={[0, 0, 0]} material={rimMaterial} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[radius + 0.6, 0.25, 32, 64]} />
       </mesh>
 
-      {/* Left / Right arrows */}
-      <mesh position={[-0.7, 0, 0.75]} material={new THREE.MeshBasicMaterial({ color: '#ff3333' })}>
-        <planeGeometry args={[0.3, 0.18]} />
-      </mesh>
-      <mesh position={[0.7, 0, 0.75]} material={new THREE.MeshBasicMaterial({ color: '#ff3333' })}>
-        <planeGeometry args={[0.3, 0.18]} />
-      </mesh>
-
-      {/* 5 arms + frames */}
-      {[0, 1, 2, 3, 4].map((i) => {
-        const angle = (i * Math.PI * 2) / 5;
+      {/* Spokes + Photo Frames */}
+      {Array.from({ length: numFrames }).map((_, i) => {
+        const angle = (i * Math.PI * 2) / numFrames;
+        
         return (
-          <group key={i} rotation={[0, angle, 0]}>
-            <mesh position={[2.8, 0, 0]} material={metalMaterial}>
-              <boxGeometry args={[4.2, 0.15, 0.15]} />
+          <group key={i} rotation={[angle, 0, 0]}>
+            {/* Thick structural spoke */}
+            <mesh position={[0, radius * 0.6, 0]} material={spokeMaterial}>
+              <cylinderGeometry args={[0.18, 0.18, radius * 1.1, 32]} />
             </mesh>
-            <mesh position={[5.4, 0, 0]} material={new THREE.MeshPhongMaterial({ color: '#0a0a0a', shininess: 60 })}>
-              <planeGeometry args={[2.4, 1.8]} />
-            </mesh>
+
+            {/* Beveled 3D photo frame chassis */}
+            <group position={[0, radius, 0]}>
+              {/* Frame backing (depth) */}
+              <mesh position={[0, 0, 0]} material={frameMaterial}>
+                <boxGeometry args={[2.8, 2.1, 0.25]} />
+              </mesh>
+              
+              {/* Inner photo plane */}
+              <mesh position={[0, 0, 0.18]} material={new THREE.MeshStandardMaterial({ color: '#0a0a0a' })}>
+                <planeGeometry args={[2.5, 1.85]} />
+              </mesh>
+            </group>
           </group>
         );
       })}
