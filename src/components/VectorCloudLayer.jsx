@@ -30,9 +30,10 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
-  // 2. Custom internal depth shading shader
+  // 2. Fragment Shader: Dramatically intensifies the lower shadow gradient
   const colorMaterial = useMemo(() => {
-    const shadedBaseColor = new THREE.Color(solidColor).clone().multiplyScalar(0.45);
+    // Drop the bottom shadow color multiplier to 0.15 to force deep, rich base depth
+    const shadedBaseColor = new THREE.Color(solidColor).clone().multiplyScalar(0.15);
 
     return new THREE.ShaderMaterial({
       uniforms: {
@@ -53,8 +54,11 @@ export default function VectorCloudLayer({
 
         void main() {
           float normalizedY = clamp((vLocalPosition.y + 4.5) / 5.5, 0.0, 1.0);
-          float shadeCurve = pow(normalizedY, 0.75);
+          
+          // Tight exponential curve concentrates the deep shade toward the bottom 40% of the card
+          float shadeCurve = pow(normalizedY, 1.8);
           vec3 finalColor = mix(uColorBottom, uColorTop, shadeCurve);
+          
           gl_FragColor = vec4(finalColor, 1.0);
         }
       `,
@@ -63,10 +67,12 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  // 3. Crisp, step-darker red outline lip
+  // 3. Crisp, Significantly Darker Opaque Outline Crease
   const rimMaterial = useMemo(() => {
     const darkEdgeColor = new THREE.Color(solidColor).clone();
-    darkEdgeColor.multiplyScalar(0.65);
+    
+    // Aggressively darken the outline color to form a clean, deep recessed border separation
+    darkEdgeColor.multiplyScalar(0.38);
     
     return new THREE.MeshBasicMaterial({
       color: darkEdgeColor,
@@ -75,6 +81,7 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
+  // Soft drop shadow backer
   const shadowMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: '#000000',
@@ -87,8 +94,13 @@ export default function VectorCloudLayer({
 
   return (
     <group ref={containerRef}>
-      <mesh geometry={geometry} material={shadowMaterial} position={[0, -0.12, zPos - 0.08]} />
+      {/* PASS 1: SOFT DROP SHADOW */}
+      <mesh geometry={geometry} material={shadowMaterial} position={[0, -0.15, zPos - 0.08]} />
+      
+      {/* PASS 2: CRISP DEEP-RED BORDER SEPARATION CREASE */}
       <mesh geometry={geometry} material={rimMaterial} position={[0, 0, zPos]} />
+      
+      {/* PASS 3: HIGH-DEPTH SHADED FACE SHEET */}
       <mesh geometry={geometry} material={colorMaterial} position={[0, -0.045, zPos + 0.02]} />
     </group>
   );
