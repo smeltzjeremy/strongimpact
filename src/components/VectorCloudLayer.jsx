@@ -73,10 +73,10 @@ export default function VectorCloudLayer({
     // Create a vertical gradient: solid black at the bottom, fading to transparent at the top
     const gradient = ctx.createLinearGradient(0, 256, 0, 0);
     
-    // ADJUSTED STOPS:
-    gradient.addColorStop(0.0, 'rgba(0, 0, 0, 0.80)');  // FIXED: Blacker and punchier right at the bottom edge
-    gradient.addColorStop(0.12, 'rgba(0, 0, 0, 0.45)'); // Sharp mid-transition to create a deep crease look
-    gradient.addColorStop(0.32, 'rgba(0, 0, 0, 0.00)'); // FIXED: Fades out completely early so it is lower and doesn't eat the red
+    // COMPRESSED STOPS TO PULL SHADOW DOWN BY HALF:
+    gradient.addColorStop(0.0, 'rgba(0, 0, 0, 0.85)');  // Kept deep, rich black punch at the very bottom edge
+    gradient.addColorStop(0.05, 'rgba(0, 0, 0, 0.45)'); // Fast, sharp mid-crease transition
+    gradient.addColorStop(0.14, 'rgba(0, 0, 0, 0.00)'); // FIXED: Cut off at 0.14 instead of 0.32 so it stays halfway down and clears the red face
     
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 1, 256);
