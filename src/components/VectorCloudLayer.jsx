@@ -30,11 +30,19 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
-  // 2. Custom internal depth shading shader (Tuned to only tint the bottom edge)
+  // 2. Custom isolated shading shader
   const colorMaterial = useMemo(() => {
+    // Only apply the bottom black tint if this is the very back layer
+    const isBackLayer = (zPos === -2.6);
+    const shadedBaseColor = isBackLayer 
+      ? new THREE.Color(solidColor).clone().multiplyScalar(0.40) // Faint black tint multiplier
+      : new THREE.Color(solidColor); // Completely flat for all other layers
+
     return new THREE.ShaderMaterial({
       uniforms: {
-        uColor: { value: new THREE.Color(solidColor) }
+        uColorTop: { value: new THREE.Color(solidColor) },
+        uColorBottom: { value: shadedBaseColor },
+        uIsBackLayer: { value: isBackLayer }
       },
       vertexShader: `
         varying vec3 vLocalPosition;
@@ -44,20 +52,24 @@ export default function VectorCloudLayer({
         }
       `,
       fragmentShader: `
-        uniform vec3 uColor;
+        uniform vec3 uColorTop;
+        uniform vec3 uColorBottom;
+        uniform bool uIsBackLayer;
         varying vec3 vLocalPosition;
 
         void main() {
-          // 1. Calculate height relative to the card's local bottom boundary (-4.5)
+          if (!uIsBackLayer) {
+            gl_FragColor = vec4(uColorTop, 1.0);
+            return;
+          }
+
+          // Calculate height from the local bottom baseline
           float normalizedY = clamp((vLocalPosition.y + 4.5) / 5.5, 0.0, 1.0);
           
-          // 2. High exponent (2.8) keeps your solid color pure at the top, 
-          // and restricts the black tint strictly to the bottom valleys
-          float bottomShadow = smoothstep(0.0, 0.45, normalizedY);
-          
-          // 3. Blend a subtle 45% black tint at the absolute baseline edge
-          vec3 shadowColor = uColor * 0.55; 
-          vec3 finalColor = mix(shadowColor, uColor, bottomShadow);
+          // CRITICAL: A high number (3.0) forces the shading to cluster tightly at the bottom edge 
+          // and fade out quickly as it travels upward, keeping your main red pure.
+          float shadeCurve = pow(normalizedY, 3.0);
+          vec3 finalColor = mix(uColorBottom, uColorTop, shadeCurve);
           
           gl_FragColor = vec4(finalColor, 1.0);
         }
@@ -65,7 +77,7 @@ export default function VectorCloudLayer({
       transparent: false,
       depthWrite: true
     });
-  }, [solidColor]);
+  }, [solidColor, zPos]);
 
   // 3. Crisp, step-darker red outline lip
   const rimMaterial = useMemo(() => {
