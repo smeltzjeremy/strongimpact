@@ -5,13 +5,13 @@ import * as THREE from 'three';
 export default function VectorCloudLayer({ 
   zPos = 0, 
   solidColor = '#c23d55', 
-  shadowOpacity = 0.45,
+  shadowOpacity = 0.35, // Slightly softened shadow to keep colors light
   parallaxFactor = 0.05,
   seed = 1.0 
 }) {
   const containerRef = useRef();
 
-  // 1. Procedurally generate the identical base shape across all three styling passes
+  // 1. Procedurally generate curves
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-15, -6);
@@ -32,7 +32,7 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
-  // PASS A MATERIAL: Deep Ambient Occlusion Drop Shadow
+  // PASS A MATERIAL: Soft Ambient Occlusion Drop Shadow
   const shadowMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: '#000000',
@@ -43,11 +43,10 @@ export default function VectorCloudLayer({
     });
   }, [shadowOpacity]);
 
-  // PASS B MATERIAL: Crisp Outer Border Rim Highlight
+  // PASS B MATERIAL: Crisp Outer Border Rim Highlight (Brightened up)
   const rimMaterial = useMemo(() => {
     const rimColor = new THREE.Color(solidColor);
-    // Slightly shift the rim scalar brighter than the core color to catch premium light glints
-    rimColor.addScalar(0.22); 
+    rimColor.addScalar(0.4); // Pushed significantly brighter for a glowing pink-red edge highlight
     
     return new THREE.MeshBasicMaterial({
       color: rimColor,
@@ -58,21 +57,21 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  // PASS C MATERIAL: Custom Shader to fix stretching & inject moody vertical gradients
+  // PASS C MATERIAL: Custom Shader with light vertical gradients
   const gradientMaterial = useMemo(() => {
-    // Generate a rich, deep burgundy color for the dark baseline anchor
-    const darkBaseColor = new THREE.Color(solidColor).multiplyScalar(0.28);
+    // FIXED: Raised from 0.28 to 0.55 so the baseline stays a vibrant, rich crimson instead of dark maroon
+    const darkBaseColor = new THREE.Color(solidColor).multiplyScalar(0.55);
 
     return new THREE.ShaderMaterial({
       uniforms: {
         uColorTop: { value: new THREE.Color(solidColor) },
         uColorBottom: { value: darkBaseColor },
-        uOpacity: { value: 0.88 }
+        uOpacity: { value: 0.85 }
       },
       vertexShader: `
         varying vec3 vLocalPosition;
         void main() {
-          vLocalPosition = position; // Feed local position coordinates to the fragment pipeline
+          vLocalPosition = position;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `,
@@ -83,21 +82,23 @@ export default function VectorCloudLayer({
         varying vec3 vLocalPosition;
 
         void main() {
-          // Normalize localized Y coordinates from base boundary (-6.0) to top peak (~1.2)
           float normalizedY = clamp((vLocalPosition.y + 6.0) / 7.2, 0.0, 1.0);
-          
-          // Mix a flawless, clean vertical gradient
           vec3 finalColor = mix(uColorBottom, uColorTop, normalizedY);
           gl_FragColor = vec4(finalColor, uOpacity);
         }
       `,
       transparent: true,
       depthWrite: false,
-      blending: THREE.NormalBlending
+
+      // ADVANCED: Enables vibrant pass-through blending so stacked transparent reds illuminate each other
+      blending: THREE.CustomBlending,
+      blendEquation: THREE.AddEquation,
+      blendSrc: THREE.SrcAlphaFactor,
+      blendDst: THREE.OneMinusSrcAlphaFactor
     });
   }, [solidColor]);
 
-  // 4. Parallax physics loop for smooth translation shifts
+  // 4. Parallax physics loop
   useFrame((state) => {
     if (!containerRef.current) return;
     const targetX = state.pointer.x * parallaxFactor * 0.7;
@@ -109,29 +110,9 @@ export default function VectorCloudLayer({
 
   return (
     <group ref={containerRef}>
-      {/* PASS A: DROP SHADOW MESH - Shifted slightly down (Y) and back (Z) */}
-      <mesh 
-        geometry={geometry} 
-        material={shadowMaterial} 
-        position={[0, -0.08, zPos - 0.12]} 
-      />
-
-      {/* PASS B: HIGH-CONTRAST BORDER HIGHLIGHT RIM MESH */}
-      <mesh 
-        geometry={geometry} 
-        material={rimMaterial} 
-        position={[0, 0, zPos]} 
-      />
-
-      {/* PASS C: INTERIOR VERTICAL GRADIENT MESH 
-          - Shifted micro-fractions down (Y) and forward (Z) to overlap Pass B, 
-            perfectly exposing just the top edge rim profile like crisp paper layers!
-      */}
-      <mesh 
-        geometry={geometry} 
-        material={gradientMaterial} 
-        position={[0, -0.032, zPos + 0.02]} 
-      />
+      <mesh geometry={geometry} material={shadowMaterial} position={[0, -0.09, zPos - 0.1]} />
+      <mesh geometry={geometry} material={rimMaterial} position={[0, 0, zPos]} />
+      <mesh geometry={geometry} material={gradientMaterial} position={[0, -0.032, zPos + 0.02]} />
     </group>
   );
 }
