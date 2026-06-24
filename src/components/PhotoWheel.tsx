@@ -51,11 +51,32 @@ const PhotoWheel: React.FC = () => {
 
       <group 
         ref={groupRef} 
-        position={[0, isMobile ? 2.35 : 2.8, isMobile ? -2.2 : -1.8]} // tuned for mobile
+        position={[0, isMobile ? 1.0 : 1.35, isMobile ? -2.2 : -1.8]}
       >
-        {/* Center Hub */}
+        {/* PREMIUM HUB INTERFACE */}
+        {/* Base Mirror Ball Hub */}
         <mesh material={chromeSpokeMat}>
-          <sphereGeometry args={[0.45]} />
+          <sphereGeometry args={[0.45, 32, 32]} />
+        </mesh>
+
+        {/* Flat Dial Faceplate */}
+        <mesh position={[0, 0, 0.3]} rotation={[Math.PI / 2, 0, 0]} material={titaniumFrameMat}>
+          <cylinderGeometry args={[0.32, 0.32, 0.08, 32]} />
+        </mesh>
+
+        {/* LEFT SCROLL ARROW */}
+        <mesh position={[-0.18, 0, 0.35]} rotation={[0, 0, Math.PI / 2]} material={new THREE.MeshStandardMaterial({ color: '#ef4444', metalness: 0.5, roughness: 0.2 })}>
+          <coneGeometry args={[0.04, 0.1, 4]} />
+        </mesh>
+
+        {/* RIGHT SCROLL ARROW */}
+        <mesh position={[0.18, 0, 0.35]} rotation={[0, 0, -Math.PI / 2]} material={new THREE.MeshStandardMaterial({ color: '#ef4444', metalness: 0.5, roughness: 0.2 })}>
+          <coneGeometry args={[0.04, 0.1, 4]} />
+        </mesh>
+
+        {/* Central Dial Indicator */}
+        <mesh position={[0, 0, 0.35]} material={chromeSpokeMat}>
+          <boxGeometry args={[0.08, 0.03, 0.02]} />
         </mesh>
 
         {Array.from({ length: numFrames }).map((_, i) => {
