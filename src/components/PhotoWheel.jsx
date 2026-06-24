@@ -4,15 +4,14 @@ import * as THREE from 'three';
 
 export default function PhotoWheel() {
   const groupRef = useRef();
-  const { gl, scene } = useThree();
+  const { gl } = useThree();
   const rotationRef = useRef(0);
 
-  // Scroll control
   useEffect(() => {
     const handleWheel = (e) => {
       e.preventDefault();
       const delta = e.deltaY > 0 ? -0.08 : 0.08;
-      rotationRef.current += delta * 5.5;
+      rotationRef.current += delta * 3.5;
     };
 
     const canvas = gl.domElement;
@@ -27,61 +26,44 @@ export default function PhotoWheel() {
   });
 
   const spokeMaterial = new THREE.MeshStandardMaterial({
-    color: '#aaaaaa',
+    color: '#dddddd',
     metalness: 1.0,
-    roughness: 0.15,
-    envMapIntensity: 1.2
+    roughness: 0.12,
   });
 
   const frameMaterial = new THREE.MeshStandardMaterial({
-    color: '#111111',
-    metalness: 0.9,
-    roughness: 0.3,
-    envMapIntensity: 1.0
-  });
-
-  const rimMaterial = new THREE.MeshStandardMaterial({
-    color: '#888888',
-    metalness: 1.0,
-    roughness: 0.1
+    color: '#1a1a1c',
+    metalness: 0.85,
+    roughness: 0.22,
   });
 
   const numFrames = 6;
-  const radius = 4.8;
+  const radius = 3.2;   // Much smaller & balanced
 
   return (
-    <group ref={groupRef} position={[0, 0.6, -1.5]}>
-      {/* Main central axle / hub */}
-      <mesh position={[0, 0, 0]} material={spokeMaterial}>
-        <cylinderGeometry args={[0.45, 0.45, 1.2, 64]} />
+    <group ref={groupRef} position={[0, 0.4, -1.6]}>   {/* Tuned position + z-depth */}
+      {/* Central axle / hub */}
+      <mesh rotation={[0, 0, Math.PI / 2]} material={spokeMaterial}>
+        <cylinderGeometry args={[0.32, 0.32, 1.4, 32]} />
       </mesh>
 
-      {/* Outer rim ring (for structural feel) */}
-      <mesh position={[0, 0, 0]} material={rimMaterial} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[radius + 0.6, 0.25, 32, 64]} />
-      </mesh>
-
-      {/* Spokes + Photo Frames */}
+      {/* Spokes + Frames */}
       {Array.from({ length: numFrames }).map((_, i) => {
         const angle = (i * Math.PI * 2) / numFrames;
-        
         return (
           <group key={i} rotation={[angle, 0, 0]}>
-            {/* Thick structural spoke */}
-            <mesh position={[0, radius * 0.6, 0]} material={spokeMaterial}>
-              <cylinderGeometry args={[0.18, 0.18, radius * 1.1, 32]} />
+            {/* Structural spoke */}
+            <mesh position={[0, 0, radius * 0.55]} rotation={[Math.PI / 2, 0, 0]} material={spokeMaterial}>
+              <cylinderGeometry args={[0.09, 0.09, radius * 1.05, 16]} />
             </mesh>
 
-            {/* Beveled 3D photo frame chassis */}
-            <group position={[0, radius, 0]}>
-              {/* Frame backing (depth) */}
-              <mesh position={[0, 0, 0]} material={frameMaterial}>
-                <boxGeometry args={[2.8, 2.1, 0.25]} />
+            {/* 3D Photo Frame */}
+            <group position={[0, 0, radius]}>
+              <mesh material={frameMaterial}>
+                <boxGeometry args={[2.4, 1.75, 0.22]} />
               </mesh>
-              
-              {/* Inner photo plane */}
-              <mesh position={[0, 0, 0.18]} material={new THREE.MeshStandardMaterial({ color: '#0a0a0a' })}>
-                <planeGeometry args={[2.5, 1.85]} />
+              <mesh position={[0, 0, 0.13]} material={new THREE.MeshStandardMaterial({ color: '#0a0a0a' })}>
+                <planeGeometry args={[2.15, 1.55]} />
               </mesh>
             </group>
           </group>
