@@ -27,52 +27,22 @@ export default function PhotosPage() {
               <ProceduralChromeBackground />
             </group>
 
-            <group position={[-0.8, -2.7, 0]}>
+            <group position={[-1.2, -2.55, 0]}>
               
-              {/* LAYER 2: DEEPEST BACK */}
-              <VectorCloudLayer 
-                zPos={-2.5} 
-                solidColor="#941327" 
-                shadowOpacity={0.45} 
-                parallaxFactor={0.15} 
-                seed={5.2}
-              />
+              {/* BACK - Darkest */}
+              <VectorCloudLayer zPos={-2.6} solidColor="#6f0d20" shadowOpacity={0.48} parallaxFactor={0.1} seed={5.2} />
+              <VectorCloudLayer zPos={-2.4} solidColor="#7f1226" shadowOpacity={0.45} parallaxFactor={0.13} seed={6.8} />
 
-              {/* Extra wide back layer for better left/right coverage */}
-              <VectorCloudLayer 
-                zPos={-2.3} 
-                solidColor="#941327" 
-                shadowOpacity={0.38} 
-                parallaxFactor={0.12} 
-                seed={4.7}
-              />
+              {/* MID-BACK */}
+              <VectorCloudLayer zPos={-1.1} solidColor="#bf1c38" shadowOpacity={0.4} parallaxFactor={0.3} seed={3.4} />
+              <VectorCloudLayer zPos={-0.9} solidColor="#d02847" shadowOpacity={0.37} parallaxFactor={0.33} seed={4.5} />
 
-              {/* LAYER 3: MID-BACK */}
-              <VectorCloudLayer 
-                zPos={-0.8} 
-                solidColor="#c41f3b" 
-                shadowOpacity={0.38}
-                parallaxFactor={0.35} 
-                seed={3.4}
-              />
+              {/* MID-FRONT */}
+              <VectorCloudLayer zPos={0.5} solidColor="#e93f5d" shadowOpacity={0.32} parallaxFactor={0.55} seed={1.8} />
+              <VectorCloudLayer zPos={0.7} solidColor="#f14f6f" shadowOpacity={0.28} parallaxFactor={0.6} seed={2.7} />
 
-              {/* LAYER 4: MID-FRONT - lifted slightly */}
-              <VectorCloudLayer 
-                zPos={0.6} 
-                solidColor="#e63553" 
-                shadowOpacity={0.35}
-                parallaxFactor={0.6} 
-                seed={1.8}
-              />
-
-              {/* LAYER 5: FOREGROUND */}
-              <VectorCloudLayer 
-                zPos={2.0} 
-                solidColor="#ff5977" 
-                shadowOpacity={0.0} 
-                parallaxFactor={0.85} 
-                seed={0.6}
-              />
+              {/* FOREGROUND - Lightest */}
+              <VectorCloudLayer zPos={2.0} solidColor="#ff7492" shadowOpacity={0.1} parallaxFactor={0.8} seed={0.6} />
 
             </group>
 
