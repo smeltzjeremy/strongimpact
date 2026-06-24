@@ -28,11 +28,13 @@ const PhotoWheel: React.FC = () => {
     }
   });
 
-  const spokeMat = new THREE.MeshBasicMaterial({ color: '#dddddd' });
-  const frameMat = new THREE.MeshBasicMaterial({ color: '#1a1a1c' });
-  const photoMat = new THREE.MeshBasicMaterial({ color: '#0f0f11' });
+  // Upgraded metallic materials
+  const spokeMat = new THREE.MeshStandardMaterial({ color: '#f1f5f9', metalness: 0.95, roughness: 0.05 });
+  const frameMat = new THREE.MeshStandardMaterial({ color: '#18181b', metalness: 0.85, roughness: 0.15 });
+  const photoMat = new THREE.MeshStandardMaterial({ color: '#09090b', metalness: 0.1, roughness: 0.5 });
+  const hubMat = new THREE.MeshStandardMaterial({ color: '#cbd5e1', metalness: 0.95, roughness: 0.05 });
 
-  const radius = 3.8;   // closer to center
+  const radius = 3.8;
   const numFrames = 6;
 
   return (
@@ -42,7 +44,7 @@ const PhotoWheel: React.FC = () => {
 
       <group ref={groupRef} position={[0, 2.0, -2.0]}>
         {/* Center hub */}
-        <mesh material={new THREE.MeshBasicMaterial({ color: '#aaaaaa' })}>
+        <mesh material={hubMat}>
           <sphereGeometry args={[0.45]} />
         </mesh>
 
@@ -50,21 +52,19 @@ const PhotoWheel: React.FC = () => {
           const angle = (i * Math.PI * 2) / numFrames;
           return (
             <group key={i} rotation={[0, 0, angle]}>
-              {/* Thin metallic spoke */}
+              {/* Thin metallic spoke - fixed orientation */}
               <mesh
                 position={[0, radius * 0.52, 0]}
-                rotation={[Math.PI / 2, 0, 0]}
                 material={spokeMat}
               >
                 <cylinderGeometry args={[0.06, 0.06, radius * 1.05, 16]} />
               </mesh>
 
-              {/* Photo Frame */}
-              <group position={[0, radius, 0]}>
+              {/* Photo Frame - counter-rotated to stay upright */}
+              <group position={[0, radius, 0]} rotation={[0, 0, -angle]}>
                 <mesh material={frameMat}>
                   <boxGeometry args={[2.4, 1.75, 0.18]} />
                 </mesh>
-                {/* Photo placeholder */}
                 <mesh position={[0, 0, 0.1]} material={photoMat}>
                   <planeGeometry args={[2.2, 1.55]} />
                 </mesh>
