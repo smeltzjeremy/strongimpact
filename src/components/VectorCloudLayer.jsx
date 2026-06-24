@@ -11,7 +11,7 @@ export default function VectorCloudLayer({
 }) {
   const containerRef = useRef();
 
-  const geometry = useMemo(() => {
+  const [geometry, borderGeometry] = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-15, -6);
     
@@ -28,49 +28,56 @@ export default function VectorCloudLayer({
     shape.lineTo(-15, -6);
     shape.closePath();
 
-    return new THREE.ShapeGeometry(shape);
+    const shapeGeo = new THREE.ShapeGeometry(shape);
+
+    // Top edge border curve only
+    const points = [];
+    for (let i = 0; i <= 120; i++) {
+      const t = i / 120;
+      const x = -15 + t * 30;
+      let y = 0;
+      if (x < -5) y = THREE.MathUtils.lerp(-0.2, h2, (x + 15) / 10);
+      else if (x < 0.5) y = THREE.MathUtils.lerp(h2, h3, (x + 5) / 5.5);
+      else if (x < 6.5) y = THREE.MathUtils.lerp(h3, h2 - 0.1, (x - 0.5) / 6);
+      else y = THREE.MathUtils.lerp(h2 - 0.1, -0.2, (x - 6.5) / 8.5);
+      points.push(new THREE.Vector3(x, y + 0.03, 0)); // slight offset up
+    }
+    const curve = new THREE.CatmullRomCurve3(points);
+    const borderGeo = new THREE.TubeGeometry(curve, 80, 0.035, 8, false);
+
+    return [shapeGeo, borderGeo];
   }, [seed]);
 
-  const colorMaterial = useMemo(() => {
-    return new THREE.MeshBasicMaterial({
-      color: new THREE.Color(solidColor),
-      transparent: false,
-      depthTest: true,
-      depthWrite: true
-    });
+  const colorMaterial = useMemo(() => new THREE.MeshBasicMaterial({
+    color: new THREE.Color(solidColor),
+  }), [solidColor]);
+
+  const borderMaterial = useMemo(() => {
+    const highlight = new THREE.Color(solidColor);
+    highlight.addScalar(0.35);
+    return new THREE.MeshBasicMaterial({ color: highlight });
   }, [solidColor]);
 
-  const shadowMaterial = useMemo(() => {
-    return new THREE.MeshBasicMaterial({
-      color: '#000000',
-      transparent: true,
-      opacity: shadowOpacity,
-      depthTest: true,
-      depthWrite: false
-    });
-  }, [shadowOpacity]);
+  const shadowMaterial = useMemo(() => new THREE.MeshBasicMaterial({
+    color: '#000000',
+    transparent: true,
+    opacity: shadowOpacity,
+    depthWrite: false,
+  }), [shadowOpacity]);
 
   useFrame((state) => {
     if (!containerRef.current) return;
     const targetX = state.pointer.x * parallaxFactor * 0.7;
     const targetY = state.pointer.y * parallaxFactor * 0.35;
-
     containerRef.current.position.x += (targetX - containerRef.current.position.x) * 0.05;
     containerRef.current.position.y += (targetY - containerRef.current.position.y) * 0.05;
   });
 
   return (
     <group ref={containerRef}>
-      <mesh 
-        geometry={geometry} 
-        material={shadowMaterial} 
-        position={[0, -0.18, zPos - 0.05]} 
-      />
-      <mesh 
-        geometry={geometry} 
-        material={colorMaterial} 
-        position={[0, 0, zPos]} 
-      />
+      <mesh geometry={geometry} material={shadowMaterial} position={[0, -0.18, zPos - 0.05]} />
+      <mesh geometry={geometry} material={colorMaterial} position={[0, 0, zPos]} />
+      <mesh geometry={borderGeometry} material={borderMaterial} position={[0, 0, zPos + 0.1]} />
     </group>
   );
 }
