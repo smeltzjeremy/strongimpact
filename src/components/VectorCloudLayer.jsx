@@ -30,58 +30,60 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
-  // 2. Fragment Shader: Dramatically intensifies the lower shadow gradient
+  // 2. Your Fixed UV Gradient Shader (Forces true vertical shading)
   const colorMaterial = useMemo(() => {
-    // Drop the bottom shadow color multiplier to 0.15 to force deep, rich base depth
-    const shadedBaseColor = new THREE.Color(solidColor).clone().multiplyScalar(0.15);
+    // Deep crimson/black base mix for the valleys
+    const darkBaseColor = new THREE.Color(solidColor).clone().multiplyScalar(0.25);
 
     return new THREE.ShaderMaterial({
       uniforms: {
         uColorTop: { value: new THREE.Color(solidColor) },
-        uColorBottom: { value: shadedBaseColor }
+        uColorBottom: { value: darkBaseColor }
       },
       vertexShader: `
-        varying vec3 vLocalPosition;
+        varying vec2 vUv;
         void main() {
-          vLocalPosition = position;
+          vUv = uv;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `,
       fragmentShader: `
         uniform vec3 uColorTop;
         uniform vec3 uColorBottom;
-        varying vec3 vLocalPosition;
+        varying vec2 vUv;
 
         void main() {
-          float normalizedY = clamp((vLocalPosition.y + 4.5) / 5.5, 0.0, 1.0);
+          float normalizedY = clamp(vUv.y, 0.0, 1.0);
           
-          // Tight exponential curve concentrates the deep shade toward the bottom 40% of the card
-          float shadeCurve = pow(normalizedY, 1.8);
+          // Exponential falloff clusters the rich shadows beautifully at the base
+          float shadeCurve = pow(normalizedY, 1.6);
           vec3 finalColor = mix(uColorBottom, uColorTop, shadeCurve);
           
-          gl_FragColor = vec4(finalColor, 1.0);
+          gl_FragColor = vec4(finalColor, 0.95);
         }
       `,
-      transparent: false,
-      depthWrite: true
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.NormalBlending
     });
   }, [solidColor]);
 
-  // 3. Crisp, Significantly Darker Opaque Outline Crease
+  // 3. Crisp, True-Opaque Dark Accent Rim Crease
   const rimMaterial = useMemo(() => {
     const darkEdgeColor = new THREE.Color(solidColor).clone();
-    
-    // Aggressively darken the outline color to form a clean, deep recessed border separation
-    darkEdgeColor.multiplyScalar(0.38);
+    // Drops the rim exposure to create a deep recessed separation crease
+    darkEdgeColor.multiplyScalar(0.42);
     
     return new THREE.MeshBasicMaterial({
       color: darkEdgeColor,
-      transparent: false,
-      depthWrite: true
+      transparent: true,
+      opacity: 0.95,
+      depthWrite: false,
+      blending: THREE.NormalBlending
     });
   }, [solidColor]);
 
-  // Soft drop shadow backer
+  // Ambient Drop Shadow Backer
   const shadowMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: '#000000',
