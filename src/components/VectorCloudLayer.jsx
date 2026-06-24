@@ -9,7 +9,6 @@ export default function VectorCloudLayer({
 }) {
   const containerRef = useRef();
 
-  // 1. Your exact, locked geometric curves
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-12.0, -4.5);
@@ -30,7 +29,7 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
-  // 2. Custom internal depth shading shader (Your exact golden material setup)
+  // Main red material - unchanged
   const colorMaterial = useMemo(() => {
     const shadedBaseColor = new THREE.Color(solidColor).clone().multiplyScalar(0.45);
 
@@ -63,11 +62,33 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  // 3. Crisp, step-darker red outline lip
+  // Subtle quick-fading black shading overlay
+  const bottomShadeMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec2 vUv;
+        void main() {
+          float fadeUp = pow(vUv.y, 4.5);     // very quick fade
+          float alpha = mix(0.28, 0.0, fadeUp); // subtle darkness
+          gl_FragColor = vec4(0.0, 0.0, 0.0, alpha);
+        }
+      `,
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+      blending: THREE.NormalBlending
+    });
+  }, []);
+
   const rimMaterial = useMemo(() => {
-    const darkEdgeColor = new THREE.Color(solidColor).clone();
-    darkEdgeColor.multiplyScalar(0.65);
-    
+    const darkEdgeColor = new THREE.Color(solidColor).clone().multiplyScalar(0.65);
     return new THREE.MeshBasicMaterial({
       color: darkEdgeColor,
       transparent: false,
@@ -90,6 +111,14 @@ export default function VectorCloudLayer({
       <mesh geometry={geometry} material={shadowMaterial} position={[0, -0.12, zPos - 0.08]} />
       <mesh geometry={geometry} material={rimMaterial} position={[0, 0, zPos]} />
       <mesh geometry={geometry} material={colorMaterial} position={[0, -0.045, zPos + 0.02]} />
+      
+      {/* Subtle bottom shading - on all clouds */}
+      <mesh 
+        geometry={geometry} 
+        material={bottomShadeMaterial} 
+        position={[0, -0.09, zPos + 0.05]} 
+        renderOrder={2}
+      />
     </group>
   );
 }
