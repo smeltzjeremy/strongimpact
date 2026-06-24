@@ -63,33 +63,64 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  // NEW: Dedicated Bottom Shading Overlay Layer (Paints a clean black fade)
+  // NEW: Organic Coordinate-Mapped Overlay (Tracks your custom wavy lines perfectly)
   const overlayShadowMaterial = useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1;
-    canvas.height = 256;
-    const ctx = canvas.getContext('2d');
-    
-    // Create a vertical gradient: solid black at the bottom, fading to transparent at the top
-    const gradient = ctx.createLinearGradient(0, 256, 0, 0);
-    
-    // COMPRESSED STOPS TO PULL SHADOW DOWN BY HALF:
-    gradient.addColorStop(0.0, 'rgba(0, 0, 0, 0.85)');  // Kept deep, rich black punch at the very bottom edge
-    gradient.addColorStop(0.05, 'rgba(0, 0, 0, 0.45)'); // Fast, sharp mid-crease transition
-    gradient.addColorStop(0.14, 'rgba(0, 0, 0, 0.00)'); // FIXED: Cut off at 0.14 instead of 0.32 so it stays halfway down and clears the red face
-    
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 1, 256);
+    const h1 = -0.2 + Math.sin(seed) * 0.25;
+    const h2 = 0.1 + Math.cos(seed) * 0.35;
+    const h3 = -0.1 + Math.sin(seed * 2.5) * 0.25;
 
-    const texture = new THREE.CanvasTexture(canvas);
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uH1: { value: h1 },
+        uH2: { value: h2 },
+        uH3: { value: h3 }
+      },
+      vertexShader: `
+        varying vec3 vLocalPosition;
+        void main() {
+          vLocalPosition = position;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vLocalPosition;
+        uniform float uH1;
+        uniform float uH2;
+        uniform float uH3;
 
-    return new THREE.MeshBasicMaterial({
-      map: texture,
-      transparent: true,     // Lets your perfect reds show through underneath
-      depthWrite: false,     // Prevents this layer from clipping or cutting your background
+        void main() {
+          // Calculate the exact target curve Y boundary dynamically across the horizontal X track
+          float curveY = -4.5;
+          if (vLocalPosition.x < -5.0) {
+            float t = clamp((vLocalPosition.x + 12.0) / 7.0, 0.0, 1.0);
+            curveY = mix(uH1 - 0.2, uH2, t);
+          } else if (vLocalPosition.x < 1.0) {
+            float t = clamp((vLocalPosition.x + 5.0) / 6.0, 0.0, 1.0);
+            curveY = mix(uH2, uH3, t);
+          } else {
+            float t = clamp((vLocalPosition.x - 1.0) / 11.0, 0.0, 1.0);
+            curveY = mix(uH3, uH2 - 0.1, t);
+          }
+
+          // Compute exact local height relative to the wavy top profile
+          float totalHeight = curveY - (-4.5);
+          float localY = clamp((vLocalPosition.y + 4.5) / totalHeight, 0.0, 1.0);
+
+          // Soft exponential falloff (no slicing, smooth fade out as it crawls upward)
+          float fadeUp = pow(localY, 1.8);
+          
+          // Soft 45% black overlay tint at the absolute bottom crease, smoothly blending away
+          float alpha = mix(0.45, 0.0, fadeUp);
+
+          gl_FragColor = vec4(vec3(0.0), alpha);
+        }
+      `,
+      transparent: true,
+      depthTest: false,   // Bypass opaque layout occlusion blocks
+      depthWrite: false,
       blending: THREE.NormalBlending
     });
-  }, []);
+  }, [seed]);
 
   // 3. Crisp, step-darker red outline lip (Your exact, unchangeable baseline)
   const rimMaterial = useMemo(() => {
@@ -125,11 +156,12 @@ export default function VectorCloudLayer({
       {/* Mesh 3: Main Base Red Face Sheet (Your Untouched Golden Material) */}
       <mesh geometry={geometry} material={colorMaterial} position={[0, -0.045, zPos + 0.02]} />
 
-      {/* Mesh 4: NEW Black Shading Overlay */}
+      {/* Mesh 4: Form-Fitting Wavy Crease Shadow Layer */}
       <mesh 
         geometry={geometry} 
         material={overlayShadowMaterial} 
-        position={[0, -0.045, zPos + 0.03]} 
+        position={[0, 0, zPos + 0.04]} 
+        renderOrder={1}
       />
     </group>
   );
