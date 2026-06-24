@@ -35,18 +35,14 @@ const PhotoWheel: React.FC = () => {
 
   return (
     <>
-      {/* Local lights for the wheel only */}
       <ambientLight intensity={1.5} />
       <directionalLight position={[0, 5, 5]} intensity={2.0} />
 
-      {/* Main wheel group */}
       <group ref={groupRef} position={[0, 2.2, -2.0]}>
-        {/* Big central hub */}
         <mesh material={brightMat}>
           <sphereGeometry args={[0.8]} />
         </mesh>
 
-        {/* Test frames */}
         {Array.from({ length: 6 }).map((_, i) => {
           const angle = (i * Math.PI * 2) / 6;
           return (
