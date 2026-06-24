@@ -11,11 +11,11 @@ export default function VectorCloudLayer({
 }) {
   const containerRef = useRef();
 
-  // 1. Procedurally generate extra-wide papercut curves to guarantee zero viewport clipping
+  // 1. Procedurally generate the extra-wide base bezier curves (Preserves full native dimensions)
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     
-    // Safety expansion to +/- 6.5 horizontally to cushion extreme mouse parallax shifts
+    // Safety expansion to +/- 6.5 horizontally to cushion parallax movements
     shape.moveTo(-6.5, -4.5);
     
     const h1 = -0.2 + Math.sin(seed) * 0.25;
@@ -36,10 +36,10 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
-  // 2. Uniform local-space gradient shader (Fixes ShapeGeometry UV stretching)
+  // 2. Uniform local-space gradient shader with a lifted, lighter bottom baseline color
   const colorMaterial = useMemo(() => {
-    // Generate a rich, deep burgundy color for the dark baseline anchor
-    const darkBaseColor = new THREE.Color(solidColor).multiplyScalar(0.28);
+    // FIXED: Shifted multiplyScalar from 0.28 up to 0.65 to keep the base color light and vibrant
+    const darkBaseColor = new THREE.Color(solidColor).multiplyScalar(0.65);
 
     return new THREE.ShaderMaterial({
       uniforms: {
@@ -50,7 +50,7 @@ export default function VectorCloudLayer({
       vertexShader: `
         varying vec3 vLocalPosition;
         void main() {
-          vLocalPosition = position; // Pass local coordinates directly to fragment pipeline
+          vLocalPosition = position;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `,
@@ -77,7 +77,7 @@ export default function VectorCloudLayer({
   // 3. Crisp Outer Border Rim Highlight
   const rimMaterial = useMemo(() => {
     const rimColor = new THREE.Color(solidColor);
-    rimColor.addScalar(0.22); // Catch premium light glints on the edge
+    rimColor.addScalar(0.22); // Catch light glints on the edge
     
     return new THREE.MeshBasicMaterial({
       color: rimColor,
@@ -111,8 +111,10 @@ export default function VectorCloudLayer({
   });
 
   return (
-    <group ref={containerRef}>
-      {/* PASS A: OCCLUSION SHADOW MESH - Offset slightly lower (Y) and deeper back (Z) */}
+    /* FIXED STRETCH: Applied horizontal scale multiplier [2.2] straight to the master group 
+       to instantly stretch the shapes across the entire page viewport natively. */
+    <group ref={containerRef} scale={[2.2, 1.0, 1.0]}>
+      {/* PASS A: OCCLUSION SHADOW MESH */}
       <mesh 
         geometry={geometry} 
         material={shadowMaterial} 
@@ -126,7 +128,7 @@ export default function VectorCloudLayer({
         position={[0, 0, zPos]} 
       />
 
-      {/* PASS C: VISUAL GRADIENT MESH - Shifted micro-fractions down (Y) and forward (Z) */}
+      {/* PASS C: VISUAL GRADIENT MESH */}
       <mesh 
         geometry={geometry} 
         material={colorMaterial} 
