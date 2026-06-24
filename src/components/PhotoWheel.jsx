@@ -2,68 +2,64 @@ import React, { useRef, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function PhotoWheel() {
-  const groupRef = useRef();
+const PhotoWheel: React.FC = () => {
+  const groupRef = useRef<THREE.Group>(null!);
   const { gl } = useThree();
-  const rotationRef = useRef(0);
+
+  const rotationRef = useRef<number>(0);
+  const targetStepRef = useRef<number>(0);
 
   useEffect(() => {
-    const handleWheel = (e) => {
+    const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      rotationRef.current += (e.deltaY > 0 ? -0.06 : 0.06) * 4;
+      targetStepRef.current += e.deltaY > 0 ? 1 : -1;
     };
-    const canvas = gl.domElement;
+
+    const canvas = gl.domElement as HTMLCanvasElement;
     canvas.addEventListener('wheel', handleWheel, { passive: false });
     return () => canvas.removeEventListener('wheel', handleWheel);
   }, [gl]);
 
-  useFrame(() => {
-    if (groupRef.current) groupRef.current.rotation.x = rotationRef.current;
+  useFrame((_, delta) => {
+    if (groupRef.current) {
+      const target = targetStepRef.current * (Math.PI * 2) / 6;
+      rotationRef.current = THREE.MathUtils.lerp(rotationRef.current, target, 1 - Math.exp(-12 * delta));
+      groupRef.current.rotation.z = rotationRef.current;
+    }
   });
 
-  const metalMat = new THREE.MeshStandardMaterial({
-    color: '#cccccc',
-    metalness: 0.95,
-    roughness: 0.1,
-  });
+  const brightMat = new THREE.MeshBasicMaterial({ color: '#ff00ff' });
+  const frameMat = new THREE.MeshBasicMaterial({ color: '#00ffff' });
 
-  const frameMat = new THREE.MeshStandardMaterial({
-    color: '#111111',
-    metalness: 0.8,
-    roughness: 0.3,
-  });
-
-  const radius = 3.4;
-  const numFrames = 6;
+  const radius = 4;
 
   return (
-    <group ref={groupRef} position={[0, 0.5, -1.55]}>
-      {/* Central hub */}
-      <mesh material={metalMat}>
-        <cylinderGeometry args={[0.4, 0.4, 1.8, 48]} />
-      </mesh>
+    <>
+      {/* Local lights for the wheel only */}
+      <ambientLight intensity={1.5} />
+      <directionalLight position={[0, 5, 5]} intensity={2.0} />
 
-      {Array.from({ length: numFrames }).map((_, i) => {
-        const angle = (i * Math.PI * 2) / numFrames;
-        return (
-          <group key={i} rotation={[angle, 0, 0]}>
-            {/* Spoke */}
-            <mesh position={[0, radius * 0.55, 0]} material={metalMat}>
-              <cylinderGeometry args={[0.12, 0.12, radius * 1.1, 24]} />
-            </mesh>
+      {/* Main wheel group */}
+      <group ref={groupRef} position={[0, 2.2, -2.0]}>
+        {/* Big central hub */}
+        <mesh material={brightMat}>
+          <sphereGeometry args={[0.8]} />
+        </mesh>
 
-            {/* Photo frame with depth */}
-            <group position={[0, radius, 0]}>
-              <mesh material={frameMat}>
-                <boxGeometry args={[2.6, 1.9, 0.25]} />
-              </mesh>
-              <mesh position={[0, 0, 0.15]} material={new THREE.MeshStandardMaterial({ color: '#222222' })}>
-                <planeGeometry args={[2.3, 1.65]} />
+        {/* Test frames */}
+        {Array.from({ length: 6 }).map((_, i) => {
+          const angle = (i * Math.PI * 2) / 6;
+          return (
+            <group key={i} rotation={[0, 0, angle]}>
+              <mesh position={[0, radius, 0]} material={frameMat}>
+                <boxGeometry args={[2.8, 2.0, 0.3]} />
               </mesh>
             </group>
-          </group>
-        );
-      })}
-    </group>
+          );
+        })}
+      </group>
+    </>
   );
-}
+};
+
+export default PhotoWheel;

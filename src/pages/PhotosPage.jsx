@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { Link } from 'react-router-dom';
 import ProceduralChromeBackground from '../components/ProceduralChromeBackground';
 import VectorCloudLayer from '../components/VectorCloudLayer';
-import PhotoWheel from '../components/PhotoWheel';   // ← New
+import PhotoWheel from '../components/PhotoWheel';
 
 export default function PhotosPage() {
   return (
@@ -32,7 +32,7 @@ export default function PhotosPage() {
               <VectorCloudLayer zPos={-2.6} solidColor="#8c1224" shadowOpacity={0.5} seed={5.2} />
               <VectorCloudLayer zPos={-2.35} solidColor="#b31931" shadowOpacity={0.46} seed={6.7} />
 
-              {/* PHOTO WHEEL - in front of first two clouds */}
+              {/* PHOTO WHEEL */}
               <PhotoWheel />
 
               {/* Layers 3+ : In front of wheel */}
