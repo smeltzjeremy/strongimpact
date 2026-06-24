@@ -4,17 +4,21 @@ import { Environment, MeshTransmissionMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
 const PhotoWheel: React.FC = () => {
-  const groupRef = useRef<THREE.Group>(null!);
+  const wheelGroupRef = useRef<THREE.Group>(null!);
+  const framesGroupRef = useRef<THREE.Group>(null!);
+  
   const { gl, viewport } = useThree();
   const isMobile = viewport.width < 5;
 
   const rotationRef = useRef<number>(0);
   const targetStepRef = useRef<number>(0);
 
-  // Global wheel + horizontal swipe
+  // Global Wheel & High-Response Horizontal Swipe
   useEffect(() => {
     const handleGlobalWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) > 5) targetStepRef.current += e.deltaY > 0 ? 1 : -1;
+      if (Math.abs(e.deltaY) > 5) {
+        targetStepRef.current += e.deltaY > 0 ? 1 : -1;
+      }
     };
 
     let touchStartX = 0;
@@ -29,14 +33,15 @@ const PhotoWheel: React.FC = () => {
       if (!isDragging) return;
       const currentX = e.touches[0].clientX;
       const delta = touchStartX - currentX;
-      if (Math.abs(delta) > 40) {
+
+      if (Math.abs(delta) > 35) {
         targetStepRef.current += delta > 0 ? 1 : -1;
         touchStartX = currentX;
         isDragging = false;
       }
     };
 
-    const handleTouchEnd = () => isDragging = false;
+    const handleTouchEnd = () => { isDragging = false; };
 
     window.addEventListener('wheel', handleGlobalWheel, { passive: false });
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
@@ -51,11 +56,29 @@ const PhotoWheel: React.FC = () => {
     };
   }, []);
 
+  const radius = 3.8;
+  const numFrames = 6;
+
   useFrame((_, delta) => {
-    if (groupRef.current) {
-      const target = targetStepRef.current * (Math.PI * 2) / 6;
-      rotationRef.current = THREE.MathUtils.lerp(rotationRef.current, target, 1 - Math.exp(-14 * delta));
-      groupRef.current.rotation.z = rotationRef.current;
+    const target = (targetStepRef.current * (Math.PI * 2)) / numFrames;
+    
+    rotationRef.current = THREE.MathUtils.lerp(
+      rotationRef.current,
+      target,
+      1 - Math.exp(-14 * delta)
+    );
+
+    if (wheelGroupRef.current) {
+      wheelGroupRef.current.rotation.z = rotationRef.current;
+    }
+
+    if (framesGroupRef.current) {
+      framesGroupRef.current.children.forEach((child, i) => {
+        const currentAngle = (i * Math.PI * 2) / numFrames + rotationRef.current;
+        child.position.x = Math.sin(currentAngle) * radius;
+        child.position.y = Math.cos(currentAngle) * radius;
+        child.rotation.z = 0;
+      });
     }
   });
 
@@ -67,8 +90,9 @@ const PhotoWheel: React.FC = () => {
     new THREE.MeshStandardMaterial({ color: '#121214', metalness: 0.8, roughness: 0.25 }), []
   );
 
-  const radius = 3.8;
-  const numFrames = 6;
+  const redArrowMat = useMemo(() => 
+    new THREE.MeshStandardMaterial({ color: '#ef4444', metalness: 0.7, roughness: 0.15 }), []
+  );
 
   return (
     <>
@@ -79,71 +103,78 @@ const PhotoWheel: React.FC = () => {
 
       <group position={[0, isMobile ? 1.0 : 1.35, isMobile ? -2.2 : -1.8]}>
 
-        {/* Stationary Hub */}
+        {/* Stationary Center Hub */}
         <mesh material={chromeSpokeMat}>
           <sphereGeometry args={[0.45, 32, 32]} />
         </mesh>
 
-        {/* LEFT CLICKABLE ARROW */}
+        {/* LEFT ARROW */}
         <mesh 
           position={[-0.85, 0, 0.1]} 
           rotation={[0, 0, Math.PI / 2]} 
-          material={new THREE.MeshStandardMaterial({ color: '#ef4444', metalness: 0.7, roughness: 0.15 })}
-          onPointerDown={() => targetStepRef.current -= 1}
+          material={redArrowMat}
+          onPointerDown={(e) => { e.stopPropagation(); targetStepRef.current -= 1; }}
         >
           <coneGeometry args={[0.08, 0.22, 4]} />
         </mesh>
 
-        {/* RIGHT CLICKABLE ARROW */}
+        {/* RIGHT ARROW */}
         <mesh 
           position={[0.85, 0, 0.1]} 
           rotation={[0, 0, -Math.PI / 2]} 
-          material={new THREE.MeshStandardMaterial({ color: '#ef4444', metalness: 0.7, roughness: 0.15 })}
-          onPointerDown={() => targetStepRef.current += 1}
+          material={redArrowMat}
+          onPointerDown={(e) => { e.stopPropagation(); targetStepRef.current += 1; }}
         >
           <coneGeometry args={[0.08, 0.22, 4]} />
         </mesh>
 
-        {/* Rotating Wheel */}
-        <group ref={groupRef}>
+        {/* SPINNING SPOKES */}
+        <group ref={wheelGroupRef}>
           {Array.from({ length: numFrames }).map((_, i) => {
             const angle = (i * Math.PI * 2) / numFrames;
             return (
               <group key={i} rotation={[0, 0, angle]}>
-                {/* Mechanical Mounting Pin */}
                 <mesh position={[0, 0.46, 0.05]} material={chromeSpokeMat}>
                   <cylinderGeometry args={[0.04, 0.04, 0.06, 16]} />
                 </mesh>
-
-                {/* Spoke */}
                 <mesh position={[0, radius * 0.48, 0]} material={chromeSpokeMat}>
                   <cylinderGeometry args={[0.025, 0.025, radius * 1.05, 16]} />
                 </mesh>
+              </group>
+            );
+          })}
+        </group>
 
-                {/* Upright Frame */}
-                <group position={[0, radius, 0]} rotation={[0, 0, -angle - rotationRef.current]}>
-                  <mesh material={titaniumFrameMat}>
-                    <boxGeometry args={[2.35, 1.72, 0.18]} />
-                  </mesh>
-                  <mesh position={[0, 0, 0.095]} material={chromeSpokeMat}>
-                    <boxGeometry args={[2.19, 1.56, 0.01]} />
-                  </mesh>
-                  <mesh position={[0, 0, 0.1]}>
-                    <planeGeometry args={[2.15, 1.52]} />
-                    <MeshTransmissionMaterial
-                      backside
-                      samples={6}
-                      thickness={0.25}
-                      chromaticAberration={0.06}
-                      anisotropy={0.2}
-                      clearcoat={1}
-                      attenuationDistance={0.6}
-                      color="#f8fafc"
-                      roughness={0.12}
-                      transmission={0.65}
-                    />
-                  </mesh>
-                </group>
+        {/* UPRIGHT FRAMES */}
+        <group ref={framesGroupRef}>
+          {Array.from({ length: numFrames }).map((_, i) => {
+            const startAngle = (i * Math.PI * 2) / numFrames;
+            const startX = Math.sin(startAngle) * radius;
+            const startY = Math.cos(startAngle) * radius;
+
+            return (
+              <group key={i} position={[startX, startY, 0]}>
+                <mesh material={titaniumFrameMat}>
+                  <boxGeometry args={[2.35, 1.72, 0.18]} />
+                </mesh>
+                <mesh position={[0, 0, 0.095]} material={chromeSpokeMat}>
+                  <boxGeometry args={[2.19, 1.56, 0.01]} />
+                </mesh>
+                <mesh position={[0, 0, 0.1]}>
+                  <planeGeometry args={[2.15, 1.52]} />
+                  <MeshTransmissionMaterial
+                    backside
+                    samples={6}
+                    thickness={0.25}
+                    chromaticAberration={0.06}
+                    anisotropy={0.2}
+                    clearcoat={1}
+                    attenuationDistance={0.6}
+                    color="#f8fafc"
+                    roughness={0.12}
+                    transmission={0.65}
+                  />
+                </mesh>
               </group>
             );
           })}
