@@ -1,37 +1,37 @@
 import React, { useRef, useMemo } from 'react';
-import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 export default function VectorCloudLayer({ 
   zPos = 0, 
   solidColor = '#c23d55', 
   shadowOpacity = 0.45,
-  parallaxFactor = 0.05,
   seed = 1.0 
 }) {
   const containerRef = useRef();
 
+  // 1. Procedural Shape Creation - Extended to +/- 12 to secure wide viewports statically
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     
-    shape.moveTo(-6.5, -4.5);
+    shape.moveTo(-12.0, -4.5);
     
     const h1 = -0.2 + Math.sin(seed) * 0.25;
     const h2 = 0.1 + Math.cos(seed) * 0.35;
     const h3 = -0.1 + Math.sin(seed * 2.5) * 0.25;
 
-    shape.bezierCurveTo(-5.0, h1 - 0.2, -4.0, h1 + 0.8, -3.0, h2);
-    shape.bezierCurveTo(-2.0, h2 + 0.6, -1.0, h2 + 0.5, 0.0, h3);
-    shape.bezierCurveTo(1.0, h3 + 0.9, 2.0, h1 + 0.7, 3.5, h2 - 0.1);
-    shape.bezierCurveTo(4.5, h2 + 0.5, 5.5, h3 + 0.6, 6.5, -0.4);
+    shape.bezierCurveTo(-9.0, h1 - 0.2, -7.0, h1 + 0.8, -5.0, h2);
+    shape.bezierCurveTo(-3.0, h2 + 0.6, -1.0, h2 + 0.5, 1.0, h3);
+    shape.bezierCurveTo(3.0, h3 + 0.9, 5.0, h1 + 0.7, 7.5, h2 - 0.1);
+    shape.bezierCurveTo(9.0, h2 + 0.5, 10.5, h3 + 0.6, 12.0, -0.4);
     
-    shape.lineTo(6.5, -4.5);
-    shape.lineTo(-6.5, -4.5);
+    shape.lineTo(12.0, -4.5);
+    shape.lineTo(-12.0, -4.5);
     shape.closePath();
 
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
+  // Gradient fill pass
   const colorMaterial = useMemo(() => {
     const darkBaseColor = new THREE.Color(solidColor).multiplyScalar(0.65);
 
@@ -66,6 +66,7 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
+  // Stepped-lighter rim accent pass (Calculates a color one step lighter than base)
   const rimMaterial = useMemo(() => {
     const rimColor = new THREE.Color(solidColor);
     rimColor.addScalar(0.22);
@@ -79,6 +80,7 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
+  // Soft drop shadow pass
   const shadowMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: '#000000',
@@ -89,30 +91,23 @@ export default function VectorCloudLayer({
     });
   }, [shadowOpacity]);
 
-  useFrame((state) => {
-    if (!containerRef.current) return;
-    
-    const targetX = state.pointer.x * parallaxFactor * 0.7;
-    const targetY = state.pointer.y * parallaxFactor * 0.35;
-
-    containerRef.current.position.x += (targetX - containerRef.current.position.x) * 0.05;
-    containerRef.current.position.y += (targetY - containerRef.current.position.y) * 0.05;
-  });
-
   return (
     <group ref={containerRef}>
+      {/* 1. DROP SHADOW BACKDROP */}
       <mesh 
         geometry={geometry} 
         material={shadowMaterial} 
         position={[0, -0.08, zPos - 0.12]} 
       />
 
+      {/* 2. LIGHTER MONOCHROMATIC BACKGROUND RIM SHAPE */}
       <mesh 
         geometry={geometry} 
         material={rimMaterial} 
         position={[0, 0, zPos]} 
       />
 
+      {/* 3. SOLID COLOR FOREGROUND SHEET (Offset down slightly to expose the clean rim) */}
       <mesh 
         geometry={geometry} 
         material={colorMaterial} 

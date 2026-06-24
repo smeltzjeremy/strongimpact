@@ -27,19 +27,22 @@ export default function PhotosPage() {
               <ProceduralChromeBackground />
             </group>
 
-            <group position={[-1.1, -2.5, 0]}>
+            {/* UNIFIED PAPERCUT SCENE ANCHOR 
+                - Positioned at X = -0.1 to perfectly lock down the static widescreen borders
+            */}
+            <group position={[-0.1, -2.5, 0]}>
               
-              {/* 1 & 2 - Darkest Back */}
-              <VectorCloudLayer zPos={-2.6} solidColor="#9c1a2f" shadowOpacity={0.45} parallaxFactor={0.1} seed={5.2} />
-              <VectorCloudLayer zPos={-2.35} solidColor="#a82237" shadowOpacity={0.43} parallaxFactor={0.13} seed={6.7} />
+              {/* 1 & 2 - Darkest Back Layers */}
+              <VectorCloudLayer zPos={-2.6} solidColor="#9c1a2f" shadowOpacity={0.45} seed={5.2} />
+              <VectorCloudLayer zPos={-2.35} solidColor="#a82237" shadowOpacity={0.43} seed={6.7} />
 
-              {/* 3 & 4 - Mid */}
-              <VectorCloudLayer zPos={-1.05} solidColor="#d12f4a" shadowOpacity={0.37} parallaxFactor={0.32} seed={3.4} />
-              <VectorCloudLayer zPos={-0.8} solidColor="#e03d5a" shadowOpacity={0.34} parallaxFactor={0.36} seed={4.1} />
+              {/* 3 & 4 - Mid Layers */}
+              <VectorCloudLayer zPos={-1.05} solidColor="#d12f4a" shadowOpacity={0.37} seed={3.4} />
+              <VectorCloudLayer zPos={-0.8} solidColor="#e03d5a" shadowOpacity={0.34} seed={4.1} />
 
-              {/* 5 & 6 - Front / Lightest */}
-              <VectorCloudLayer zPos={0.65} solidColor="#f15a73" shadowOpacity={0.28} parallaxFactor={0.58} seed={1.8} />
-              <VectorCloudLayer zPos={0.95} solidColor="#ff7a90" shadowOpacity={0.18} parallaxFactor={0.78} seed={0.9} />
+              {/* 5 & 6 - Front / Lightest Layers */}
+              <VectorCloudLayer zPos={0.65} solidColor="#f15a73" shadowOpacity={0.28} seed={1.8} />
+              <VectorCloudLayer zPos={0.95} solidColor="#ff7a90" shadowOpacity={0.18} seed={0.9} />
 
             </group>
 
