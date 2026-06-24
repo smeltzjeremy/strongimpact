@@ -27,22 +27,19 @@ export default function PhotosPage() {
               <ProceduralChromeBackground />
             </group>
 
-            <group position={[-1.2, -2.55, 0]}>
+            <group position={[-1.1, -2.5, 0]}>
               
-              {/* BACK - Darkest */}
-              <VectorCloudLayer zPos={-2.6} solidColor="#6f0d20" shadowOpacity={0.48} parallaxFactor={0.1} seed={5.2} />
-              <VectorCloudLayer zPos={-2.4} solidColor="#7f1226" shadowOpacity={0.45} parallaxFactor={0.13} seed={6.8} />
+              {/* 1 & 2 - Darkest Back */}
+              <VectorCloudLayer zPos={-2.6} solidColor="#9c1a2f" shadowOpacity={0.45} parallaxFactor={0.1} seed={5.2} />
+              <VectorCloudLayer zPos={-2.35} solidColor="#a82237" shadowOpacity={0.43} parallaxFactor={0.13} seed={6.7} />
 
-              {/* MID-BACK */}
-              <VectorCloudLayer zPos={-1.1} solidColor="#bf1c38" shadowOpacity={0.4} parallaxFactor={0.3} seed={3.4} />
-              <VectorCloudLayer zPos={-0.9} solidColor="#d02847" shadowOpacity={0.37} parallaxFactor={0.33} seed={4.5} />
+              {/* 3 & 4 - Mid */}
+              <VectorCloudLayer zPos={-1.05} solidColor="#d12f4a" shadowOpacity={0.37} parallaxFactor={0.32} seed={3.4} />
+              <VectorCloudLayer zPos={-0.8} solidColor="#e03d5a" shadowOpacity={0.34} parallaxFactor={0.36} seed={4.1} />
 
-              {/* MID-FRONT */}
-              <VectorCloudLayer zPos={0.5} solidColor="#e93f5d" shadowOpacity={0.32} parallaxFactor={0.55} seed={1.8} />
-              <VectorCloudLayer zPos={0.7} solidColor="#f14f6f" shadowOpacity={0.28} parallaxFactor={0.6} seed={2.7} />
-
-              {/* FOREGROUND - Lightest */}
-              <VectorCloudLayer zPos={2.0} solidColor="#ff7492" shadowOpacity={0.1} parallaxFactor={0.8} seed={0.6} />
+              {/* 5 & 6 - Front / Lightest */}
+              <VectorCloudLayer zPos={0.65} solidColor="#f15a73" shadowOpacity={0.28} parallaxFactor={0.58} seed={1.8} />
+              <VectorCloudLayer zPos={0.95} solidColor="#ff7a90" shadowOpacity={0.18} parallaxFactor={0.78} seed={0.9} />
 
             </group>
 
