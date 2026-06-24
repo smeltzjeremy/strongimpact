@@ -9,10 +9,9 @@ export default function VectorCloudLayer({
 }) {
   const containerRef = useRef();
 
-  // 1. Procedural Shape Creation - Extended to +/- 12 to secure wide viewports statically
+  // 1. Your exact, locked geometric curves
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
-    
     shape.moveTo(-12.0, -4.5);
     
     const h1 = -0.2 + Math.sin(seed) * 0.25;
@@ -31,15 +30,14 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
-  // Gradient fill pass
+  // 2. Custom internal depth shading shader
   const colorMaterial = useMemo(() => {
-    const darkBaseColor = new THREE.Color(solidColor).multiplyScalar(0.65);
+    const shadedBaseColor = new THREE.Color(solidColor).clone().multiplyScalar(0.45);
 
     return new THREE.ShaderMaterial({
       uniforms: {
         uColorTop: { value: new THREE.Color(solidColor) },
-        uColorBottom: { value: darkBaseColor },
-        uOpacity: { value: 0.88 }
+        uColorBottom: { value: shadedBaseColor }
       },
       vertexShader: `
         varying vec3 vLocalPosition;
@@ -51,36 +49,32 @@ export default function VectorCloudLayer({
       fragmentShader: `
         uniform vec3 uColorTop;
         uniform vec3 uColorBottom;
-        uniform float uOpacity;
         varying vec3 vLocalPosition;
 
         void main() {
           float normalizedY = clamp((vLocalPosition.y + 4.5) / 5.5, 0.0, 1.0);
-          vec3 finalColor = mix(uColorBottom, uColorTop, normalizedY);
-          gl_FragColor = vec4(finalColor, uOpacity);
+          float shadeCurve = pow(normalizedY, 0.75);
+          vec3 finalColor = mix(uColorBottom, uColorTop, shadeCurve);
+          gl_FragColor = vec4(finalColor, 1.0);
         }
       `,
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.NormalBlending
+      transparent: false,
+      depthWrite: true
     });
   }, [solidColor]);
 
-  // Stepped-lighter rim accent pass (Calculates a color one step lighter than base)
+  // 3. Crisp, step-darker red outline lip
   const rimMaterial = useMemo(() => {
-    const rimColor = new THREE.Color(solidColor);
-    rimColor.addScalar(0.22);
+    const darkEdgeColor = new THREE.Color(solidColor).clone();
+    darkEdgeColor.multiplyScalar(0.65);
     
     return new THREE.MeshBasicMaterial({
-      color: rimColor,
-      transparent: true,
-      opacity: 0.95,
-      depthWrite: false,
-      blending: THREE.NormalBlending
+      color: darkEdgeColor,
+      transparent: false,
+      depthWrite: true
     });
   }, [solidColor]);
 
-  // Soft drop shadow pass
   const shadowMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: '#000000',
@@ -93,26 +87,9 @@ export default function VectorCloudLayer({
 
   return (
     <group ref={containerRef}>
-      {/* 1. DROP SHADOW BACKDROP */}
-      <mesh 
-        geometry={geometry} 
-        material={shadowMaterial} 
-        position={[0, -0.08, zPos - 0.12]} 
-      />
-
-      {/* 2. LIGHTER MONOCHROMATIC BACKGROUND RIM SHAPE */}
-      <mesh 
-        geometry={geometry} 
-        material={rimMaterial} 
-        position={[0, 0, zPos]} 
-      />
-
-      {/* 3. SOLID COLOR FOREGROUND SHEET (Offset down slightly to expose the clean rim) */}
-      <mesh 
-        geometry={geometry} 
-        material={colorMaterial} 
-        position={[0, -0.032, zPos + 0.02]} 
-      />
+      <mesh geometry={geometry} material={shadowMaterial} position={[0, -0.12, zPos - 0.08]} />
+      <mesh geometry={geometry} material={rimMaterial} position={[0, 0, zPos]} />
+      <mesh geometry={geometry} material={colorMaterial} position={[0, -0.045, zPos + 0.02]} />
     </group>
   );
 }
