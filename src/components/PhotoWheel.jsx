@@ -4,15 +4,14 @@ import * as THREE from 'three';
 
 export default function PhotoWheel() {
   const groupRef = useRef();
-  const { viewport, gl } = useThree();
+  const { gl } = useThree();
   const rotationRef = useRef(0);
 
-  // Scroll control
   useEffect(() => {
     const handleWheel = (e) => {
       e.preventDefault();
-      const delta = e.deltaY > 0 ? -0.1 : 0.1; // one scroll = ~1 turn segment
-      rotationRef.current += delta * 6; // tune sensitivity
+      const delta = e.deltaY > 0 ? -0.12 : 0.12;
+      rotationRef.current += delta * 6;
     };
 
     const canvas = gl.domElement;
@@ -26,47 +25,48 @@ export default function PhotoWheel() {
     }
   });
 
-  // Simple metallic material
   const metalMaterial = new THREE.MeshPhongMaterial({
-    color: '#aaaaaa',
-    shininess: 100,
+    color: '#bbbbbb',
+    shininess: 120,
     specular: '#ffffff',
-    metalness: 0.9,
-    emissive: '#222222'
+    metalness: 0.95,
+    emissive: '#111111'
   });
 
   return (
-    <group ref={groupRef} position={[0, 0, -1.5]}>
-      {/* Central Hub */}
+    <group 
+      ref={groupRef} 
+      position={[0, 0.8, -1.5]} 
+      rotation={[Math.PI * -0.5, 0, 0]}   // upright
+    >
+      {/* Central metallic hub */}
       <mesh position={[0, 0, 0]} material={metalMaterial}>
-        <sphereGeometry args={[0.6, 64, 64]} />
+        <sphereGeometry args={[0.65, 64, 64]} />
       </mesh>
 
-      {/* Dial rectangle in center */}
-      <mesh position={[0, 0, 0.65]} material={new THREE.MeshBasicMaterial({ color: '#333333' })}>
-        <planeGeometry args={[1.1, 0.35]} />
+      {/* Center dial panel */}
+      <mesh position={[0, 0, 0.7]} material={new THREE.MeshBasicMaterial({ color: '#222222' })}>
+        <planeGeometry args={[1.3, 0.4]} />
       </mesh>
 
-      {/* Left / Right Arrows */}
-      <mesh position={[-0.6, 0, 0.7]} material={new THREE.MeshBasicMaterial({ color: '#ff4444' })}>
-        <planeGeometry args={[0.25, 0.15]} />
+      {/* Left / Right arrows */}
+      <mesh position={[-0.7, 0, 0.75]} material={new THREE.MeshBasicMaterial({ color: '#ff3333' })}>
+        <planeGeometry args={[0.3, 0.18]} />
       </mesh>
-      <mesh position={[0.6, 0, 0.7]} material={new THREE.MeshBasicMaterial({ color: '#ff4444' })}>
-        <planeGeometry args={[0.25, 0.15]} />
+      <mesh position={[0.7, 0, 0.75]} material={new THREE.MeshBasicMaterial({ color: '#ff3333' })}>
+        <planeGeometry args={[0.3, 0.18]} />
       </mesh>
 
-      {/* 5 Arms + Photo Frames (like your drawing) */}
+      {/* 5 arms + frames */}
       {[0, 1, 2, 3, 4].map((i) => {
         const angle = (i * Math.PI * 2) / 5;
         return (
-          <group key={i} rotation={[0, angle, 0]} position={[0, 0, 0]}>
-            {/* Arm */}
-            <mesh position={[2.2, 0, 0]} material={metalMaterial}>
-              <boxGeometry args={[3.8, 0.12, 0.12]} />
+          <group key={i} rotation={[0, angle, 0]}>
+            <mesh position={[2.8, 0, 0]} material={metalMaterial}>
+              <boxGeometry args={[4.2, 0.15, 0.15]} />
             </mesh>
-            {/* Photo Frame */}
-            <mesh position={[4.8, 0, 0]} material={new THREE.MeshPhongMaterial({ color: '#111111', shininess: 80 })}>
-              <planeGeometry args={[2.2, 1.65]} />
+            <mesh position={[5.4, 0, 0]} material={new THREE.MeshPhongMaterial({ color: '#0a0a0a', shininess: 60 })}>
+              <planeGeometry args={[2.4, 1.8]} />
             </mesh>
           </group>
         );
