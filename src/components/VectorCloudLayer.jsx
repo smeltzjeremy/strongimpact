@@ -100,7 +100,7 @@ export default function VectorCloudLayer({
   });
 
   return (
-    <group ref={containerRef} scale={[1.35, 1.0, 1.0]}>
+    <group ref={containerRef}>
       <mesh 
         geometry={geometry} 
         material={shadowMaterial} 
