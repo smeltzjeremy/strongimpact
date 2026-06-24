@@ -1,10 +1,13 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
+import { Environment, MeshTransmissionMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
 const PhotoWheel: React.FC = () => {
   const groupRef = useRef<THREE.Group>(null!);
-  const { gl } = useThree();
+  const { gl, viewport } = useThree();
+
+  const isMobile = viewport.width < 5; // Rough mobile detection
 
   const rotationRef = useRef<number>(0);
   const targetStepRef = useRef<number>(0);
@@ -28,23 +31,30 @@ const PhotoWheel: React.FC = () => {
     }
   });
 
-  // Upgraded metallic materials
-  const spokeMat = new THREE.MeshStandardMaterial({ color: '#f1f5f9', metalness: 0.95, roughness: 0.05 });
-  const frameMat = new THREE.MeshStandardMaterial({ color: '#18181b', metalness: 0.85, roughness: 0.15 });
-  const photoMat = new THREE.MeshStandardMaterial({ color: '#09090b', metalness: 0.1, roughness: 0.5 });
-  const hubMat = new THREE.MeshStandardMaterial({ color: '#cbd5e1', metalness: 0.95, roughness: 0.05 });
+  const chromeSpokeMat = useMemo(() => 
+    new THREE.MeshStandardMaterial({ color: '#ffffff', metalness: 1.0, roughness: 0.02 }), []
+  );
+
+  const titaniumFrameMat = useMemo(() => 
+    new THREE.MeshStandardMaterial({ color: '#121214', metalness: 0.8, roughness: 0.25 }), []
+  );
 
   const radius = 3.8;
   const numFrames = 6;
 
   return (
     <>
-      <ambientLight intensity={1.2} />
-      <directionalLight position={[0, 5, 5]} intensity={1.8} />
+      <Environment preset="studio" />
 
-      <group ref={groupRef} position={[0, 2.0, -2.0]}>
-        {/* Center hub */}
-        <mesh material={hubMat}>
+      <ambientLight intensity={0.4} />
+      <directionalLight position={[5, 8, 5]} intensity={2.0} />
+
+      <group 
+        ref={groupRef} 
+        position={[0, isMobile ? 1.9 : 2.0, isMobile ? -4.5 : -2.5]}
+      >
+        {/* Center Hub */}
+        <mesh material={chromeSpokeMat}>
           <sphereGeometry args={[0.45]} />
         </mesh>
 
@@ -52,21 +62,34 @@ const PhotoWheel: React.FC = () => {
           const angle = (i * Math.PI * 2) / numFrames;
           return (
             <group key={i} rotation={[0, 0, angle]}>
-              {/* Thin metallic spoke - fixed orientation */}
-              <mesh
-                position={[0, radius * 0.52, 0]}
-                material={spokeMat}
-              >
-                <cylinderGeometry args={[0.06, 0.06, radius * 1.05, 16]} />
+              {/* Thin polished spoke */}
+              <mesh position={[0, radius * 0.52, 0]} material={chromeSpokeMat}>
+                <cylinderGeometry args={[0.025, 0.025, radius * 1.05, 16]} />
               </mesh>
 
-              {/* Photo Frame - counter-rotated to stay upright */}
+              {/* Photo Frame */}
               <group position={[0, radius, 0]} rotation={[0, 0, -angle]}>
-                <mesh material={frameMat}>
+                <mesh material={titaniumFrameMat}>
                   <boxGeometry args={[2.4, 1.75, 0.18]} />
                 </mesh>
-                <mesh position={[0, 0, 0.1]} material={photoMat}>
+
+                {/* Frosted Glass Photo Panel */}
+                <mesh position={[0, 0, 0.1]}>
                   <planeGeometry args={[2.2, 1.55]} />
+                  <MeshTransmissionMaterial
+                    backside
+                    samples={4}
+                    thickness={0.2}
+                    chromaticAberration={0.05}
+                    anisotropy={0.1}
+                    distortion={0.0}
+                    clearcoat={1}
+                    attenuationDistance={0.5}
+                    attenuationColor="#ffffff"
+                    color="#ffffff"
+                    roughness={0.15}
+                    transmission={0.6}
+                  />
                 </mesh>
               </group>
             </group>
