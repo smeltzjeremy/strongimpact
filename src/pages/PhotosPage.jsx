@@ -29,7 +29,7 @@ export default function PhotosPage() {
 
             <group position={[-0.8, -2.7, 0]}>
               
-              {/* LAYER 2: BACK (Now a clearly visible Bright Crimson Base) */}
+              {/* LAYER 2: DEEPEST BACK */}
               <VectorCloudLayer 
                 zPos={-2.5} 
                 solidColor="#941327" 
@@ -38,7 +38,16 @@ export default function PhotosPage() {
                 seed={5.2}
               />
 
-              {/* LAYER 3: MID-BACK (Vivid Cardinal Velvet) */}
+              {/* Extra wide back layer for better left/right coverage */}
+              <VectorCloudLayer 
+                zPos={-2.3} 
+                solidColor="#941327" 
+                shadowOpacity={0.38} 
+                parallaxFactor={0.12} 
+                seed={4.7}
+              />
+
+              {/* LAYER 3: MID-BACK */}
               <VectorCloudLayer 
                 zPos={-0.8} 
                 solidColor="#c41f3b" 
@@ -47,18 +56,18 @@ export default function PhotosPage() {
                 seed={3.4}
               />
 
-              {/* LAYER 4: MID-FRONT (Bright Ruby Rose) */}
+              {/* LAYER 4: MID-FRONT - lifted slightly */}
               <VectorCloudLayer 
-                zPos={0.8} 
+                zPos={0.6} 
                 solidColor="#e63553" 
                 shadowOpacity={0.35}
                 parallaxFactor={0.6} 
                 seed={1.8}
               />
 
-              {/* LAYER 5: FOREGROUND (Punchy Light Coral Ruby) */}
+              {/* LAYER 5: FOREGROUND */}
               <VectorCloudLayer 
-                zPos={2.2} 
+                zPos={2.0} 
                 solidColor="#ff5977" 
                 shadowOpacity={0.0} 
                 parallaxFactor={0.85} 
