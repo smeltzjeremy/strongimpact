@@ -32,9 +32,9 @@ export default function VectorCloudLayer({
 
   // 2. Custom isolated shading shader
   const colorMaterial = useMemo(() => {
-    // Only apply the bottom black tint if this is the very back layer
-    const isBackLayer = (zPos === -2.6);
-    const shadedBaseColor = isBackLayer 
+    // TARGET LOCK: Only apply the bottom black tint if this is the 2nd layer from the front
+    const isTargetLayer = (zPos === 0.65);
+    const shadedBaseColor = isTargetLayer 
       ? new THREE.Color(solidColor).clone().multiplyScalar(0.40) // Faint black tint multiplier
       : new THREE.Color(solidColor); // Completely flat for all other layers
 
@@ -42,7 +42,7 @@ export default function VectorCloudLayer({
       uniforms: {
         uColorTop: { value: new THREE.Color(solidColor) },
         uColorBottom: { value: shadedBaseColor },
-        uIsBackLayer: { value: isBackLayer }
+        uIsTargetLayer: { value: isTargetLayer }
       },
       vertexShader: `
         varying vec3 vLocalPosition;
@@ -54,11 +54,11 @@ export default function VectorCloudLayer({
       fragmentShader: `
         uniform vec3 uColorTop;
         uniform vec3 uColorBottom;
-        uniform bool uIsBackLayer;
+        uniform bool uIsTargetLayer;
         varying vec3 vLocalPosition;
 
         void main() {
-          if (!uIsBackLayer) {
+          if (!uIsTargetLayer) {
             gl_FragColor = vec4(uColorTop, 1.0);
             return;
           }
@@ -66,8 +66,8 @@ export default function VectorCloudLayer({
           // Calculate height from the local bottom baseline
           float normalizedY = clamp((vLocalPosition.y + 4.5) / 5.5, 0.0, 1.0);
           
-          // CRITICAL: A high number (3.0) forces the shading to cluster tightly at the bottom edge 
-          // and fade out quickly as it travels upward, keeping your main red pure.
+          // A high exponent (3.0) compresses the shading tightly at the bottom edge 
+          // and fades out quickly as it travels upward, keeping your main red pure.
           float shadeCurve = pow(normalizedY, 3.0);
           vec3 finalColor = mix(uColorBottom, uColorTop, shadeCurve);
           
