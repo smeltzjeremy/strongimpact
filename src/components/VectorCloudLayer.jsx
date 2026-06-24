@@ -9,7 +9,7 @@ export default function VectorCloudLayer({
 }) {
   const containerRef = useRef();
 
-  // Your exact, locked geometric curves
+  // 1. Your exact, locked geometric curves
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-12.0, -4.5);
@@ -30,45 +30,40 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
-  // Back to Basics: Clean, flat native material
+  // 2. Custom internal depth shading shader
   const colorMaterial = useMemo(() => {
-    return new THREE.MeshBasicMaterial({
-      color: new THREE.Color(solidColor),
+    const shadedBaseColor = new THREE.Color(solidColor).clone().multiplyScalar(0.45);
+
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uColorTop: { value: new THREE.Color(solidColor) },
+        uColorBottom: { value: shadedBaseColor }
+      },
+      vertexShader: `
+        varying vec3 vLocalPosition;
+        void main() {
+          vLocalPosition = position;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 uColorTop;
+        uniform vec3 uColorBottom;
+        varying vec3 vLocalPosition;
+
+        void main() {
+          float normalizedY = clamp((vLocalPosition.y + 4.5) / 5.5, 0.0, 1.0);
+          float shadeCurve = pow(normalizedY, 0.75);
+          vec3 finalColor = mix(uColorBottom, uColorTop, shadeCurve);
+          gl_FragColor = vec4(finalColor, 1.0);
+        }
+      `,
       transparent: false,
       depthWrite: true
     });
   }, [solidColor]);
 
-  // Isolate a soft, faint black gradient overlay ONLY on the 2nd layer from the front
-  const gradientOverlayMaterial = useMemo(() => {
-    const isTargetLayer = (zPos === 0.65);
-    
-    if (!isTargetLayer) return null;
-
-    // Create a simple, native 2D canvas gradient to paint a soft fade over the bottom edge
-    const canvas = document.createElement('canvas');
-    canvas.width = 1;
-    canvas.height = 256;
-    const ctx = canvas.getContext('2d');
-    
-    const gradient = ctx.createLinearGradient(0, 0, 0, 256);
-    gradient.addColorStop(0, 'rgba(0, 0, 0, 0.0)');   // Completely clear at the top peak
-    gradient.addColorStop(0.7, 'rgba(0, 0, 0, 0.0)'); // Stays clear across the main face
-    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.4)');   // Faint black paint strictly at the bottom edge
-    
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 1, 256);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    return new THREE.MeshBasicMaterial({
-      map: texture,
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.NormalBlending
-    });
-  }, [zPos]);
-
-  // Clean, step-darker red outline lip
+  // 3. Crisp, step-darker red outline lip
   const rimMaterial = useMemo(() => {
     const darkEdgeColor = new THREE.Color(solidColor).clone();
     darkEdgeColor.multiplyScalar(0.65);
@@ -92,19 +87,9 @@ export default function VectorCloudLayer({
 
   return (
     <group ref={containerRef}>
-      {/* 1. DROP SHADOW */}
       <mesh geometry={geometry} material={shadowMaterial} position={[0, -0.12, zPos - 0.08]} />
-      
-      {/* 2. OUTLINE CREASE */}
       <mesh geometry={geometry} material={rimMaterial} position={[0, 0, zPos]} />
-      
-      {/* 3. BASE RED FACE SHEET */}
       <mesh geometry={geometry} material={colorMaterial} position={[0, -0.045, zPos + 0.02]} />
-
-      {/* 4. ISOLATED BOTTOM TINT OVERLAY */}
-      {gradientOverlayMaterial && (
-        <mesh geometry={geometry} material={gradientOverlayMaterial} position={[0, -0.045, zPos + 0.021]} />
-      )}
     </group>
   );
 }
