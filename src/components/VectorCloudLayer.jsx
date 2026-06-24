@@ -9,6 +9,7 @@ export default function VectorCloudLayer({
 }) {
   const containerRef = useRef();
 
+  // 1. Your exact, locked geometric curves
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-12.0, -4.5);
@@ -29,6 +30,7 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
+  // 2. Custom internal depth shading shader (Your exact, unchangeable baseline)
   const colorMaterial = useMemo(() => {
     const shadedBaseColor = new THREE.Color(solidColor).clone().multiplyScalar(0.45);
 
@@ -61,32 +63,37 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  const bottomShadeMaterial = useMemo(() => {
-    return new THREE.ShaderMaterial({
-      vertexShader: `
-        varying vec2 vUv;
-        void main() {
-          vUv = uv;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        varying vec2 vUv;
-        void main() {
-          float fadeUp = pow(vUv.y, 5.5);   // very tight to bottom
-          float alpha = mix(0.22, 0.0, fadeUp); // very subtle
-          gl_FragColor = vec4(0.0, 0.0, 0.0, alpha);
-        }
-      `,
-      transparent: true,
-      depthTest: false,
-      depthWrite: false,
+  // NEW: Dedicated Bottom Shading Overlay Layer (Paints a clean black fade)
+  const overlayShadowMaterial = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+    
+    // Create a vertical gradient: solid black at the bottom, fading to transparent at the top
+    const gradient = ctx.createLinearGradient(0, 256, 0, 0);
+    gradient.addColorStop(0.0, 'rgba(0, 0, 0, 0.50)'); // Subtle black tint at the very bottom
+    gradient.addColorStop(0.35, 'rgba(0, 0, 0, 0.15)'); // Fading out through the middle
+    gradient.addColorStop(0.65, 'rgba(0, 0, 0, 0.00)'); // Completely transparent before the top rim
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 1, 256);
+
+    const texture = new THREE.CanvasTexture(canvas);
+
+    return new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,     // Lets your perfect reds show through underneath
+      depthWrite: false,     // Prevents this layer from clipping or cutting your background
       blending: THREE.NormalBlending
     });
   }, []);
 
+  // 3. Crisp, step-darker red outline lip (Your exact, unchangeable baseline)
   const rimMaterial = useMemo(() => {
-    const darkEdgeColor = new THREE.Color(solidColor).clone().multiplyScalar(0.65);
+    const darkEdgeColor = new THREE.Color(solidColor).clone();
+    darkEdgeColor.multiplyScalar(0.65);
+    
     return new THREE.MeshBasicMaterial({
       color: darkEdgeColor,
       transparent: false,
@@ -94,6 +101,7 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
+  // 4. Ambient Background Drop Shadow (Your exact, unchangeable baseline)
   const shadowMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: '#000000',
@@ -104,22 +112,23 @@ export default function VectorCloudLayer({
     });
   }, [shadowOpacity]);
 
-  const isTargetCloud = zPos === 0.65;
-
   return (
     <group ref={containerRef}>
+      {/* Mesh 1: Ambient Drop Shadow Backer */}
       <mesh geometry={geometry} material={shadowMaterial} position={[0, -0.12, zPos - 0.08]} />
+      
+      {/* Mesh 2: Dark Rim Outline Lip */}
       <mesh geometry={geometry} material={rimMaterial} position={[0, 0, zPos]} />
+      
+      {/* Mesh 3: Main Base Red Face Sheet (Your Untouched Golden Material) */}
       <mesh geometry={geometry} material={colorMaterial} position={[0, -0.045, zPos + 0.02]} />
 
-      {isTargetCloud && (
-        <mesh 
-          geometry={geometry} 
-          material={bottomShadeMaterial} 
-          position={[0, -0.12, zPos + 0.06]} 
-          renderOrder={3}
-        />
-      )}
+      {/* Mesh 4: NEW Black Shading Overlay */}
+      <mesh 
+        geometry={geometry} 
+        material={overlayShadowMaterial} 
+        position={[0, -0.045, zPos + 0.03]} 
+      />
     </group>
   );
 }
