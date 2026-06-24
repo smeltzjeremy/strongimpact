@@ -25,24 +25,27 @@ const PhotoWheel: React.FC = () => {
   useFrame((state, delta) => {
     if (groupRef.current) {
       const targetRotation = (targetStepRef.current * (Math.PI * 2)) / 6;
+      
+      // Platinum easing - frame rate independent
       rotationRef.current = THREE.MathUtils.lerp(
         rotationRef.current,
         targetRotation,
-        0.12
+        1 - Math.exp(-10 * delta)
       );
-      groupRef.current.rotation.x = rotationRef.current;
+
+      groupRef.current.rotation.z = rotationRef.current;   // Changed to .z for new orientation
     }
   });
 
-  const spokeMaterial = new THREE.MeshBasicMaterial({ color: '#cccccc' });
-  const frameMaterial = new THREE.MeshBasicMaterial({ color: '#1a1a1c' });
-  const photoMaterial = new THREE.MeshBasicMaterial({ color: '#0a0a0a' });
+  const spokeMaterial = new THREE.MeshBasicMaterial({ color: '#e0e0e0' });
+  const frameMaterial = new THREE.MeshBasicMaterial({ color: '#222222' });
+  const photoMaterial = new THREE.MeshBasicMaterial({ color: '#111111' });
 
   const radius = 3.4;
   const numFrames = 6;
 
   return (
-    <group ref={groupRef} position={[0, 1.2, 0.0]}>
+    <group ref={groupRef} position={[0, -0.6, -3.2]}>
       {/* Central axle / hub */}
       <mesh rotation={[0, 0, Math.PI / 2]} material={spokeMaterial}>
         <cylinderGeometry args={[0.35, 0.35, 1.6, 32]} />
@@ -51,10 +54,10 @@ const PhotoWheel: React.FC = () => {
       {Array.from({ length: numFrames }).map((_, i) => {
         const angle = (i * Math.PI * 2) / numFrames;
         return (
-          <group key={i} rotation={[angle, 0, 0]}>
+          <group key={i} rotation={[0, 0, angle]}>   {/* Changed rotation axis */}
             {/* Spoke */}
             <mesh
-              position={[0, 0, radius * 0.55]}
+              position={[0, radius * 0.55, 0]}
               rotation={[Math.PI / 2, 0, 0]}
               material={spokeMaterial}
             >
@@ -62,7 +65,7 @@ const PhotoWheel: React.FC = () => {
             </mesh>
 
             {/* Photo Frame */}
-            <group position={[0, 0, radius]}>
+            <group position={[0, radius, 0]}>
               <mesh material={frameMaterial}>
                 <boxGeometry args={[2.55, 1.85, 0.22]} />
               </mesh>
