@@ -5,11 +5,12 @@ export default function VectorCloudLayer({
   zPos = 0, 
   solidColor = '#c23d55', 
   shadowOpacity = 0.45,
-  seed = 1.0 
+  seed = 1.0,
+  isFront = false // NEW: Direct flag to bypass shading entirely
 }) {
   const containerRef = useRef();
 
-  // 1. Your exact, locked geometric curves
+  // 1. Immutable Shape Geometry
   const geometry = useMemo(() => {
     const shape = new THREE.Shape();
     shape.moveTo(-12.0, -4.5);
@@ -30,10 +31,13 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
-  // 2. Your Fixed UV Gradient Shader (Forces true vertical shading)
+  // 2. Custom Shader: Tuned down to only tint the absolute lowest valley line
   const colorMaterial = useMemo(() => {
-    // Deep crimson/black base mix for the valleys
-    const darkBaseColor = new THREE.Color(solidColor).clone().multiplyScalar(0.25);
+    // If it's the front cloud, make the base mix color identical to the top (completely flat)
+    // Otherwise, use a gentle 0.55 multiplier so the black tint is a soft whisper
+    const darkBaseColor = isFront 
+      ? new THREE.Color(solidColor) 
+      : new THREE.Color(solidColor).clone().multiplyScalar(0.55);
 
     return new THREE.ShaderMaterial({
       uniforms: {
@@ -55,8 +59,8 @@ export default function VectorCloudLayer({
         void main() {
           float normalizedY = clamp(vUv.y, 0.0, 1.0);
           
-          // Exponential falloff clusters the rich shadows beautifully at the base
-          float shadeCurve = pow(normalizedY, 1.6);
+          // CRITICAL: High exponent (3.5) forces the shadow to compress entirely into the bottom baseline
+          float shadeCurve = pow(normalizedY, 3.5);
           vec3 finalColor = mix(uColorBottom, uColorTop, shadeCurve);
           
           gl_FragColor = vec4(finalColor, 0.95);
@@ -66,13 +70,12 @@ export default function VectorCloudLayer({
       depthWrite: false,
       blending: THREE.NormalBlending
     });
-  }, [solidColor]);
+  }, [solidColor, isFront]);
 
-  // 3. Crisp, True-Opaque Dark Accent Rim Crease
+  // 3. One-Step Darker Red Outline Crease
   const rimMaterial = useMemo(() => {
     const darkEdgeColor = new THREE.Color(solidColor).clone();
-    // Drops the rim exposure to create a deep recessed separation crease
-    darkEdgeColor.multiplyScalar(0.42);
+    darkEdgeColor.multiplyScalar(0.50); // Balanced crease contrast
     
     return new THREE.MeshBasicMaterial({
       color: darkEdgeColor,
@@ -83,7 +86,6 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  // Ambient Drop Shadow Backer
   const shadowMaterial = useMemo(() => {
     return new THREE.MeshBasicMaterial({
       color: '#000000',
@@ -96,13 +98,8 @@ export default function VectorCloudLayer({
 
   return (
     <group ref={containerRef}>
-      {/* PASS 1: SOFT DROP SHADOW */}
       <mesh geometry={geometry} material={shadowMaterial} position={[0, -0.15, zPos - 0.08]} />
-      
-      {/* PASS 2: CRISP DEEP-RED BORDER SEPARATION CREASE */}
       <mesh geometry={geometry} material={rimMaterial} position={[0, 0, zPos]} />
-      
-      {/* PASS 3: HIGH-DEPTH SHADED FACE SHEET */}
       <mesh geometry={geometry} material={colorMaterial} position={[0, -0.045, zPos + 0.02]} />
     </group>
   );

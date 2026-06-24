@@ -27,22 +27,22 @@ export default function PhotosPage() {
               <ProceduralChromeBackground />
             </group>
 
-            {/* HIGH-CONTRAST VIBRANT BACKDROP */}
             <group position={[-0.1, -2.5, 0]}>
               
-              {/* Layers 1 & 2: Vibrant Crimson Bases (Behind the upcoming photo wheel) */}
+              {/* Back layers - subtle bottom tint */}
               <VectorCloudLayer zPos={-2.6} solidColor="#8c1224" shadowOpacity={0.5} seed={5.2} />
               <VectorCloudLayer zPos={-2.35} solidColor="#b31931" shadowOpacity={0.46} seed={6.7} />
 
-              {/* [PHOTO WHEEL SLOT WILL SIT HERE AT Z = -1.50] */}
+              {/* [PHOTO WHEEL SPACE] */}
 
-              {/* Layers 3 & 4: Radiant Ruby Midgrounds */}
+              {/* Mid layers - subtle bottom tint */}
               <VectorCloudLayer zPos={-1.05} solidColor="#d92341" shadowOpacity={0.38} seed={3.4} />
               <VectorCloudLayer zPos={-0.8} solidColor="#f03a58" shadowOpacity={0.34} seed={4.1} />
 
-              {/* Layers 5 & 6: Crisp Coral-Ruby Foreground Sheets */}
+              {/* Foreground layers */}
               <VectorCloudLayer zPos={0.65} solidColor="#ff5774" shadowOpacity={0.25} seed={1.8} />
-              <VectorCloudLayer zPos={0.95} solidColor="#ff7a93" shadowOpacity={0.15} seed={0.9} />
+              {/* HERO LAYER: 100% Flat bright color, zero shading */}
+              <VectorCloudLayer zPos={0.95} solidColor="#ff7a93" shadowOpacity={0.15} seed={0.9} isFront={true} />
 
             </group>
 
