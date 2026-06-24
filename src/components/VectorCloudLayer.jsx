@@ -30,14 +30,11 @@ export default function VectorCloudLayer({
     return new THREE.ShapeGeometry(shape);
   }, [seed]);
 
-  // 2. Custom internal depth shading shader
+  // 2. Custom internal depth shading shader (Tuned to only tint the bottom edge)
   const colorMaterial = useMemo(() => {
-    const shadedBaseColor = new THREE.Color(solidColor).clone().multiplyScalar(0.45);
-
     return new THREE.ShaderMaterial({
       uniforms: {
-        uColorTop: { value: new THREE.Color(solidColor) },
-        uColorBottom: { value: shadedBaseColor }
+        uColor: { value: new THREE.Color(solidColor) }
       },
       vertexShader: `
         varying vec3 vLocalPosition;
@@ -47,14 +44,21 @@ export default function VectorCloudLayer({
         }
       `,
       fragmentShader: `
-        uniform vec3 uColorTop;
-        uniform vec3 uColorBottom;
+        uniform vec3 uColor;
         varying vec3 vLocalPosition;
 
         void main() {
+          // 1. Calculate height relative to the card's local bottom boundary (-4.5)
           float normalizedY = clamp((vLocalPosition.y + 4.5) / 5.5, 0.0, 1.0);
-          float shadeCurve = pow(normalizedY, 0.75);
-          vec3 finalColor = mix(uColorBottom, uColorTop, shadeCurve);
+          
+          // 2. High exponent (2.8) keeps your solid color pure at the top, 
+          // and restricts the black tint strictly to the bottom valleys
+          float bottomShadow = smoothstep(0.0, 0.45, normalizedY);
+          
+          // 3. Blend a subtle 45% black tint at the absolute baseline edge
+          vec3 shadowColor = uColor * 0.55; 
+          vec3 finalColor = mix(shadowColor, uColor, bottomShadow);
+          
           gl_FragColor = vec4(finalColor, 1.0);
         }
       `,
