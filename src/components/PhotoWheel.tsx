@@ -39,7 +39,7 @@ const PhotoWheel: React.FC = () => {
     new THREE.MeshStandardMaterial({ color: '#121214', metalness: 0.8, roughness: 0.25 }), []
   );
 
-  const radius = 3.8; // back to previous spoke length
+  const radius = 3.8;
   const numFrames = 6;
 
   return (
@@ -51,7 +51,7 @@ const PhotoWheel: React.FC = () => {
 
       <group 
         ref={groupRef} 
-        position={[0, isMobile ? 2.6 : 2.8, isMobile ? -2.8 : -1.8]} // moved forward
+        position={[0, isMobile ? 2.35 : 2.8, isMobile ? -2.2 : -1.8]} // tuned for mobile
       >
         {/* Center Hub */}
         <mesh material={chromeSpokeMat}>
