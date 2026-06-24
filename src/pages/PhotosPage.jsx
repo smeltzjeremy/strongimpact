@@ -3,13 +3,14 @@ import { Canvas } from '@react-three/fiber';
 import { Link } from 'react-router-dom';
 import ProceduralChromeBackground from '../components/ProceduralChromeBackground';
 import VectorCloudLayer from '../components/VectorCloudLayer';
+import PhotoWheel from '../components/PhotoWheel';   // ← New
 
 export default function PhotosPage() {
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
       <div className="fixed top-6 left-6 z-50">
-        <Link 
-          to="/gallery" 
+        <Link
+          to="/gallery"
           className="px-5 py-3 bg-black/60 hover:bg-black/80 border border-white/20 rounded-2xl text-sm transition"
         >
           ← Back to Gallery
@@ -22,30 +23,24 @@ export default function PhotosPage() {
           style={{ background: '#05050f' }}
         >
           <Suspense fallback={null}>
-            
             <group position={[0, 0, -4]}>
               <ProceduralChromeBackground />
             </group>
 
-            {/* HIGH-CONTRAST VIBRANT BACKDROP */}
             <group position={[-0.1, -2.5, 0]}>
-              
-              {/* Layers 1 & 2: Vibrant Crimson Bases (Behind the upcoming photo wheel) */}
+              {/* Layers 1 & 2: Behind wheel */}
               <VectorCloudLayer zPos={-2.6} solidColor="#8c1224" shadowOpacity={0.5} seed={5.2} />
               <VectorCloudLayer zPos={-2.35} solidColor="#b31931" shadowOpacity={0.46} seed={6.7} />
 
-              {/* [PHOTO WHEEL SLOT WILL SIT HERE AT Z = -1.50] */}
+              {/* PHOTO WHEEL - in front of first two clouds */}
+              <PhotoWheel />
 
-              {/* Layers 3 & 4: Radiant Ruby Midgrounds */}
+              {/* Layers 3+ : In front of wheel */}
               <VectorCloudLayer zPos={-1.05} solidColor="#d92341" shadowOpacity={0.38} seed={3.4} />
               <VectorCloudLayer zPos={-0.8} solidColor="#f03a58" shadowOpacity={0.34} seed={4.1} />
-
-              {/* Layers 5 & 6: Crisp Coral-Ruby Foreground Sheets */}
               <VectorCloudLayer zPos={0.65} solidColor="#ff5774" shadowOpacity={0.25} seed={1.8} />
               <VectorCloudLayer zPos={0.95} solidColor="#ff7a93" shadowOpacity={0.15} seed={0.9} />
-
             </group>
-
           </Suspense>
         </Canvas>
       </div>
