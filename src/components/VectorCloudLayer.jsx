@@ -63,9 +63,8 @@ export default function VectorCloudLayer({
     });
   }, [solidColor]);
 
-  // 3. Precise Coordinate-Mapped Shading Overlay
+  // 3. Precise Coordinate-Mapped Shading Overlay (With Depth Fixes)
   const overlayShadowMaterial = useMemo(() => {
-    // We calculate the heights of your exact curve points to feed to the shader
     const h1 = -0.2 + Math.sin(seed) * 0.25;
     const h2 = 0.1 + Math.cos(seed) * 0.35;
     const h3 = -0.1 + Math.sin(seed * 2.5) * 0.25;
@@ -90,7 +89,6 @@ export default function VectorCloudLayer({
         uniform float uH3;
 
         void main() {
-          // Approximate the target curve height matching your exact geometry segments
           float curveY = -4.5;
           if (vLocalPosition.x < -5.0) {
             float t = clamp((vLocalPosition.x + 12.0) / 7.0, 0.0, 1.0);
@@ -103,21 +101,21 @@ export default function VectorCloudLayer({
             curveY = mix(uH3, uH2 - 0.1, t);
           }
 
-          // Calculate distance from the exact bottom baseline (-4.5) up to the current pixel height
           float totalHeight = curveY - (-4.5);
           float localY = clamp((vLocalPosition.y + 4.5) / totalHeight, 0.0, 1.0);
 
-          // Exponent keeps the shadow trapped exclusively at the bottom part
-          float fadeUp = pow(localY, 2.5);
+          // Exponent (3.5) squeezes the dark tint strictly to the bottom edge
+          float fadeUp = pow(localY, 3.5);
 
-          // Apply a clean 40% black shade that fades completely out as it goes up
-          float alpha = mix(0.40, 0.0, fadeUp);
+          // Blends from a clear 45% black shade down at the base, fading to 0% at the top
+          float alpha = mix(0.45, 0.0, fadeUp);
 
           gl_FragColor = vec4(vec3(0.0), alpha);
         }
       `,
       transparent: true,
-      depthWrite: false,
+      depthTest: false,  // FIX 1: Forces WebGL to skip the depth check blocking it
+      depthWrite: false, // FIX 2: Prevents it from clipping other layers behind it
       blending: THREE.NormalBlending
     });
   }, [seed]);
@@ -145,7 +143,6 @@ export default function VectorCloudLayer({
     });
   }, [shadowOpacity]);
 
-  // Isolate strictly to the target preview layer for safety
   const isTargetLayer = (zPos === 0.65);
 
   return (
@@ -159,12 +156,13 @@ export default function VectorCloudLayer({
       {/* Mesh 3: Main Base Red Face Sheet */}
       <mesh geometry={geometry} material={colorMaterial} position={[0, -0.045, zPos + 0.02]} />
 
-      {/* Mesh 4: Coordinate-Mapped Shader Overlay */}
+      {/* Mesh 4: Separate Gradient Shading Layer */}
       {isTargetLayer && (
         <mesh 
           geometry={geometry} 
           material={overlayShadowMaterial} 
           position={[0, 0, zPos + 0.04]} 
+          renderOrder={1} // FIX 3: Commands the engine to draw this layout overlay absolute last
         />
       )}
     </group>
