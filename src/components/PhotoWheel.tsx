@@ -39,7 +39,7 @@ const PhotoWheel: React.FC = () => {
     new THREE.MeshStandardMaterial({ color: '#121214', metalness: 0.8, roughness: 0.25 }), []
   );
 
-  const radius = 3.4; // slightly shorter spokes
+  const radius = 3.8; // back to previous spoke length
   const numFrames = 6;
 
   return (
@@ -51,7 +51,7 @@ const PhotoWheel: React.FC = () => {
 
       <group 
         ref={groupRef} 
-        position={[0, isMobile ? 2.6 : 2.8, isMobile ? -4.5 : -2.5]} // moved higher
+        position={[0, isMobile ? 2.6 : 2.8, isMobile ? -2.8 : -1.8]} // moved forward
       >
         {/* Center Hub */}
         <mesh material={chromeSpokeMat}>
@@ -62,12 +62,12 @@ const PhotoWheel: React.FC = () => {
           const angle = (i * Math.PI * 2) / numFrames;
           return (
             <group key={i} rotation={[0, 0, angle]}>
-              {/* Shorter polished spoke */}
+              {/* Spoke */}
               <mesh position={[0, radius * 0.48, 0]} material={chromeSpokeMat}>
-                <cylinderGeometry args={[0.025, 0.025, radius * 0.92, 16]} />
+                <cylinderGeometry args={[0.025, 0.025, radius * 1.05, 16]} />
               </mesh>
 
-              {/* Photo Frame - aligned better */}
+              {/* Photo Frame */}
               <group position={[0, radius, 0]} rotation={[0, 0, -angle]}>
                 <mesh material={titaniumFrameMat}>
                   <boxGeometry args={[2.35, 1.72, 0.18]} />
