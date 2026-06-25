@@ -82,7 +82,7 @@ const PhotoWheel: React.FC = () => {
     const handleTouchMove = (e: TouchEvent) => {
       if (hasSwipedThisTouch) return;
       const delta = touchStartX - e.touches[0].clientX;
-      if (Math.abs(delta) > 85) {
+      if (Math.abs(delta) > 90) {
         targetStepRef.current += delta > 0 ? 1 : -1;
         hasSwipedThisTouch = true;
       }
@@ -192,36 +192,35 @@ const PhotoWheel: React.FC = () => {
         </group>
       </group>
 
-      {/* Enlarge Button - always visible at bottom once loaded */}
-      {rawUrls.some(url => url) && (
-        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-40">
-          <button 
-            onClick={() => {
-              const currentUrl = rawUrls[(targetStepRef.current % 6 + 6) % 6];
-              if (currentUrl) setEnlargedImage(currentUrl);
-            }}
-            className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white text-sm uppercase tracking-widest font-extrabold rounded-2xl border border-white/20 shadow-[0_0_30px_rgba(239,68,68,0.3)] transition transform hover:scale-105 active:scale-95"
-          >
-            🔍 Enlarge Current Photo
-          </button>
-        </div>
-      )}
+      {/* Simple Enlarge Button */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+        <button 
+          onClick={() => {
+            const index = Math.round(targetStepRef.current) % 6;
+            const url = rawUrls[Math.abs(index)];
+            if (url) setEnlargedImage(url);
+          }}
+          className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white text-sm uppercase tracking-widest font-extrabold rounded-2xl border border-white/20 shadow-lg"
+        >
+          🔍 Enlarge Current Photo
+        </button>
+      </div>
 
       {/* Enlarged Modal */}
       {enlargedImage && (
         <div 
-          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-3xl flex items-center justify-center p-4 cursor-zoom-out"
+          className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-3xl flex items-center justify-center p-4"
           onClick={() => setEnlargedImage(null)}
         >
           <div className="relative w-full max-w-md aspect-[4/5] bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
             <img 
               src={enlargedImage} 
               alt="Enlarged" 
-              className="w-full h-full object-cover select-none"
+              className="w-full h-full object-cover"
             />
             <button 
-              className="absolute top-4 right-4 bg-black/60 hover:bg-black border border-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold transition"
-              onClick={() => setEnlargedImage(null)}
+              className="absolute top-4 right-4 bg-black/70 hover:bg-black text-white w-10 h-10 rounded-full flex items-center justify-center text-xl"
+              onClick={(e) => { e.stopPropagation(); setEnlargedImage(null); }}
             >
               ✕
             </button>
