@@ -24,7 +24,11 @@ export default function AdminDashboard() {
 
   const fetchWheelPhotos = async () => {
     try {
-      const { data } = await supabase.storage.from('gallery').list('wheel');
+      const { data, error } = await supabase.storage.from('gallery').list('wheel');
+      console.log("Supabase returned files:", data);
+
+      if (error) throw error;
+
       const loaded = Array(6).fill(null);
       const timestamp = new Date().getTime();
 
@@ -40,6 +44,8 @@ export default function AdminDashboard() {
           }
         }
       });
+
+      console.log("Loaded into state:", loaded);
       setWheelPhotos(loaded);
     } catch (err) {
       console.error(err);
@@ -95,7 +101,6 @@ export default function AdminDashboard() {
 
       alert(`Slot ${slot + 1} deleted.`);
 
-      // Force refresh
       setWheelPhotos(Array(6).fill(null));
       setTimeout(() => {
         fetchWheelPhotos();
