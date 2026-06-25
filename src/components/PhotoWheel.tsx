@@ -43,8 +43,8 @@ const PhotoWheel: React.FC = () => {
       const textures = await Promise.all(
         urls.map(url => url ? new Promise((resolve) => {
           loader.load(url, (texture) => {
-            texture.flipY = true;   // Fix upside down
-            texture.flipX = false;  // Fix mirror
+            texture.flipY = true;
+            texture.flipX = false;
             texture.needsUpdate = true;
             resolve(texture);
           }, undefined, () => resolve(null));
@@ -78,7 +78,7 @@ const PhotoWheel: React.FC = () => {
     const handleTouchMove = (e: TouchEvent) => {
       if (!isDragging) return;
       const delta = touchStartX - e.touches[0].clientX;
-      if (Math.abs(delta) > 60) {   // Even stricter for mobile
+      if (Math.abs(delta) > 80) {   // Much stricter for 1 swipe = 1 slot
         targetStepRef.current += delta > 0 ? 1 : -1;
         touchStartX = e.touches[0].clientX;
       }
@@ -104,15 +104,19 @@ const PhotoWheel: React.FC = () => {
 
   useFrame((_, delta) => {
     const target = (targetStepRef.current * (Math.PI * 2)) / numFrames;
-    rotationRef.current = THREE.MathUtils.lerp(rotationRef.current, target, 1 - Math.exp(-14 * delta));
+    rotationRef.current = THREE.MathUtils.lerp(rotationRef.current, target, 1 - Math.exp(-18 * delta)); // Faster snap
 
     if (wheelGroupRef.current) wheelGroupRef.current.rotation.z = rotationRef.current;
 
     if (framesGroupRef.current) {
       framesGroupRef.current.children.forEach((child, i) => {
         const currentAngle = (i * Math.PI * 2) / numFrames - rotationRef.current;
+        const normalizedAngle = ((currentAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+        const isFront = normalizedAngle < 0.3 || normalizedAngle > (Math.PI * 2 - 0.3);
+
         child.position.x = Math.sin(currentAngle) * radius;
         child.position.y = Math.cos(currentAngle) * radius;
+        child.scale.setScalar(isFront ? 1.12 : 1.0); // Enlarge front photo
       });
     }
   });
