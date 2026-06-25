@@ -34,7 +34,7 @@ const PhotoWheel: React.FC = () => {
       const currentX = e.touches[0].clientX;
       const delta = touchStartX - currentX;
 
-      if (Math.abs(delta) > 35) {
+      if (Math.abs(delta) > 15) {
         targetStepRef.current += delta > 0 ? 1 : -1;
         touchStartX = currentX;
         isDragging = false;
@@ -101,7 +101,7 @@ const PhotoWheel: React.FC = () => {
       <directionalLight position={[5, 8, 5]} intensity={2.2} />
       <pointLight position={[0, 0, 2]} intensity={1.5} color="#ffffff" />
 
-      <group position={[0, isMobile ? 1.0 : 1.35, isMobile ? -2.2 : -1.8]}>
+      <group position={[0, 0, 0]}>
 
         {/* Stationary Center Hub */}
         <mesh material={chromeSpokeMat}>
@@ -145,7 +145,7 @@ const PhotoWheel: React.FC = () => {
           })}
         </group>
 
-        {/* UPRIGHT FRAMES */}
+        {/* UPRIGHT PORTRAIT FRAMES */}
         <group ref={framesGroupRef}>
           {Array.from({ length: numFrames }).map((_, i) => {
             const startAngle = (i * Math.PI * 2) / numFrames;
@@ -155,13 +155,13 @@ const PhotoWheel: React.FC = () => {
             return (
               <group key={i} position={[startX, startY, 0]}>
                 <mesh material={titaniumFrameMat}>
-                  <boxGeometry args={[2.35, 1.72, 0.18]} />
+                  <boxGeometry args={[1.72, 2.35, 0.18]} />
                 </mesh>
                 <mesh position={[0, 0, 0.095]} material={chromeSpokeMat}>
-                  <boxGeometry args={[2.19, 1.56, 0.01]} />
+                  <boxGeometry args={[1.56, 2.19, 0.01]} />
                 </mesh>
                 <mesh position={[0, 0, 0.1]}>
-                  <planeGeometry args={[2.15, 1.52]} />
+                  <planeGeometry args={[1.52, 2.15]} />
                   <MeshTransmissionMaterial
                     backside
                     samples={6}
