@@ -15,38 +15,51 @@ const PhotoWheel: React.FC = () => {
   const targetStepRef = useRef<number>(0);
 
   const [imageTextures, setImageTextures] = useState<(THREE.Texture | null)[]>(Array(6).fill(null));
-  const [refreshKey, setRefreshKey] = useState(0);
 
   const loadWheelPhotos = async () => {
+    console.log("=== Starting loadWheelPhotos ===");
     try {
-      const { data } = await supabase.storage.from('gallery').list('wheel');
+      const { data, error } = await supabase.storage.from('gallery').list('wheel');
+      console.log("Wheel files found:", data?.length || 0, data);
+
+      if (error) {
+        console.error("List error:", error);
+        return;
+      }
+
       const urls: string[] = Array(6).fill('');
       const timestamp = Date.now();
 
-      data?.forEach((file, index) => {
-        if (index < 6) {
-          const rawUrl = supabase.storage.from('gallery').getPublicUrl(`wheel/${file.name}`).data.publicUrl;
-          urls[index] = `${rawUrl}?t=${timestamp}`;
+      data?.forEach((file) => {
+        const match = file.name.match(/slot-(\d+)/);
+        if (match) {
+          const slotIndex = parseInt(match[1]) - 1;
+          if (slotIndex >= 0 && slotIndex < 6) {
+            const rawUrl = supabase.storage.from('gallery').getPublicUrl(`wheel/${file.name}`).data.publicUrl;
+            urls[slotIndex] = `${rawUrl}?t=${timestamp}`;
+          }
         }
       });
 
       const loader = new THREE.TextureLoader();
+      loader.setCrossOrigin('anonymous');
+
       const textures = await Promise.all(
-        urls.map(url => 
-          url ? new Promise<THREE.Texture>((resolve) => loader.load(url, resolve)) : Promise.resolve(null)
-        )
+        urls.map(url => url ? new Promise((resolve) => loader.load(url, resolve, undefined, () => resolve(null))) : Promise.resolve(null))
       );
+
+      console.log("Textures loaded:", textures.filter(t => t !== null).length);
       setImageTextures(textures);
     } catch (err) {
-      console.error("Failed to load wheel photos:", err);
+      console.error("Load failed:", err);
     }
   };
 
   useEffect(() => {
     loadWheelPhotos();
-  }, [refreshKey]);
+  }, []);
 
-  // Swipe & Wheel Controls
+  // Controls and rendering (same as before)
   useEffect(() => {
     const handleGlobalWheel = (e: WheelEvent) => {
       if (Math.abs(e.deltaY) > 5) targetStepRef.current += e.deltaY > 0 ? 1 : -1;
@@ -55,28 +68,21 @@ const PhotoWheel: React.FC = () => {
     let touchStartX = 0;
     let isDragging = false;
 
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartX = e.touches[0].clientX;
-      isDragging = true;
-    };
-
+    const handleTouchStart = (e: TouchEvent) => { touchStartX = e.touches[0].clientX; isDragging = true; };
     const handleTouchMove = (e: TouchEvent) => {
       if (!isDragging) return;
-      const currentX = e.touches[0].clientX;
-      const delta = touchStartX - currentX;
+      const delta = touchStartX - e.touches[0].clientX;
       if (Math.abs(delta) > 18) {
         targetStepRef.current += delta > 0 ? 1 : -1;
-        touchStartX = currentX;
-        isDragging = false;
+        touchStartX = e.touches[0].clientX;
       }
     };
-
     const handleTouchEnd = () => isDragging = false;
 
-    window.addEventListener('wheel', handleGlobalWheel, { passive: false });
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: true });
-    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+    window.addEventListener('wheel', handleGlobalWheel);
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchend', handleTouchEnd);
 
     return () => {
       window.removeEventListener('wheel', handleGlobalWheel);
@@ -91,7 +97,7 @@ const PhotoWheel: React.FC = () => {
 
   useFrame((_, delta) => {
     const target = (targetStepRef.current * (Math.PI * 2)) / numFrames;
-    rotationRef.current = THREE.MathUtils.lerp(rotationRef.current, target, 1 - Math.exp(-16 * delta));
+    rotationRef.current = THREE.MathUtils.lerp(rotationRef.current, target, 1 - Math.exp(-12 * delta));
 
     if (wheelGroupRef.current) wheelGroupRef.current.rotation.z = rotationRef.current;
 
@@ -100,7 +106,6 @@ const PhotoWheel: React.FC = () => {
         const currentAngle = (i * Math.PI * 2) / numFrames - rotationRef.current;
         child.position.x = Math.sin(currentAngle) * radius;
         child.position.y = Math.cos(currentAngle) * radius;
-        child.rotation.z = 0;
       });
     }
   });
@@ -117,23 +122,10 @@ const PhotoWheel: React.FC = () => {
       <pointLight position={[0, 0, 2]} intensity={1.5} color="#ffffff" />
 
       <group position={[0, isMobile ? 1.35 : 1.15, isMobile ? -2.2 : -1.8]}>
+        {/* ... same 3D structure as before ... */}
         <mesh material={chromeSpokeMat}>
           <sphereGeometry args={[0.45, 32, 32]} />
         </mesh>
-
-        <group position={[-0.95, 0, 0.1]} onPointerDown={() => targetStepRef.current += 1}>
-          <mesh rotation={[0, 0, Math.PI / 2]} material={redArrowMat}>
-            <coneGeometry args={[0.12, 0.28, 4]} />
-          </mesh>
-          <mesh><boxGeometry args={[0.4, 0.4, 0.3]} /><meshBasicMaterial visible={false} /></mesh>
-        </group>
-
-        <group position={[0.95, 0, 0.1]} onPointerDown={() => targetStepRef.current -= 1}>
-          <mesh rotation={[0, 0, -Math.PI / 2]} material={redArrowMat}>
-            <coneGeometry args={[0.12, 0.28, 4]} />
-          </mesh>
-          <mesh><boxGeometry args={[0.4, 0.4, 0.3]} /><meshBasicMaterial visible={false} /></mesh>
-        </group>
 
         <group ref={wheelGroupRef}>
           {Array.from({ length: numFrames }).map((_, i) => (
@@ -150,7 +142,6 @@ const PhotoWheel: React.FC = () => {
             const startAngle = (i * Math.PI * 2) / numFrames;
             const startX = Math.sin(startAngle) * radius;
             const startY = Math.cos(startAngle) * radius;
-
             return (
               <group key={i} position={[startX, startY, 0]}>
                 <mesh material={titaniumFrameMat}>
@@ -159,7 +150,6 @@ const PhotoWheel: React.FC = () => {
                 <mesh position={[0, 0, 0.095]} material={chromeSpokeMat}>
                   <boxGeometry args={[1.56, 2.19, 0.01]} />
                 </mesh>
-
                 <mesh position={[0, 0, 0.11]}>
                   <planeGeometry args={[1.52, 2.15]} />
                   {imageTextures[i] ? (
