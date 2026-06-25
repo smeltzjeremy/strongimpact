@@ -22,45 +22,38 @@ export default function AdminDashboard() {
     }
   };
 
-  const fetchPhotos = async () => {
-    try {
-      const { data } = await supabase.storage.from('gallery').list('photos');
-      if (data) {
-        const urls = data.map(file => ({
-          name: file.name,
-          url: supabase.storage.from('gallery').getPublicUrl(`photos/${file.name}`).data.publicUrl
-        }));
-        setPhotosList(urls);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const fetchWheelPhotos = async () => {
     try {
       const { data } = await supabase.storage.from('gallery').list('wheel');
       const loaded = Array(6).fill(null);
-      if (data) {
-        data.forEach((file, index) => {
-          if (index < 6) {
-            loaded[index] = {
+      const timestamp = new Date().getTime();
+
+      data?.forEach((file) => {
+        const match = file.name.match(/slot-(\d+)/);
+        if (match) {
+          const slotIndex = parseInt(match[1]) - 1;
+          if (slotIndex >= 0 && slotIndex < 6) {
+            loaded[slotIndex] = {
               name: file.name,
-              url: supabase.storage.from('gallery').getPublicUrl(`wheel/${file.name}`).data.publicUrl
+              url: `${supabase.storage.from('gallery').getPublicUrl(`wheel/${file.name}`).data.publicUrl}?t=${timestamp}`
             };
           }
-        });
-      }
+        }
+      });
       setWheelPhotos(loaded);
     } catch (err) {
       console.error(err);
     }
   };
 
+  const fetchPhotos = async () => {
+    // your original general gallery code if you want it
+  };
+
   useEffect(() => {
     if (isAuthenticated) {
-      fetchPhotos();
       fetchWheelPhotos();
+      fetchPhotos();
     }
   }, [isAuthenticated]);
 
@@ -70,7 +63,8 @@ export default function AdminDashboard() {
       const file = event.target.files?.[0];
       if (!file) return;
 
-      const fileName = `slot-${slot + 1}.jpg`;
+      const paddedSlot = String(slot + 1).padStart(2, '0');
+      const fileName = `slot-${paddedSlot}.jpg`;
 
       await supabase.storage.from('gallery').remove([`wheel/${fileName}`]);
 
@@ -80,7 +74,7 @@ export default function AdminDashboard() {
 
       if (error) throw error;
 
-      alert(`Slot ${slot + 1} updated!`);
+      alert(`Slot ${slot + 1} updated successfully!`);
       fetchWheelPhotos();
     } catch (error) {
       alert('Upload failed: ' + error.message);
@@ -89,8 +83,25 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeleteSlot = async (slot) => {
+    if (!confirm(`Delete image from Slot ${slot + 1}? This cannot be undone.`)) return;
+
+    try {
+      const paddedSlot = String(slot + 1).padStart(2, '0');
+      const fileName = `slot-${paddedSlot}.jpg`;
+
+      const { error } = await supabase.storage.from('gallery').remove([`wheel/${fileName}`]);
+      if (error) throw error;
+
+      alert(`Slot ${slot + 1} deleted.`);
+      fetchWheelPhotos();
+    } catch (err) {
+      alert('Delete failed: ' + err.message);
+    }
+  };
+
   if (!isAuthenticated) {
-    return ( /* login screen stays the same */ 
+    return (
       <div className="min-h-screen bg-[#05050f] flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-zinc-950/80 border border-white/10 rounded-3xl p-10 backdrop-blur-xl">
           <h2 className="text-3xl font-bold text-center mb-2">STRONG IMPACT</h2>
@@ -128,17 +139,31 @@ export default function AdminDashboard() {
           <div>
             <h2 className="text-3xl font-semibold mb-8">Photo Wheel Manager</h2>
             <p className="text-zinc-400 mb-8">Upload or replace images for the 6 wheel slots.</p>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {wheelPhotos.map((photo, index) => (
                 <div key={index} className="bg-zinc-950 border border-white/10 rounded-3xl p-6">
                   <div className="text-lg font-medium mb-4">Slot {index + 1}</div>
+                  
                   <div className="aspect-[4/5] bg-zinc-900 rounded-2xl overflow-hidden mb-6 border border-white/10">
-                    {photo ? <img src={photo.url} alt={`Slot ${index + 1}`} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-zinc-500">Empty</div>}
+                    {photo ? (
+                      <img src={photo.url} alt={`Slot ${index + 1}`} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-500">Empty</div>
+                    )}
                   </div>
-                  <label className="block w-full bg-red-600 hover:bg-red-700 py-4 text-center rounded-2xl font-semibold cursor-pointer transition">
-                    {photo ? 'Replace' : 'Upload'}
+
+                  <label className="block w-full bg-red-600 hover:bg-red-700 py-4 text-center rounded-2xl font-semibold cursor-pointer transition mb-3">
+                    {photo ? 'Replace Image' : 'Upload Image'}
                     <input type="file" accept="image/*" onChange={(e) => handleWheelUpload(e, index)} className="hidden" />
                   </label>
+
+                  <button 
+                    onClick={() => handleDeleteSlot(index)}
+                    className="w-full bg-zinc-800 hover:bg-red-900 py-3 text-sm rounded-2xl border border-white/20 transition"
+                  >
+                    Delete Image
+                  </button>
                 </div>
               ))}
             </div>
