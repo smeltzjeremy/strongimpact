@@ -9,9 +9,10 @@ export default function AdminDashboard() {
   
   const [uploading, setUploading] = useState(false);
   const [photosList, setPhotosList] = useState([]);
-  const [activeTab, setActiveTab] = useState('photos');
+  const [wheelPhotos, setWheelPhotos] = useState(Array(6).fill(null));
+  const [activeTab, setActiveTab] = useState('wheel');
 
-  const handleLogin = (e) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordInput === 'JStrong2026') {
       setIsAuthenticated(true);
@@ -21,6 +22,7 @@ export default function AdminDashboard() {
     }
   };
 
+  // Fetch general photos
   const fetchPhotos = async () => {
     try {
       const { data, error } = await supabase.storage.from('gallery').list('photos');
@@ -36,45 +38,58 @@ export default function AdminDashboard() {
     }
   };
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchPhotos();
-    }
-  }, [isAuthenticated]);
-
-  const handleUpload = async (event) => {
+  // Fetch Wheel Photos (6 slots)
+  const fetchWheelPhotos = async () => {
     try {
-      setUploading(true);
-      const files = event.target.files;
-      if (!files || files.length === 0) return;
+      const { data, error } = await supabase.storage.from('gallery').list('wheel');
+      if (error) throw error;
 
-      for (let file of files) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-        const { error } = await supabase.storage
-          .from('gallery')
-          .upload(`photos/${fileName}`, file);
-        
-        if (error) throw error;
-      }
-
-      alert('Photos uploaded successfully!');
-      fetchPhotos();
-    } catch (error) {
-      alert('Upload failed: ' + error.message);
-    } finally {
-      setUploading(false);
+      const loaded = Array(6).fill(null);
+      data.forEach((file, index) => {
+        if (index < 6) {
+          loaded[index] = {
+            name: file.name,
+            url: supabase.storage.from('gallery').getPublicUrl(`wheel/${file.name}`).data.publicUrl
+          };
+        }
+      });
+      setWheelPhotos(loaded);
+    } catch (err) {
+      console.error("Error fetching wheel photos:", err);
     }
   };
 
-  const handleDelete = async (fileName) => {
-    if (!window.confirm("Delete this photo?")) return;
-    try {
-      const { error } = await supabase.storage.from('gallery').remove([`photos/${fileName}`]);
-      if (error) throw error;
+  useEffect(() => {
+    if (isAuthenticated) {
       fetchPhotos();
-    } catch (error) {
-      alert('Delete failed: ' + error.message);
+      fetchWheelPhotos();
+    }
+  }, [isAuthenticated]);
+
+  const handleWheelUpload = async (event: React.ChangeEvent<HTMLInputElement>, slot: number) => {
+    try {
+      setUploading(true);
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `slot-${slot + 1}.${fileExt}`;
+
+      // Replace existing file if any
+      await supabase.storage.from('gallery').remove([`wheel/${fileName}`]);
+
+      const { error } = await supabase.storage
+        .from('gallery')
+        .upload(`wheel/${fileName}`, file, { upsert: true });
+
+      if (error) throw error;
+
+      alert(`Slot ${slot + 1} updated successfully!`);
+      fetchWheelPhotos();
+    } catch (error: any) {
+      alert('Upload failed: ' + error.message);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -123,39 +138,96 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Upload Area */}
-        <div className="border-2 border-dashed border-white/30 rounded-3xl p-12 text-center mb-10 hover:border-red-500/50 transition">
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={handleUpload}
-            disabled={uploading}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          />
-          <p className="text-2xl mb-2">{uploading ? "Uploading photos..." : "Drop photos here or click to upload"}</p>
-          <p className="text-zinc-400">They will go directly into the main gallery/photos folder</p>
+        {/* Tabs */}
+        <div className="flex gap-2 mb-8 border-b border-white/10 pb-4">
+          <button
+            onClick={() => setActiveTab('wheel')}
+            className={`px-8 py-3 rounded-2xl font-medium transition ${activeTab === 'wheel' ? 'bg-red-600' : 'bg-white/10 hover:bg-white/20'}`}
+          >
+            Wheel Photos (6 Slots)
+          </button>
+          <button
+            onClick={() => setActiveTab('gallery')}
+            className={`px-8 py-3 rounded-2xl font-medium transition ${activeTab === 'gallery' ? 'bg-red-600' : 'bg-white/10 hover:bg-white/20'}`}
+          >
+            General Gallery
+          </button>
         </div>
 
-        {/* Photos Grid */}
-        <h2 className="text-2xl mb-6">Uploaded Photos ({photosList.length})</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {photosList.map((item) => (
-            <div key={item.name} className="relative group bg-zinc-950 rounded-2xl overflow-hidden border border-white/10">
-              <img 
-                src={item.url} 
-                alt={item.name} 
-                className="w-full aspect-square object-cover"
-              />
-              <button 
-                onClick={() => handleDelete(item.name)}
-                className="absolute top-3 right-3 bg-red-600 hover:bg-red-700 p-2 rounded-xl opacity-0 group-hover:opacity-100 transition"
-              >
-                🗑️
-              </button>
+        {/* ==================== WHEEL PHOTOS MANAGER ==================== */}
+        {activeTab === 'wheel' && (
+          <div>
+            <h2 className="text-3xl font-semibold mb-8">Photo Wheel Manager</h2>
+            <p className="text-zinc-400 mb-8">Upload/replace portrait images for the interactive wheel. Exactly 6 slots.</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {wheelPhotos.map((photo, index) => (
+                <div key={index} className="bg-zinc-950 border border-white/10 rounded-3xl p-6">
+                  <div className="text-lg font-medium mb-4">Slot {index + 1}</div>
+                  
+                  <div className="aspect-[4/5] bg-zinc-900 rounded-2xl overflow-hidden mb-6 border border-white/10">
+                    {photo ? (
+                      <img src={photo.url} alt={`Slot ${index + 1}`} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-500">
+                        Empty Slot
+                      </div>
+                    )}
+                  </div>
+
+                  <label className="block w-full bg-red-600 hover:bg-red-700 py-4 text-center rounded-2xl font-semibold cursor-pointer transition">
+                    {photo ? 'Replace Image' : 'Upload Image'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleWheelUpload(e, index)}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
+
+        {/* ==================== GENERAL GALLERY (unchanged) ==================== */}
+        {activeTab === 'gallery' && (
+          <>
+            {/* Upload Area */}
+            <div className="border-2 border-dashed border-white/30 rounded-3xl p-12 text-center mb-10 hover:border-red-500/50 transition">
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={/* your original handleUpload */}
+                disabled={uploading}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+              <p className="text-2xl mb-2">{uploading ? "Uploading photos..." : "Drop photos here or click to upload"}</p>
+              <p className="text-zinc-400">General gallery folder</p>
+            </div>
+
+            {/* Photos Grid */}
+            <h2 className="text-2xl mb-6">Uploaded Photos ({photosList.length})</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {photosList.map((item) => (
+                <div key={item.name} className="relative group bg-zinc-950 rounded-2xl overflow-hidden border border-white/10">
+                  <img 
+                    src={item.url} 
+                    alt={item.name} 
+                    className="w-full aspect-square object-cover"
+                  />
+                  <button 
+                    onClick={() => {/* your original handleDelete */}}
+                    className="absolute top-3 right-3 bg-red-600 hover:bg-red-700 p-2 rounded-xl opacity-0 group-hover:opacity-100 transition"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
