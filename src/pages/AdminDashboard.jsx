@@ -24,8 +24,8 @@ export default function AdminDashboard() {
 
   const fetchPhotos = async () => {
     try {
-      const { data, error } = await supabase.storage.from('gallery').list('photos');
-      if (!error && data) {
+      const { data } = await supabase.storage.from('gallery').list('photos');
+      if (data) {
         const urls = data.map(file => ({
           name: file.name,
           url: supabase.storage.from('gallery').getPublicUrl(`photos/${file.name}`).data.publicUrl
@@ -33,27 +33,27 @@ export default function AdminDashboard() {
         setPhotosList(urls);
       }
     } catch (err) {
-      console.error("Error fetching photos:", err);
+      console.error(err);
     }
   };
 
   const fetchWheelPhotos = async () => {
     try {
-      const { data, error } = await supabase.storage.from('gallery').list('wheel');
-      if (error) throw error;
-
+      const { data } = await supabase.storage.from('gallery').list('wheel');
       const loaded = Array(6).fill(null);
-      data.forEach((file, index) => {
-        if (index < 6) {
-          loaded[index] = {
-            name: file.name,
-            url: supabase.storage.from('gallery').getPublicUrl(`wheel/${file.name}`).data.publicUrl
-          };
-        }
-      });
+      if (data) {
+        data.forEach((file, index) => {
+          if (index < 6) {
+            loaded[index] = {
+              name: file.name,
+              url: supabase.storage.from('gallery').getPublicUrl(`wheel/${file.name}`).data.publicUrl
+            };
+          }
+        });
+      }
       setWheelPhotos(loaded);
     } catch (err) {
-      console.error("Error fetching wheel photos:", err);
+      console.error(err);
     }
   };
 
@@ -70,8 +70,7 @@ export default function AdminDashboard() {
       const file = event.target.files?.[0];
       if (!file) return;
 
-      const fileExt = file.name.split('.').pop();
-      const fileName = `slot-${slot + 1}.${fileExt}`;
+      const fileName = `slot-${slot + 1}.jpg`;
 
       await supabase.storage.from('gallery').remove([`wheel/${fileName}`]);
 
@@ -81,7 +80,7 @@ export default function AdminDashboard() {
 
       if (error) throw error;
 
-      alert(`Slot ${slot + 1} updated successfully!`);
+      alert(`Slot ${slot + 1} updated!`);
       fetchWheelPhotos();
     } catch (error) {
       alert('Upload failed: ' + error.message);
@@ -91,25 +90,15 @@ export default function AdminDashboard() {
   };
 
   if (!isAuthenticated) {
-    return (
+    return ( /* login screen stays the same */ 
       <div className="min-h-screen bg-[#05050f] flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-zinc-950/80 border border-white/10 rounded-3xl p-10 backdrop-blur-xl">
           <h2 className="text-3xl font-bold text-center mb-2">STRONG IMPACT</h2>
           <p className="text-red-400 text-center mb-8">Protected Admin Console</p>
-          
           <form onSubmit={handleLogin}>
-            <input
-              type="password"
-              placeholder="Enter Admin Password"
-              value={passwordInput}
-              onChange={(e) => setPasswordInput(e.target.value)}
-              className="w-full bg-black/50 border border-white/20 rounded-2xl px-6 py-4 text-white placeholder-zinc-500 focus:outline-none focus:border-red-500 mb-4"
-            />
+            <input type="password" placeholder="Enter Admin Password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} className="w-full bg-black/50 border border-white/20 rounded-2xl px-6 py-4 text-white placeholder-zinc-500 focus:outline-none focus:border-red-500 mb-4" />
             {loginError && <p className="text-red-400 text-sm text-center mb-4">{loginError}</p>}
-            
-            <button type="submit" className="w-full bg-red-600 hover:bg-red-700 py-4 rounded-2xl font-semibold transition">
-              Unlock Dashboard
-            </button>
+            <button type="submit" className="w-full bg-red-600 hover:bg-red-700 py-4 rounded-2xl font-semibold transition">Unlock Dashboard</button>
           </form>
         </div>
       </div>
@@ -125,58 +114,30 @@ export default function AdminDashboard() {
             <p className="text-emerald-400">Live Photo Management</p>
           </div>
           <div className="flex gap-4">
-            <Link to="/" className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl border border-white/20 transition">
-              ← Back to Main Page
-            </Link>
-            <button onClick={() => setIsAuthenticated(false)} className="px-6 py-3 bg-zinc-900 hover:bg-red-900/50 rounded-2xl border border-white/20 transition">
-              Lock Console
-            </button>
+            <Link to="/" className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl border border-white/20 transition">← Back to Main Page</Link>
+            <button onClick={() => setIsAuthenticated(false)} className="px-6 py-3 bg-zinc-900 hover:bg-red-900/50 rounded-2xl border border-white/20 transition">Lock Console</button>
           </div>
         </div>
 
         <div className="flex gap-2 mb-8 border-b border-white/10 pb-4">
-          <button
-            onClick={() => setActiveTab('wheel')}
-            className={`px-8 py-3 rounded-2xl font-medium transition ${activeTab === 'wheel' ? 'bg-red-600' : 'bg-white/10 hover:bg-white/20'}`}
-          >
-            Wheel Photos (6 Slots)
-          </button>
-          <button
-            onClick={() => setActiveTab('gallery')}
-            className={`px-8 py-3 rounded-2xl font-medium transition ${activeTab === 'gallery' ? 'bg-red-600' : 'bg-white/10 hover:bg-white/20'}`}
-          >
-            General Gallery
-          </button>
+          <button onClick={() => setActiveTab('wheel')} className={`px-8 py-3 rounded-2xl font-medium transition ${activeTab === 'wheel' ? 'bg-red-600' : 'bg-white/10 hover:bg-white/20'}`}>Wheel Photos (6 Slots)</button>
+          <button onClick={() => setActiveTab('gallery')} className={`px-8 py-3 rounded-2xl font-medium transition ${activeTab === 'gallery' ? 'bg-red-600' : 'bg-white/10 hover:bg-white/20'}`}>General Gallery</button>
         </div>
 
         {activeTab === 'wheel' && (
           <div>
             <h2 className="text-3xl font-semibold mb-8">Photo Wheel Manager</h2>
-            <p className="text-zinc-400 mb-8">Upload or replace portrait images for the interactive wheel. Exactly 6 slots.</p>
-            
+            <p className="text-zinc-400 mb-8">Upload or replace images for the 6 wheel slots.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {wheelPhotos.map((photo, index) => (
                 <div key={index} className="bg-zinc-950 border border-white/10 rounded-3xl p-6">
                   <div className="text-lg font-medium mb-4">Slot {index + 1}</div>
-                  
                   <div className="aspect-[4/5] bg-zinc-900 rounded-2xl overflow-hidden mb-6 border border-white/10">
-                    {photo ? (
-                      <img src={photo.url} alt={`Slot ${index + 1}`} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-zinc-500 text-sm">
-                        No image yet
-                      </div>
-                    )}
+                    {photo ? <img src={photo.url} alt={`Slot ${index + 1}`} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-zinc-500">Empty</div>}
                   </div>
-
                   <label className="block w-full bg-red-600 hover:bg-red-700 py-4 text-center rounded-2xl font-semibold cursor-pointer transition">
-                    {photo ? 'Replace Image' : 'Upload Image'}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleWheelUpload(e, index)}
-                      className="hidden"
-                    />
+                    {photo ? 'Replace' : 'Upload'}
+                    <input type="file" accept="image/*" onChange={(e) => handleWheelUpload(e, index)} className="hidden" />
                   </label>
                 </div>
               ))}
@@ -185,20 +146,7 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'gallery' && (
-          <div>
-            <div className="border-2 border-dashed border-white/30 rounded-3xl p-12 text-center mb-10 hover:border-red-500/50 transition">
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={() => alert("General upload coming back soon")}
-                disabled={uploading}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              />
-              <p className="text-2xl mb-2">General Gallery Upload</p>
-              <p className="text-zinc-400">Temporarily disabled — focus on Wheel first</p>
-            </div>
-          </div>
+          <p className="text-center text-zinc-400 py-20">General Gallery coming back soon...</p>
         )}
       </div>
     </div>
