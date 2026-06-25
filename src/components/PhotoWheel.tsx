@@ -14,15 +14,15 @@ const PhotoWheel: React.FC = () => {
   const rotationRef = useRef<number>(0);
   const targetStepRef = useRef<number>(0);
 
-  // Load images from Supabase
-  const [imageUrls, setImageUrls] = useState<string[]>(Array(6).fill(''));
+  // Load images + textures
+  const [imageTextures, setImageTextures] = useState<(THREE.Texture | null)[]>(Array(6).fill(null));
 
   useEffect(() => {
     const loadWheelPhotos = async () => {
       try {
         const { data } = await supabase.storage.from('gallery').list('wheel');
         const urls: string[] = Array(6).fill('');
-
+        
         if (data) {
           data.forEach((file, index) => {
             if (index < 6) {
@@ -30,7 +30,18 @@ const PhotoWheel: React.FC = () => {
             }
           });
         }
-        setImageUrls(urls);
+
+        // Load textures
+        const loader = new THREE.TextureLoader();
+        const textures = await Promise.all(
+          urls.map(async (url) => {
+            if (!url) return null;
+            return new Promise<THREE.Texture | null>((resolve) => {
+              loader.load(url, resolve, undefined, () => resolve(null));
+            });
+          })
+        );
+        setImageTextures(textures);
       } catch (err) {
         console.error("Failed to load wheel photos:", err);
       }
@@ -39,7 +50,7 @@ const PhotoWheel: React.FC = () => {
     loadWheelPhotos();
   }, []);
 
-  // Swipe & Wheel Controls (unchanged)
+  // Controls
   useEffect(() => {
     const handleGlobalWheel = (e: WheelEvent) => {
       if (Math.abs(e.deltaY) > 5) targetStepRef.current += e.deltaY > 0 ? 1 : -1;
@@ -58,7 +69,7 @@ const PhotoWheel: React.FC = () => {
       const currentX = e.touches[0].clientX;
       const delta = touchStartX - currentX;
       if (Math.abs(delta) > 18) {
-        targetStepRef.current += delta > 0 ? 1 : -1;
+        targetStepRef.current += delta > 0 ? 1 : -1;  // swipe left = counter-clockwise
         touchStartX = currentX;
         isDragging = false;
       }
@@ -86,11 +97,13 @@ const PhotoWheel: React.FC = () => {
     const target = (targetStepRef.current * (Math.PI * 2)) / numFrames;
     rotationRef.current = THREE.MathUtils.lerp(rotationRef.current, target, 1 - Math.exp(-16 * delta));
 
-    if (wheelGroupRef.current) wheelGroupRef.current.rotation.z = rotationRef.current;
+    if (wheelGroupRef.current) {
+      wheelGroupRef.current.rotation.z = rotationRef.current;
+    }
 
     if (framesGroupRef.current) {
       framesGroupRef.current.children.forEach((child, i) => {
-        const currentAngle = (i * Math.PI * 2) / numFrames + rotationRef.current;
+        const currentAngle = (i * Math.PI * 2) / numFrames - rotationRef.current; // flipped sign for correct direction
         child.position.x = Math.sin(currentAngle) * radius;
         child.position.y = Math.cos(currentAngle) * radius;
         child.rotation.z = 0;
@@ -116,7 +129,7 @@ const PhotoWheel: React.FC = () => {
           <sphereGeometry args={[0.45, 32, 32]} />
         </mesh>
 
-        {/* Arrows */}
+        {/* Left Arrow */}
         <group position={[-0.95, 0, 0.1]} onPointerDown={() => targetStepRef.current -= 1}>
           <mesh rotation={[0, 0, Math.PI / 2]} material={redArrowMat}>
             <coneGeometry args={[0.12, 0.28, 4]} />
@@ -127,6 +140,7 @@ const PhotoWheel: React.FC = () => {
           </mesh>
         </group>
 
+        {/* Right Arrow */}
         <group position={[0.95, 0, 0.1]} onPointerDown={() => targetStepRef.current += 1}>
           <mesh rotation={[0, 0, -Math.PI / 2]} material={redArrowMat}>
             <coneGeometry args={[0.12, 0.28, 4]} />
@@ -164,11 +178,11 @@ const PhotoWheel: React.FC = () => {
                   <boxGeometry args={[1.56, 2.19, 0.01]} />
                 </mesh>
 
-                {/* Actual Photo */}
+                {/* Photo */}
                 <mesh position={[0, 0, 0.11]}>
                   <planeGeometry args={[1.52, 2.15]} />
-                  {imageUrls[i] ? (
-                    <meshBasicMaterial map={new THREE.TextureLoader().load(imageUrls[i])} />
+                  {imageTextures[i] ? (
+                    <meshBasicMaterial map={imageTextures[i]} />
                   ) : (
                     <meshBasicMaterial color="#1f1f1f" />
                   )}
