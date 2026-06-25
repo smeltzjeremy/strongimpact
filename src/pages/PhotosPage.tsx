@@ -17,7 +17,7 @@ export default function PhotosPage() {
         </Link>
       </div>
 
-      <div className="absolute inset-0 z-10">
+      <div className="absolute inset-0 z-10 touch-none">
         <Canvas
           camera={{ position: [0, 0, 5], fov: 60 }}
           style={{ background: '#05050f' }}
@@ -26,12 +26,11 @@ export default function PhotosPage() {
             <group position={[0, 0, -4]}>
               <ProceduralChromeBackground />
             </group>
-
             <group position={[-0.1, -2.5, 0]}>
               {/* Layers 1 & 2: Behind wheel */}
               <VectorCloudLayer zPos={-2.6} solidColor="#8c1224" shadowOpacity={0.5} seed={5.2} />
               <VectorCloudLayer zPos={-2.35} solidColor="#b31931" shadowOpacity={0.46} seed={6.7} />
-
+              
               {/* PHOTO WHEEL */}
               <PhotoWheel />
 
