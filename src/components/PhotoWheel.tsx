@@ -3,6 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import { supabase } from '../lib/supabaseClient';
+import { createPortal } from 'react-dom';
 
 const PhotoWheel: React.FC = () => {
   const wheelGroupRef = useRef<THREE.Group>(null!);
@@ -131,6 +132,44 @@ const PhotoWheel: React.FC = () => {
   const titaniumFrameMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#121214', metalness: 0.8, roughness: 0.25 }), []);
   const redArrowMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#ef4444', metalness: 0.7, roughness: 0.15 }), []);
 
+  const buttonUI = (
+    <>
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+        <button 
+          onClick={() => {
+            const index = Math.round(targetStepRef.current) % 6;
+            const url = rawUrls[Math.abs(index)];
+            if (url) setEnlargedImage(url);
+          }}
+          className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white text-sm uppercase tracking-widest font-extrabold rounded-2xl border border-white/20 shadow-lg"
+        >
+          🔍 Enlarge Current Photo
+        </button>
+      </div>
+
+      {enlargedImage && (
+        <div 
+          className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-3xl flex items-center justify-center p-4"
+          onClick={() => setEnlargedImage(null)}
+        >
+          <div className="relative w-full max-w-md aspect-[4/5] bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+            <img 
+              src={enlargedImage} 
+              alt="Enlarged" 
+              className="w-full h-full object-cover"
+            />
+            <button 
+              className="absolute top-4 right-4 bg-black/70 hover:bg-black text-white w-10 h-10 rounded-full flex items-center justify-center text-xl"
+              onClick={(e) => { e.stopPropagation(); setEnlargedImage(null); }}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+
   return (
     <>
       <Environment preset="studio" />
@@ -192,41 +231,7 @@ const PhotoWheel: React.FC = () => {
         </group>
       </group>
 
-      {/* Simple Enlarge Button */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-        <button 
-          onClick={() => {
-            const index = Math.round(targetStepRef.current) % 6;
-            const url = rawUrls[Math.abs(index)];
-            if (url) setEnlargedImage(url);
-          }}
-          className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white text-sm uppercase tracking-widest font-extrabold rounded-2xl border border-white/20 shadow-lg"
-        >
-          🔍 Enlarge Current Photo
-        </button>
-      </div>
-
-      {/* Enlarged Modal */}
-      {enlargedImage && (
-        <div 
-          className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-3xl flex items-center justify-center p-4"
-          onClick={() => setEnlargedImage(null)}
-        >
-          <div className="relative w-full max-w-md aspect-[4/5] bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-            <img 
-              src={enlargedImage} 
-              alt="Enlarged" 
-              className="w-full h-full object-cover"
-            />
-            <button 
-              className="absolute top-4 right-4 bg-black/70 hover:bg-black text-white w-10 h-10 rounded-full flex items-center justify-center text-xl"
-              onClick={(e) => { e.stopPropagation(); setEnlargedImage(null); }}
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
+      {typeof document !== 'undefined' && createPortal(buttonUI, document.body)}
     </>
   );
 };
