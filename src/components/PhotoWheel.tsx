@@ -18,7 +18,6 @@ const PhotoWheel: React.FC = () => {
   const [version, setVersion] = useState(0);
 
   const loadWheelPhotos = async () => {
-    console.log("=== Starting loadWheelPhotos ===");
     try {
       const { data } = await supabase.storage.from('gallery').list('wheel', {
         sortBy: { column: 'name', order: 'asc' }
@@ -44,8 +43,8 @@ const PhotoWheel: React.FC = () => {
       const textures = await Promise.all(
         urls.map(url => url ? new Promise((resolve) => {
           loader.load(url, (texture) => {
-            texture.flipY = false;
-            texture.flipX = true; // Fix mirror
+            texture.flipY = true;   // Fix upside down
+            texture.flipX = false;  // Fix mirror
             texture.needsUpdate = true;
             resolve(texture);
           }, undefined, () => resolve(null));
@@ -63,7 +62,6 @@ const PhotoWheel: React.FC = () => {
     loadWheelPhotos();
   }, []);
 
-  // Controls (tightened swipe)
   useEffect(() => {
     const handleGlobalWheel = (e: WheelEvent) => {
       if (Math.abs(e.deltaY) > 8) targetStepRef.current += Math.sign(e.deltaY);
@@ -72,15 +70,20 @@ const PhotoWheel: React.FC = () => {
     let touchStartX = 0;
     let isDragging = false;
 
-    const handleTouchStart = (e: TouchEvent) => { touchStartX = e.touches[0].clientX; isDragging = true; };
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX = e.touches[0].clientX;
+      isDragging = true;
+    };
+
     const handleTouchMove = (e: TouchEvent) => {
       if (!isDragging) return;
       const delta = touchStartX - e.touches[0].clientX;
-      if (Math.abs(delta) > 50) {
+      if (Math.abs(delta) > 60) {   // Even stricter for mobile
         targetStepRef.current += delta > 0 ? 1 : -1;
         touchStartX = e.touches[0].clientX;
       }
     };
+
     const handleTouchEnd = () => isDragging = false;
 
     window.addEventListener('wheel', handleGlobalWheel, { passive: false });
