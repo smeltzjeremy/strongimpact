@@ -23,7 +23,10 @@ export default function AdminDashboard() {
 
   const fetchWheelPhotos = async () => {
     try {
-      const { data, error } = await supabase.storage.from('gallery').list('wheel');
+      const { data, error } = await supabase.storage.from('gallery').list('wheel', {
+        limit: 100,
+        sortBy: { column: 'name', order: 'asc' }
+      });
       console.log("Supabase returned files:", data);
 
       if (error) throw error;
@@ -92,22 +95,23 @@ export default function AdminDashboard() {
 
       console.log("Attempting to delete:", fileName);
 
-      const { error } = await supabase.storage.from('gallery').remove([`wheel/${fileName}`]);
-      
-      if (error) {
-        console.error("Delete error:", error);
-        throw error;
+      // Stronger delete - try both with and without folder
+      const { error: removeError } = await supabase.storage.from('gallery').remove([`wheel/${fileName}`, fileName]);
+
+      if (removeError) {
+        console.error("Delete error:", removeError);
+        throw removeError;
       }
 
       console.log("Delete successful for", fileName);
 
       alert(`Slot ${slot + 1} deleted.`);
-      setWheelPhotos(Array(6).fill(null));
       
-      setTimeout(() => fetchWheelPhotos(), 1000);
+      setWheelPhotos(Array(6).fill(null));
+      setTimeout(() => fetchWheelPhotos(), 1200);
     } catch (err) {
       console.error(err);
-      alert('Delete failed: ' + err.message);
+      alert('Delete failed: ' + (err.message || err));
     }
   };
 
