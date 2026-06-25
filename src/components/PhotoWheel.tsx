@@ -37,6 +37,7 @@ const PhotoWheel: React.FC = () => {
           if (slotIndex >= 0 && slotIndex < 6) {
             const rawUrl = supabase.storage.from('gallery').getPublicUrl(`wheel/${file.name}`).data.publicUrl;
             urls[slotIndex] = `${rawUrl}?t=${timestamp}`;
+            console.log(`Slot ${slotIndex + 1} URL:`, urls[slotIndex]);
           }
         }
       });
@@ -59,7 +60,6 @@ const PhotoWheel: React.FC = () => {
     loadWheelPhotos();
   }, []);
 
-  // Controls and rendering (same as before)
   useEffect(() => {
     const handleGlobalWheel = (e: WheelEvent) => {
       if (Math.abs(e.deltaY) > 5) targetStepRef.current += e.deltaY > 0 ? 1 : -1;
@@ -122,10 +122,23 @@ const PhotoWheel: React.FC = () => {
       <pointLight position={[0, 0, 2]} intensity={1.5} color="#ffffff" />
 
       <group position={[0, isMobile ? 1.35 : 1.15, isMobile ? -2.2 : -1.8]}>
-        {/* ... same 3D structure as before ... */}
         <mesh material={chromeSpokeMat}>
           <sphereGeometry args={[0.45, 32, 32]} />
         </mesh>
+
+        {/* Left Arrow */}
+        <group position={[-0.95, 0, 0.1]} onPointerDown={() => targetStepRef.current += 1}>
+          <mesh rotation={[0, 0, Math.PI / 2]} material={redArrowMat}>
+            <coneGeometry args={[0.12, 0.28, 4]} />
+          </mesh>
+        </group>
+
+        {/* Right Arrow */}
+        <group position={[0.95, 0, 0.1]} onPointerDown={() => targetStepRef.current -= 1}>
+          <mesh rotation={[0, 0, -Math.PI / 2]} material={redArrowMat}>
+            <coneGeometry args={[0.12, 0.28, 4]} />
+          </mesh>
+        </group>
 
         <group ref={wheelGroupRef}>
           {Array.from({ length: numFrames }).map((_, i) => (
