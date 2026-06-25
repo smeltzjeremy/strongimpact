@@ -1,7 +1,8 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Environment, MeshTransmissionMaterial } from '@react-three/drei';
 import * as THREE from 'three';
+import { supabase } from '../lib/supabaseClient';
 
 const PhotoWheel: React.FC = () => {
   const wheelGroupRef = useRef<THREE.Group>(null!);
@@ -13,7 +14,32 @@ const PhotoWheel: React.FC = () => {
   const rotationRef = useRef<number>(0);
   const targetStepRef = useRef<number>(0);
 
-  // Swipe & Wheel Controls
+  // Load images from Supabase
+  const [imageUrls, setImageUrls] = useState<string[]>(Array(6).fill(''));
+
+  useEffect(() => {
+    const loadWheelPhotos = async () => {
+      try {
+        const { data } = await supabase.storage.from('gallery').list('wheel');
+        const urls: string[] = Array(6).fill('');
+
+        if (data) {
+          data.forEach((file, index) => {
+            if (index < 6) {
+              urls[index] = supabase.storage.from('gallery').getPublicUrl(`wheel/${file.name}`).data.publicUrl;
+            }
+          });
+        }
+        setImageUrls(urls);
+      } catch (err) {
+        console.error("Failed to load wheel photos:", err);
+      }
+    };
+
+    loadWheelPhotos();
+  }, []);
+
+  // Swipe & Wheel Controls (unchanged)
   useEffect(() => {
     const handleGlobalWheel = (e: WheelEvent) => {
       if (Math.abs(e.deltaY) > 5) targetStepRef.current += e.deltaY > 0 ? 1 : -1;
@@ -90,11 +116,8 @@ const PhotoWheel: React.FC = () => {
           <sphereGeometry args={[0.45, 32, 32]} />
         </mesh>
 
-        {/* UPGRADED LEFT ARROW + INVISIBLE HITBOX */}
-        <group 
-          position={[-0.95, 0, 0.1]}
-          onPointerDown={(e) => { e.stopPropagation(); targetStepRef.current -= 1; }}
-        >
+        {/* Arrows */}
+        <group position={[-0.95, 0, 0.1]} onPointerDown={() => targetStepRef.current -= 1}>
           <mesh rotation={[0, 0, Math.PI / 2]} material={redArrowMat}>
             <coneGeometry args={[0.12, 0.28, 4]} />
           </mesh>
@@ -104,11 +127,7 @@ const PhotoWheel: React.FC = () => {
           </mesh>
         </group>
 
-        {/* UPGRADED RIGHT ARROW + INVISIBLE HITBOX */}
-        <group 
-          position={[0.95, 0, 0.1]}
-          onPointerDown={(e) => { e.stopPropagation(); targetStepRef.current += 1; }}
-        >
+        <group position={[0.95, 0, 0.1]} onPointerDown={() => targetStepRef.current += 1}>
           <mesh rotation={[0, 0, -Math.PI / 2]} material={redArrowMat}>
             <coneGeometry args={[0.12, 0.28, 4]} />
           </mesh>
@@ -118,21 +137,18 @@ const PhotoWheel: React.FC = () => {
           </mesh>
         </group>
 
-        {/* SPINNING SPOKES */}
+        {/* Spokes */}
         <group ref={wheelGroupRef}>
-          {Array.from({ length: numFrames }).map((_, i) => {
-            const angle = (i * Math.PI * 2) / numFrames;
-            return (
-              <group key={i} rotation={[0, 0, angle]}>
-                <mesh position={[0, radius * 0.48, 0]} material={chromeSpokeMat}>
-                  <cylinderGeometry args={[0.025, 0.025, radius * 1.05, 16]} />
-                </mesh>
-              </group>
-            );
-          })}
+          {Array.from({ length: numFrames }).map((_, i) => (
+            <group key={i} rotation={[0, 0, (i * Math.PI * 2) / numFrames]}>
+              <mesh position={[0, radius * 0.48, 0]} material={chromeSpokeMat}>
+                <cylinderGeometry args={[0.025, 0.025, radius * 1.05, 16]} />
+              </mesh>
+            </group>
+          ))}
         </group>
 
-        {/* UPRIGHT FRAMES */}
+        {/* Photo Frames */}
         <group ref={framesGroupRef}>
           {Array.from({ length: numFrames }).map((_, i) => {
             const startAngle = (i * Math.PI * 2) / numFrames;
@@ -147,20 +163,15 @@ const PhotoWheel: React.FC = () => {
                 <mesh position={[0, 0, 0.095]} material={chromeSpokeMat}>
                   <boxGeometry args={[1.56, 2.19, 0.01]} />
                 </mesh>
-                <mesh position={[0, 0, 0.1]}>
+
+                {/* Actual Photo */}
+                <mesh position={[0, 0, 0.11]}>
                   <planeGeometry args={[1.52, 2.15]} />
-                  <MeshTransmissionMaterial
-                    backside
-                    samples={6}
-                    thickness={0.25}
-                    chromaticAberration={0.06}
-                    anisotropy={0.2}
-                    clearcoat={1}
-                    attenuationDistance={0.6}
-                    color="#f8fafc"
-                    roughness={0.12}
-                    transmission={0.65}
-                  />
+                  {imageUrls[i] ? (
+                    <meshBasicMaterial map={new THREE.TextureLoader().load(imageUrls[i])} />
+                  ) : (
+                    <meshBasicMaterial color="#1f1f1f" />
+                  )}
                 </mesh>
               </group>
             );
