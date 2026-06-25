@@ -17,7 +17,6 @@ const PhotoWheel: React.FC = () => {
   const [imageTextures, setImageTextures] = useState<(THREE.Texture | null)[]>(Array(6).fill(null));
   const [rawUrls, setRawUrls] = useState<string[]>(Array(6).fill(''));
   const [version, setVersion] = useState(0);
-  const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
 
   const loadWheelPhotos = async () => {
     try {
@@ -191,43 +190,6 @@ const PhotoWheel: React.FC = () => {
           })}
         </group>
       </group>
-
-      {/* Enlarge Button */}
-      {rawUrls.some(url => url) && (
-        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-40">
-          <button 
-            onClick={() => {
-              const frontUrl = rawUrls.find(url => url);
-              if (frontUrl) setEnlargedImage(frontUrl);
-            }}
-            className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white text-sm uppercase tracking-widest font-extrabold rounded-2xl border border-white/20 shadow-[0_0_30px_rgba(239,68,68,0.3)] transition"
-          >
-            🔍 Enlarge Current Photo
-          </button>
-        </div>
-      )}
-
-      {/* Full-Screen Enlarged View */}
-      {enlargedImage && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-3xl flex items-center justify-center p-4 cursor-zoom-out"
-          onClick={() => setEnlargedImage(null)}
-        >
-          <div className="relative w-full max-w-md aspect-[4/5] bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-            <img 
-              src={enlargedImage} 
-              alt="Enlarged" 
-              className="w-full h-full object-cover select-none"
-            />
-            <button
-              className="absolute top-4 right-4 bg-black/60 hover:bg-black border border-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold transition"
-              onClick={() => setEnlargedImage(null)}
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 };
