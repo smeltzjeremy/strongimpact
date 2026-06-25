@@ -31,7 +31,7 @@ const PhotoWheel: React.FC = () => {
       if (!isDragging) return;
       const currentX = e.touches[0].clientX;
       const delta = touchStartX - currentX;
-      if (Math.abs(delta) > 18) {   // Balanced sensitivity
+      if (Math.abs(delta) > 18) {
         targetStepRef.current += delta > 0 ? 1 : -1;
         touchStartX = currentX;
         isDragging = false;
@@ -83,32 +83,40 @@ const PhotoWheel: React.FC = () => {
       <directionalLight position={[5, 8, 5]} intensity={2.2} />
       <pointLight position={[0, 0, 2]} intensity={1.5} color="#ffffff" />
 
-      <group position={[0, isMobile ? 1.35 : 1.7, isMobile ? -2.2 : -1.8]}>
+      <group position={[0, isMobile ? 1.35 : 1.15, isMobile ? -2.2 : -1.8]}>
 
         {/* CENTER HUB */}
         <mesh material={chromeSpokeMat}>
           <sphereGeometry args={[0.45, 32, 32]} />
         </mesh>
 
-        {/* LEFT ARROW */}
-        <mesh 
-          position={[-0.85, 0, 0.1]} 
-          rotation={[0, 0, Math.PI / 2]} 
-          material={redArrowMat}
+        {/* UPGRADED LEFT ARROW + INVISIBLE HITBOX */}
+        <group 
+          position={[-0.95, 0, 0.1]}
           onPointerDown={(e) => { e.stopPropagation(); targetStepRef.current -= 1; }}
         >
-          <coneGeometry args={[0.08, 0.22, 4]} />
-        </mesh>
+          <mesh rotation={[0, 0, Math.PI / 2]} material={redArrowMat}>
+            <coneGeometry args={[0.12, 0.28, 4]} />
+          </mesh>
+          <mesh>
+            <boxGeometry args={[0.4, 0.4, 0.3]} />
+            <meshBasicMaterial visible={false} />
+          </mesh>
+        </group>
 
-        {/* RIGHT ARROW */}
-        <mesh 
-          position={[0.85, 0, 0.1]} 
-          rotation={[0, 0, -Math.PI / 2]} 
-          material={redArrowMat}
+        {/* UPGRADED RIGHT ARROW + INVISIBLE HITBOX */}
+        <group 
+          position={[0.95, 0, 0.1]}
           onPointerDown={(e) => { e.stopPropagation(); targetStepRef.current += 1; }}
         >
-          <coneGeometry args={[0.08, 0.22, 4]} />
-        </mesh>
+          <mesh rotation={[0, 0, -Math.PI / 2]} material={redArrowMat}>
+            <coneGeometry args={[0.12, 0.28, 4]} />
+          </mesh>
+          <mesh>
+            <boxGeometry args={[0.4, 0.4, 0.3]} />
+            <meshBasicMaterial visible={false} />
+          </mesh>
+        </group>
 
         {/* SPINNING SPOKES */}
         <group ref={wheelGroupRef}>
