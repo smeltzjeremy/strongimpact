@@ -15,6 +15,7 @@ const PhotoWheel: React.FC = () => {
   const targetStepRef = useRef<number>(0);
 
   const [imageTextures, setImageTextures] = useState<(THREE.Texture | null)[]>(Array(6).fill(null));
+  const [version, setVersion] = useState(0);
 
   const loadWheelPhotos = async () => {
     console.log("=== Starting loadWheelPhotos ===");
@@ -32,7 +33,6 @@ const PhotoWheel: React.FC = () => {
           if (slotIndex >= 0 && slotIndex < 6) {
             const rawUrl = supabase.storage.from('gallery').getPublicUrl(`wheel/${file.name}`).data.publicUrl;
             urls[slotIndex] = `${rawUrl}?t=${timestamp}`;
-            console.log(`Slot ${slotIndex + 1} URL:`, urls[slotIndex]);
           }
         }
       });
@@ -43,7 +43,8 @@ const PhotoWheel: React.FC = () => {
       const textures = await Promise.all(
         urls.map(url => url ? new Promise((resolve) => {
           loader.load(url, (texture) => {
-            texture.flipY = false; // Important for Three.js
+            texture.flipY = false;
+            texture.needsUpdate = true;
             resolve(texture);
           }, undefined, () => resolve(null));
         }) : Promise.resolve(null))
@@ -51,6 +52,7 @@ const PhotoWheel: React.FC = () => {
 
       console.log("Textures loaded:", textures.filter(t => t !== null).length);
       setImageTextures(textures);
+      setVersion(v => v + 1); // Force re-render
     } catch (err) {
       console.error("Load failed:", err);
     }
@@ -76,7 +78,7 @@ const PhotoWheel: React.FC = () => {
     const handleTouchMove = (e: TouchEvent) => {
       if (!isDragging) return;
       const delta = touchStartX - e.touches[0].clientX;
-      if (Math.abs(delta) > 40) {  // Higher threshold = less sensitive
+      if (Math.abs(delta) > 50) {
         targetStepRef.current += delta > 0 ? 1 : -1;
         touchStartX = e.touches[0].clientX;
       }
@@ -126,7 +128,7 @@ const PhotoWheel: React.FC = () => {
       <directionalLight position={[5, 8, 5]} intensity={2.2} />
       <pointLight position={[0, 0, 2]} intensity={1.5} color="#ffffff" />
 
-      <group position={[0, isMobile ? 1.35 : 1.15, isMobile ? -2.2 : -1.8]}>
+      <group position={[0, isMobile ? 1.35 : 1.15, isMobile ? -2.2 : -1.8]} key={version}>
         <mesh material={chromeSpokeMat}>
           <sphereGeometry args={[0.45, 32, 32]} />
         </mesh>
