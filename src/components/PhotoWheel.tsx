@@ -18,7 +18,6 @@ const PhotoWheel: React.FC = () => {
   const [rawUrls, setRawUrls] = useState<string[]>(Array(6).fill(''));
   const [version, setVersion] = useState(0);
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
-  const [topFrameIndex, setTopFrameIndex] = useState<number | null>(null);
 
   const loadWheelPhotos = async () => {
     try {
@@ -193,19 +192,22 @@ const PhotoWheel: React.FC = () => {
         </group>
       </group>
 
-      {/* Enlarge Button - outside Canvas */}
-      {topFrameIndex !== null && rawUrls[topFrameIndex] && (
+      {/* Enlarge Button - always visible at bottom once loaded */}
+      {rawUrls.some(url => url) && (
         <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-40">
           <button 
-            onClick={() => setEnlargedImage(rawUrls[topFrameIndex])}
+            onClick={() => {
+              const currentUrl = rawUrls[(targetStepRef.current % 6 + 6) % 6];
+              if (currentUrl) setEnlargedImage(currentUrl);
+            }}
             className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white text-sm uppercase tracking-widest font-extrabold rounded-2xl border border-white/20 shadow-[0_0_30px_rgba(239,68,68,0.3)] transition transform hover:scale-105 active:scale-95"
           >
-            🔍 Enlarge Photo
+            🔍 Enlarge Current Photo
           </button>
         </div>
       )}
 
-      {/* Enlarged Image Modal */}
+      {/* Enlarged Modal */}
       {enlargedImage && (
         <div 
           className="fixed inset-0 z-50 bg-black/95 backdrop-blur-3xl flex items-center justify-center p-4 cursor-zoom-out"
