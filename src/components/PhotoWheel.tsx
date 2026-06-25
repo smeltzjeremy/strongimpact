@@ -18,7 +18,6 @@ const PhotoWheel: React.FC = () => {
   const [rawUrls, setRawUrls] = useState<string[]>(Array(6).fill(''));
   const [version, setVersion] = useState(0);
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
-  const [topFrameIndex, setTopFrameIndex] = useState<number | null>(null);
 
   const loadWheelPhotos = async () => {
     try {
@@ -83,7 +82,7 @@ const PhotoWheel: React.FC = () => {
     const handleTouchMove = (e: TouchEvent) => {
       if (hasSwipedThisTouch) return;
       const delta = touchStartX - e.touches[0].clientX;
-      if (Math.abs(delta) > 85) {
+      if (Math.abs(delta) > 90) {
         targetStepRef.current += delta > 0 ? 1 : -1;
         hasSwipedThisTouch = true;
       }
@@ -109,38 +108,22 @@ const PhotoWheel: React.FC = () => {
 
   useFrame((_, delta) => {
     const target = (targetStepRef.current * (Math.PI * 2)) / numFrames;
-    const oldRotation = rotationRef.current;
-    rotationRef.current = THREE.MathUtils.lerp(rotationRef.current, target, 1 - Math.exp(-18 * delta));
-    const velocity = (rotationRef.current - oldRotation) / delta;
+    rotationRef.current = THREE.MathUtils.lerp(rotationRef.current, target, 1 - Math.exp(-16 * delta));
 
     if (wheelGroupRef.current) wheelGroupRef.current.rotation.z = rotationRef.current;
-
-    let currentFrontIndex: number | null = null;
 
     if (framesGroupRef.current) {
       framesGroupRef.current.children.forEach((childNode, i) => {
         const child = childNode as THREE.Group;
         const currentAngle = (i * Math.PI * 2) / numFrames - rotationRef.current;
         const normalizedAngle = ((currentAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-        
         const isFront = normalizedAngle < 0.4 || normalizedAngle > (Math.PI * 2 - 0.4);
 
         child.position.x = Math.sin(currentAngle) * radius;
         child.position.y = Math.cos(currentAngle) * radius;
-        child.position.z = isFront ? 0.45 : 0;
-        child.scale.setScalar(isFront ? 1.18 : 0.92);
-
-        child.rotation.y = THREE.MathUtils.lerp(child.rotation.y, velocity * 0.12, 0.12);
-        child.rotation.x = THREE.MathUtils.lerp(child.rotation.x, Math.abs(velocity) * 0.06, 0.12);
-
-        if (isFront && (normalizedAngle < 0.2 || normalizedAngle > (Math.PI * 2 - 0.2))) {
-          currentFrontIndex = i;
-        }
+        child.position.z = isFront ? 0.4 : 0;
+        child.scale.setScalar(isFront ? 1.15 : 0.95);
       });
-    }
-
-    if (currentFrontIndex !== topFrameIndex) {
-      setTopFrameIndex(currentFrontIndex);
     }
   });
 
@@ -195,7 +178,6 @@ const PhotoWheel: React.FC = () => {
                 <mesh position={[0, 0, 0.095]} material={chromeSpokeMat}>
                   <boxGeometry args={[1.56, 2.19, 0.01]} />
                 </mesh>
-
                 <mesh position={[0, 0, 0.11]}>
                   <planeGeometry args={[1.52, 2.15]} />
                   {imageTextures[i] ? (
@@ -211,13 +193,16 @@ const PhotoWheel: React.FC = () => {
       </group>
 
       {/* Enlarge Button */}
-      {topFrameIndex !== null && rawUrls[topFrameIndex] && (
+      {rawUrls.some(url => url) && (
         <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-40">
           <button 
-            onClick={() => setEnlargedImage(rawUrls[topFrameIndex])}
-            className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white text-sm uppercase tracking-widest font-extrabold rounded-2xl border border-white/20 shadow-[0_0_30px_rgba(239,68,68,0.3)] transition transform hover:scale-105 active:scale-95"
+            onClick={() => {
+              const frontUrl = rawUrls.find(url => url);
+              if (frontUrl) setEnlargedImage(frontUrl);
+            }}
+            className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white text-sm uppercase tracking-widest font-extrabold rounded-2xl border border-white/20 shadow-[0_0_30px_rgba(239,68,68,0.3)] transition"
           >
-            🔍 Enlarge Photo
+            🔍 Enlarge Current Photo
           </button>
         </div>
       )}
@@ -234,8 +219,6 @@ const PhotoWheel: React.FC = () => {
               alt="Enlarged" 
               className="w-full h-full object-cover select-none"
             />
-            
-            {/* Close Button */}
             <button
               className="absolute top-4 right-4 bg-black/60 hover:bg-black border border-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold transition"
               onClick={() => setEnlargedImage(null)}
