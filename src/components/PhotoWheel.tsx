@@ -19,13 +19,8 @@ const PhotoWheel: React.FC = () => {
   const loadWheelPhotos = async () => {
     console.log("=== Starting loadWheelPhotos ===");
     try {
-      const { data, error } = await supabase.storage.from('gallery').list('wheel');
-      console.log("Wheel files found:", data?.length || 0, data);
-
-      if (error) {
-        console.error("List error:", error);
-        return;
-      }
+      const { data } = await supabase.storage.from('gallery').list('wheel');
+      console.log("Wheel files found:", data?.length || 0);
 
       const urls: string[] = Array(6).fill('');
       const timestamp = Date.now();
@@ -46,7 +41,12 @@ const PhotoWheel: React.FC = () => {
       loader.setCrossOrigin('anonymous');
 
       const textures = await Promise.all(
-        urls.map(url => url ? new Promise((resolve) => loader.load(url, resolve, undefined, () => resolve(null))) : Promise.resolve(null))
+        urls.map(url => url ? new Promise((resolve) => {
+          loader.load(url, (texture) => {
+            texture.flipY = false; // Important for Three.js
+            resolve(texture);
+          }, undefined, () => resolve(null));
+        }) : Promise.resolve(null))
       );
 
       console.log("Textures loaded:", textures.filter(t => t !== null).length);
@@ -62,27 +62,32 @@ const PhotoWheel: React.FC = () => {
 
   useEffect(() => {
     const handleGlobalWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) > 5) targetStepRef.current += e.deltaY > 0 ? 1 : -1;
+      if (Math.abs(e.deltaY) > 8) targetStepRef.current += Math.sign(e.deltaY);
     };
 
     let touchStartX = 0;
     let isDragging = false;
 
-    const handleTouchStart = (e: TouchEvent) => { touchStartX = e.touches[0].clientX; isDragging = true; };
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX = e.touches[0].clientX;
+      isDragging = true;
+    };
+
     const handleTouchMove = (e: TouchEvent) => {
       if (!isDragging) return;
       const delta = touchStartX - e.touches[0].clientX;
-      if (Math.abs(delta) > 18) {
+      if (Math.abs(delta) > 40) {  // Higher threshold = less sensitive
         targetStepRef.current += delta > 0 ? 1 : -1;
         touchStartX = e.touches[0].clientX;
       }
     };
+
     const handleTouchEnd = () => isDragging = false;
 
-    window.addEventListener('wheel', handleGlobalWheel);
-    window.addEventListener('touchstart', handleTouchStart);
-    window.addEventListener('touchmove', handleTouchMove);
-    window.addEventListener('touchend', handleTouchEnd);
+    window.addEventListener('wheel', handleGlobalWheel, { passive: false });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
       window.removeEventListener('wheel', handleGlobalWheel);
@@ -97,7 +102,7 @@ const PhotoWheel: React.FC = () => {
 
   useFrame((_, delta) => {
     const target = (targetStepRef.current * (Math.PI * 2)) / numFrames;
-    rotationRef.current = THREE.MathUtils.lerp(rotationRef.current, target, 1 - Math.exp(-12 * delta));
+    rotationRef.current = THREE.MathUtils.lerp(rotationRef.current, target, 1 - Math.exp(-14 * delta));
 
     if (wheelGroupRef.current) wheelGroupRef.current.rotation.z = rotationRef.current;
 
@@ -126,14 +131,12 @@ const PhotoWheel: React.FC = () => {
           <sphereGeometry args={[0.45, 32, 32]} />
         </mesh>
 
-        {/* Left Arrow */}
         <group position={[-0.95, 0, 0.1]} onPointerDown={() => targetStepRef.current += 1}>
           <mesh rotation={[0, 0, Math.PI / 2]} material={redArrowMat}>
             <coneGeometry args={[0.12, 0.28, 4]} />
           </mesh>
         </group>
 
-        {/* Right Arrow */}
         <group position={[0.95, 0, 0.1]} onPointerDown={() => targetStepRef.current -= 1}>
           <mesh rotation={[0, 0, -Math.PI / 2]} material={redArrowMat}>
             <coneGeometry args={[0.12, 0.28, 4]} />
