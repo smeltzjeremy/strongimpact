@@ -94,7 +94,12 @@ export default function AdminDashboard() {
       if (error) throw error;
 
       alert(`Slot ${slot + 1} deleted.`);
-      fetchWheelPhotos();
+
+      // Force refresh
+      setWheelPhotos(Array(6).fill(null));
+      setTimeout(() => {
+        fetchWheelPhotos();
+      }, 800);
     } catch (err) {
       alert('Delete failed: ' + err.message);
     }
