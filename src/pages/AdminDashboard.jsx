@@ -22,7 +22,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // Fetch general photos
   const fetchPhotos = async () => {
     try {
       const { data, error } = await supabase.storage.from('gallery').list('photos');
@@ -38,7 +37,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // Fetch Wheel Photos
   const fetchWheelPhotos = async () => {
     try {
       const { data, error } = await supabase.storage.from('gallery').list('wheel');
@@ -121,7 +119,6 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-[#05050f] text-white p-6">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
         <div className="flex justify-between items-center mb-10 border-b border-white/10 pb-6">
           <div>
             <h1 className="text-4xl font-bold">STRONG IMPACT CMS</h1>
@@ -137,7 +134,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-2 mb-8 border-b border-white/10 pb-4">
           <button
             onClick={() => setActiveTab('wheel')}
@@ -153,11 +149,10 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        {/* Wheel Photos Manager */}
         {activeTab === 'wheel' && (
           <div>
             <h2 className="text-3xl font-semibold mb-8">Photo Wheel Manager</h2>
-            <p className="text-zinc-400 mb-8">Upload or replace portrait images for the interactive wheel. 6 slots total.</p>
+            <p className="text-zinc-400 mb-8">Upload or replace portrait images for the interactive wheel. Exactly 6 slots.</p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {wheelPhotos.map((photo, index) => (
@@ -189,25 +184,21 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* General Gallery */}
         {activeTab === 'gallery' && (
-          <>
+          <div>
             <div className="border-2 border-dashed border-white/30 rounded-3xl p-12 text-center mb-10 hover:border-red-500/50 transition">
               <input
                 type="file"
                 multiple
                 accept="image/*"
-                onChange={/* Add your original handleUpload here if you want to keep it */}
+                onChange={() => alert("General upload coming back soon")}
                 disabled={uploading}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
-              <p className="text-2xl mb-2">{uploading ? "Uploading..." : "Drop photos here or click to upload"}</p>
-              <p className="text-zinc-400">General gallery folder</p>
+              <p className="text-2xl mb-2">General Gallery Upload</p>
+              <p className="text-zinc-400">Temporarily disabled — focus on Wheel first</p>
             </div>
-
-            <h2 className="text-2xl mb-6">All Uploaded Photos ({photosList.length})</h2>
-            {/* Your original grid code here if you want to keep it */}
-          </>
+          </div>
         )}
       </div>
     </div>
