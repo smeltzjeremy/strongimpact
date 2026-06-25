@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { Environment, MeshTransmissionMaterial } from '@react-three/drei';
+import { Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import { supabase } from '../lib/supabaseClient';
 
@@ -8,7 +8,7 @@ const PhotoWheel: React.FC = () => {
   const wheelGroupRef = useRef<THREE.Group>(null!);
   const framesGroupRef = useRef<THREE.Group>(null!);
   
-  const { gl, viewport } = useThree();
+  const { viewport } = useThree();
   const isMobile = viewport.width < 5;
 
   const rotationRef = useRef<number>(0);
@@ -16,36 +16,40 @@ const PhotoWheel: React.FC = () => {
 
   const [imageTextures, setImageTextures] = useState<(THREE.Texture | null)[]>(Array(6).fill(null));
 
-  useEffect(() => {
-    const loadWheelPhotos = async () => {
-      try {
-        const { data } = await supabase.storage.from('gallery').list('wheel', { limit: 6, sortBy: { column: 'name', order: 'asc' } });
-        
-        const urls = Array(6).fill('');
-        if (data) {
-          data.forEach((file, index) => {
-            if (index < 6) {
-              urls[index] = supabase.storage.from('gallery').getPublicUrl(`wheel/${file.name}`).data.publicUrl;
-            }
-          });
+  const loadWheelPhotos = async () => {
+    try {
+      const { data } = await supabase.storage.from('gallery').list('wheel', { 
+        limit: 6, 
+        sortBy: { column: 'name', order: 'asc' } 
+      });
+      
+      const urls: string[] = Array(6).fill('');
+      const timestamp = Date.now();   // ← Cache busting
+
+      data?.forEach((file, index) => {
+        if (index < 6) {
+          const rawUrl = supabase.storage.from('gallery').getPublicUrl(`wheel/${file.name}`).data.publicUrl;
+          urls[index] = `${rawUrl}?t=${timestamp}`;
         }
+      });
 
-        const loader = new THREE.TextureLoader();
-        const textures = await Promise.all(
-          urls.map(url => 
-            url ? new Promise<THREE.Texture>((resolve, reject) => loader.load(url, resolve, undefined, reject)) : Promise.resolve(null as any)
-          )
-        );
-        setImageTextures(textures);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+      const loader = new THREE.TextureLoader();
+      const textures = await Promise.all(
+        urls.map(url => 
+          url ? new Promise<THREE.Texture>((resolve) => loader.load(url, resolve)) : Promise.resolve(null)
+        )
+      );
+      setImageTextures(textures);
+    } catch (err) {
+      console.error("Failed to load wheel photos:", err);
+    }
+  };
 
+  useEffect(() => {
     loadWheelPhotos();
   }, []);
 
-  // Swipe & Wheel Controls
+  // Swipe & Wheel Controls (unchanged)
   useEffect(() => {
     const handleGlobalWheel = (e: WheelEvent) => {
       if (Math.abs(e.deltaY) > 5) targetStepRef.current += e.deltaY > 0 ? 1 : -1;
@@ -116,31 +120,22 @@ const PhotoWheel: React.FC = () => {
       <pointLight position={[0, 0, 2]} intensity={1.5} color="#ffffff" />
 
       <group position={[0, isMobile ? 1.35 : 1.15, isMobile ? -2.2 : -1.8]}>
-
         <mesh material={chromeSpokeMat}>
           <sphereGeometry args={[0.45, 32, 32]} />
         </mesh>
 
-        {/* Left Arrow (reversed) */}
         <group position={[-0.95, 0, 0.1]} onPointerDown={() => targetStepRef.current += 1}>
           <mesh rotation={[0, 0, Math.PI / 2]} material={redArrowMat}>
             <coneGeometry args={[0.12, 0.28, 4]} />
           </mesh>
-          <mesh>
-            <boxGeometry args={[0.4, 0.4, 0.3]} />
-            <meshBasicMaterial visible={false} />
-          </mesh>
+          <mesh><boxGeometry args={[0.4, 0.4, 0.3]} /><meshBasicMaterial visible={false} /></mesh>
         </group>
 
-        {/* Right Arrow (reversed) */}
         <group position={[0.95, 0, 0.1]} onPointerDown={() => targetStepRef.current -= 1}>
           <mesh rotation={[0, 0, -Math.PI / 2]} material={redArrowMat}>
             <coneGeometry args={[0.12, 0.28, 4]} />
           </mesh>
-          <mesh>
-            <boxGeometry args={[0.4, 0.4, 0.3]} />
-            <meshBasicMaterial visible={false} />
-          </mesh>
+          <mesh><boxGeometry args={[0.4, 0.4, 0.3]} /><meshBasicMaterial visible={false} /></mesh>
         </group>
 
         <group ref={wheelGroupRef}>
