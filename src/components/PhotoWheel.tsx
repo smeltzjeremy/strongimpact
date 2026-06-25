@@ -15,16 +15,13 @@ const PhotoWheel: React.FC = () => {
   const targetStepRef = useRef<number>(0);
 
   const [imageTextures, setImageTextures] = useState<(THREE.Texture | null)[]>(Array(6).fill(null));
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const loadWheelPhotos = async () => {
     try {
-      const { data } = await supabase.storage.from('gallery').list('wheel', { 
-        limit: 6, 
-        sortBy: { column: 'name', order: 'asc' } 
-      });
-      
+      const { data } = await supabase.storage.from('gallery').list('wheel');
       const urls: string[] = Array(6).fill('');
-      const timestamp = Date.now();   // ← Cache busting
+      const timestamp = Date.now();
 
       data?.forEach((file, index) => {
         if (index < 6) {
@@ -47,9 +44,9 @@ const PhotoWheel: React.FC = () => {
 
   useEffect(() => {
     loadWheelPhotos();
-  }, []);
+  }, [refreshKey]);
 
-  // Swipe & Wheel Controls (unchanged)
+  // Swipe & Wheel Controls
   useEffect(() => {
     const handleGlobalWheel = (e: WheelEvent) => {
       if (Math.abs(e.deltaY) > 5) targetStepRef.current += e.deltaY > 0 ? 1 : -1;
