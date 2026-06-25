@@ -10,6 +10,7 @@ export default function AdminDashboard() {
   const [uploading, setUploading] = useState(false);
   const [wheelPhotos, setWheelPhotos] = useState(Array(6).fill(null));
   const [activeTab, setActiveTab] = useState('wheel');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -23,31 +24,32 @@ export default function AdminDashboard() {
 
   const fetchWheelPhotos = async () => {
     try {
-      const { data, error } = await supabase.storage.from('gallery').list('wheel', {
-        limit: 100,
-        sortBy: { column: 'name', order: 'asc' }
-      });
-      console.log("Supabase returned files:", data);
+      const { data, error } = await supabase.storage.from('gallery').list('wheel');
+      console.log("Files from Supabase:", data);
 
-      if (error) throw error;
+      if (error) {
+        console.error("List error:", error);
+        return;
+      }
 
       const loaded = Array(6).fill(null);
-      const timestamp = new Date().getTime();
+      const timestamp = Date.now();
 
-      data?.forEach((file) => {
-        const match = file.name.match(/slot-(\d+)/);
-        if (match) {
-          const slotIndex = parseInt(match[1]) - 1;
-          if (slotIndex >= 0 && slotIndex < 6) {
-            loaded[slotIndex] = {
-              name: file.name,
-              url: `${supabase.storage.from('gallery').getPublicUrl(`wheel/${file.name}`).data.publicUrl}?t=${timestamp}`
-            };
+      if (data) {
+        data.forEach((file) => {
+          const match = file.name.match(/slot-(\d{2})/);
+          if (match) {
+            const slotIndex = parseInt(match[1]) - 1;
+            if (slotIndex >= 0 && slotIndex < 6) {
+              loaded[slotIndex] = {
+                name: file.name,
+                url: `${supabase.storage.from('gallery').getPublicUrl(`wheel/${file.name}`).data.publicUrl}?t=${timestamp}`
+              };
+            }
           }
-        }
-      });
+        });
+      }
 
-      console.log("Loaded into state:", loaded);
       setWheelPhotos(loaded);
     } catch (err) {
       console.error(err);
@@ -55,10 +57,8 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchWheelPhotos();
-    }
-  }, [isAuthenticated]);
+    if (isAuthenticated) fetchWheelPhotos();
+  }, [isAuthenticated, refreshTrigger]);
 
   const handleWheelUpload = async (event, slot) => {
     try {
@@ -71,14 +71,11 @@ export default function AdminDashboard() {
 
       await supabase.storage.from('gallery').remove([`wheel/${fileName}`]);
 
-      const { error } = await supabase.storage
-        .from('gallery')
-        .upload(`wheel/${fileName}`, file, { upsert: true });
-
+      const { error } = await supabase.storage.from('gallery').upload(`wheel/${fileName}`, file, { upsert: true });
       if (error) throw error;
 
-      alert(`Slot ${slot + 1} updated successfully!`);
-      fetchWheelPhotos();
+      alert(`Slot ${slot + 1} updated!`);
+      setRefreshTrigger(prev => prev + 1);
     } catch (error) {
       alert('Upload failed: ' + error.message);
     } finally {
@@ -87,31 +84,21 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteSlot = async (slot) => {
-    if (!confirm(`Delete image from Slot ${slot + 1}?`)) return;
+    if (!confirm(`Delete Slot ${slot + 1}?`)) return;
 
     try {
       const paddedSlot = String(slot + 1).padStart(2, '0');
       const fileName = `slot-${paddedSlot}.jpg`;
 
-      console.log("Attempting to delete:", fileName);
-
-      // Stronger delete - try both with and without folder
-      const { error: removeError } = await supabase.storage.from('gallery').remove([`wheel/${fileName}`, fileName]);
-
-      if (removeError) {
-        console.error("Delete error:", removeError);
-        throw removeError;
-      }
-
-      console.log("Delete successful for", fileName);
+      const { error } = await supabase.storage.from('gallery').remove([`wheel/${fileName}`]);
+      if (error) throw error;
 
       alert(`Slot ${slot + 1} deleted.`);
-      
+
       setWheelPhotos(Array(6).fill(null));
-      setTimeout(() => fetchWheelPhotos(), 1200);
+      setRefreshTrigger(prev => prev + 1);
     } catch (err) {
-      console.error(err);
-      alert('Delete failed: ' + (err.message || err));
+      alert('Delete failed: ' + err.message);
     }
   };
 
@@ -147,7 +134,6 @@ export default function AdminDashboard() {
 
         <div className="flex gap-2 mb-8 border-b border-white/10 pb-4">
           <button onClick={() => setActiveTab('wheel')} className={`px-8 py-3 rounded-2xl font-medium transition ${activeTab === 'wheel' ? 'bg-red-600' : 'bg-white/10 hover:bg-white/20'}`}>Wheel Photos (6 Slots)</button>
-          <button onClick={() => setActiveTab('gallery')} className={`px-8 py-3 rounded-2xl font-medium transition ${activeTab === 'gallery' ? 'bg-red-600' : 'bg-white/10 hover:bg-white/20'}`}>General Gallery</button>
         </div>
 
         {activeTab === 'wheel' && (
@@ -173,20 +159,13 @@ export default function AdminDashboard() {
                     <input type="file" accept="image/*" onChange={(e) => handleWheelUpload(e, index)} className="hidden" />
                   </label>
 
-                  <button 
-                    onClick={() => handleDeleteSlot(index)}
-                    className="w-full bg-zinc-800 hover:bg-red-900 py-3 text-sm rounded-2xl border border-white/20 transition"
-                  >
+                  <button onClick={() => handleDeleteSlot(index)} className="w-full bg-zinc-800 hover:bg-red-900 py-3 text-sm rounded-2xl border border-white/20 transition">
                     Delete Image
                   </button>
                 </div>
               ))}
             </div>
           </div>
-        )}
-
-        {activeTab === 'gallery' && (
-          <p className="text-center text-zinc-400 py-20">General Gallery coming back soon...</p>
         )}
       </div>
     </div>
