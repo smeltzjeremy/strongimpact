@@ -13,7 +13,7 @@ const PhotoWheel: React.FC = () => {
   const rotationRef = useRef<number>(0);
   const targetStepRef = useRef<number>(0);
 
-  // Swipe & Wheel
+  // Swipe & Wheel Controls
   useEffect(() => {
     const handleGlobalWheel = (e: WheelEvent) => {
       if (Math.abs(e.deltaY) > 5) targetStepRef.current += e.deltaY > 0 ? 1 : -1;
@@ -31,7 +31,7 @@ const PhotoWheel: React.FC = () => {
       if (!isDragging) return;
       const currentX = e.touches[0].clientX;
       const delta = touchStartX - currentX;
-      if (Math.abs(delta) > 15) {
+      if (Math.abs(delta) > 18) {   // Balanced sensitivity
         targetStepRef.current += delta > 0 ? 1 : -1;
         touchStartX = currentX;
         isDragging = false;
@@ -58,7 +58,7 @@ const PhotoWheel: React.FC = () => {
 
   useFrame((_, delta) => {
     const target = (targetStepRef.current * (Math.PI * 2)) / numFrames;
-    rotationRef.current = THREE.MathUtils.lerp(rotationRef.current, target, 1 - Math.exp(-14 * delta));
+    rotationRef.current = THREE.MathUtils.lerp(rotationRef.current, target, 1 - Math.exp(-16 * delta));
 
     if (wheelGroupRef.current) wheelGroupRef.current.rotation.z = rotationRef.current;
 
@@ -83,7 +83,7 @@ const PhotoWheel: React.FC = () => {
       <directionalLight position={[5, 8, 5]} intensity={2.2} />
       <pointLight position={[0, 0, 2]} intensity={1.5} color="#ffffff" />
 
-      <group position={[0, isMobile ? 2.35 : 2.8, isMobile ? -2.2 : -1.8]}>
+      <group position={[0, isMobile ? 1.35 : 1.7, isMobile ? -2.2 : -1.8]}>
 
         {/* CENTER HUB */}
         <mesh material={chromeSpokeMat}>
