@@ -8,7 +8,6 @@ export default function AdminDashboard() {
   const [loginError, setLoginError] = useState('');
   
   const [uploading, setUploading] = useState(false);
-  const [photosList, setPhotosList] = useState([]);
   const [wheelPhotos, setWheelPhotos] = useState(Array(6).fill(null));
   const [activeTab, setActiveTab] = useState('wheel');
 
@@ -52,14 +51,9 @@ export default function AdminDashboard() {
     }
   };
 
-  const fetchPhotos = async () => {
-    // your original general gallery code if you want it
-  };
-
   useEffect(() => {
     if (isAuthenticated) {
       fetchWheelPhotos();
-      fetchPhotos();
     }
   }, [isAuthenticated]);
 
@@ -90,22 +84,29 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteSlot = async (slot) => {
-    if (!confirm(`Delete image from Slot ${slot + 1}? This cannot be undone.`)) return;
+    if (!confirm(`Delete image from Slot ${slot + 1}?`)) return;
 
     try {
       const paddedSlot = String(slot + 1).padStart(2, '0');
       const fileName = `slot-${paddedSlot}.jpg`;
 
+      console.log("Attempting to delete:", fileName);
+
       const { error } = await supabase.storage.from('gallery').remove([`wheel/${fileName}`]);
-      if (error) throw error;
+      
+      if (error) {
+        console.error("Delete error:", error);
+        throw error;
+      }
+
+      console.log("Delete successful for", fileName);
 
       alert(`Slot ${slot + 1} deleted.`);
-
       setWheelPhotos(Array(6).fill(null));
-      setTimeout(() => {
-        fetchWheelPhotos();
-      }, 800);
+      
+      setTimeout(() => fetchWheelPhotos(), 1000);
     } catch (err) {
+      console.error(err);
       alert('Delete failed: ' + err.message);
     }
   };
