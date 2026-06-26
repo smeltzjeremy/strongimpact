@@ -2,16 +2,17 @@ import React, { useEffect, useState } from 'react';
 import * as THREE from 'three';
 
 interface CinemaRoomProps {
-  videoElement: HTMLVideoElement;
+  currentIndex: number;
 }
 
-export default function CinemaRoom({ videoElement }: CinemaRoomProps) {
+export default function CinemaRoom({ currentIndex }: CinemaRoomProps) {
   const [texture, setTexture] = useState<THREE.VideoTexture | null>(null);
 
   useEffect(() => {
+    // Target the core hardware element running behind the curtain
+    const videoElement = document.getElementById('theater-video-core') as HTMLVideoElement;
     if (!videoElement) return;
 
-    // Build the video texture link explicitly
     const videoTex = new THREE.VideoTexture(videoElement);
     videoTex.colorSpace = THREE.SRGBColorSpace;
     videoTex.minFilter = THREE.LinearFilter;
@@ -19,15 +20,17 @@ export default function CinemaRoom({ videoElement }: CinemaRoomProps) {
     
     setTexture(videoTex);
 
-    // This forces Three.js to constantly look at the video element for new frames
-    videoElement.addEventListener('timeupdate', () => {
+    // Keep the 3D frames synchronized constantly
+    const updateFrames = () => {
       videoTex.needsUpdate = true;
-    });
+    };
+    videoElement.addEventListener('timeupdate', updateFrames);
 
     return () => {
+      videoElement.removeEventListener('timeupdate', updateFrames);
       videoTex.dispose();
     };
-  }, [videoElement]);
+  }, [currentIndex]); // Refreshes instantly when changing tracks
 
   return (
     <>
@@ -40,11 +43,10 @@ export default function CinemaRoom({ videoElement }: CinemaRoomProps) {
         {/* THE 3D SCREEN SURFACE MESH */}
         <mesh position={[0, 0.5, -5]}>
           <planeGeometry args={[7.1, 4.0]} />
-          {/* If the video texture isn't ready yet, it falls back to a clean dark zinc material instead of crashing */}
           <meshStandardMaterial 
-            map={texture || null} 
-            color={texture ? "#ffffff" : "#18181b"}
-            emissive={texture ? "#ffffff" : "#000000"}
+            map={texture} 
+            color="#ffffff"
+            emissive="#ffffff"
             emissiveMap={texture || null}
             emissiveIntensity={texture ? 0.3 : 0}
             roughness={0.4}

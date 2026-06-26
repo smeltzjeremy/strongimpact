@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
@@ -9,12 +9,9 @@ export default function TheaterPage() {
   const [videoUrls, setVideoUrls] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
-  const [videoLoaded, setVideoLoaded] = useState<boolean>(false);
   
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [isMuted, setIsMuted] = useState<boolean>(true);
-
-  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const fetchVideos = async () => {
     try {
@@ -42,25 +39,27 @@ export default function TheaterPage() {
     fetchVideos();
   }, []);
 
-  // Force texture synchronization updates safely 
+  // Sync controls directly to our hidden background hardware player
   useEffect(() => {
-    if (!videoRef.current) return;
+    const video = document.getElementById('theater-video-core') as HTMLVideoElement;
+    if (!video) return;
+
     if (isPlaying) {
-      videoRef.current.play().catch(() => {});
+      video.play().catch(() => {});
     } else {
-      videoRef.current.pause();
+      video.pause();
     }
-    videoRef.current.muted = isMuted;
-  }, [isPlaying, isMuted, currentIndex, videoLoaded]);
+    video.muted = isMuted;
+  }, [isPlaying, isMuted, currentIndex, loading]);
 
   const handleEnlarge = () => {
-    const video = videoRef.current;
+    const video = document.getElementById('theater-video-core') as HTMLVideoElement;
     if (!video) return;
     
     if (video.requestFullscreen) {
       video.requestFullscreen();
     } else if ((video as any).webkitEnterFullscreen) {
-      (video as any).webkitEnterFullscreen();
+      (video as any).webkitEnterFullscreen(); // Direct iOS full screen layout trigger
     }
   };
 
@@ -68,26 +67,27 @@ export default function TheaterPage() {
   const toggleMute = () => setIsMuted(!isMuted);
   const handleStop = () => {
     setIsPlaying(false);
-    if (videoRef.current) videoRef.current.currentTime = 0;
+    const video = document.getElementById('theater-video-core') as HTMLVideoElement;
+    if (video) video.currentTime = 0;
   };
 
   return (
     <div className="fixed inset-0 bg-black text-white overflow-hidden w-screen h-[100dvh] flex flex-col justify-between">
       
-      {/* HARDWARE INTERACTION LINK: Positioned safely out of bounds instead of using display:none */}
+      {/* THE HIDDEN ENGINE: Hidden safely out of view but active in the HTML layer */}
       {!loading && videoUrls.length > 0 && (
         <video
-          ref={videoRef}
+          id="theater-video-core"
           src={videoUrls[currentIndex]}
           loop
           playsInline
+          autoPlay
           muted={isMuted}
-          onLoadedMetadata={() => setVideoLoaded(true)}
           style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '1px', height: '1px', opacity: 0 }}
         />
       )}
 
-      {/* EXIT BUTTON LAYER */}
+      {/* EXIT BUTTON */}
       <div className="w-full p-6 flex justify-between items-center z-[999] absolute top-0 left-0 pointer-events-none">
         <Link
           to="/gallery"
@@ -97,7 +97,7 @@ export default function TheaterPage() {
         </Link>
       </div>
 
-      {/* 3D CANVAS LAYER */}
+      {/* 3D CANVAS BACKGROUND */}
       <div className="w-full h-full absolute inset-0 z-10 pointer-events-auto">
         {loading ? (
           <div className="w-full h-full flex items-center justify-center text-zinc-500 text-sm tracking-widest animate-pulse bg-black">
@@ -113,8 +113,8 @@ export default function TheaterPage() {
             gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
             style={{ width: '100%', height: '100%' }}
           >
-            {/* Only drop into WebGL once the element pipeline is actively loaded and ready */}
-            {videoRef.current && videoLoaded && <CinemaRoom videoElement={videoRef.current} />}
+            {/* The room doesn't need props anymore; it grabs the core element directly */}
+            <CinemaRoom currentIndex={currentIndex} />
             
             <OrbitControls 
               enableZoom={true}
@@ -130,7 +130,7 @@ export default function TheaterPage() {
         )}
       </div>
 
-      {/* GRAPHIC HUD CONTROL OVERLAY */}
+      {/* CONTROL DOCK OVERLAY */}
       {!loading && videoUrls.length > 0 && (
         <div className="w-full absolute bottom-12 left-0 z-[999] flex flex-col items-center justify-center px-4 pointer-events-none">
           <div className="flex items-center justify-center gap-5 bg-black/90 border border-white/20 px-6 py-3 rounded-2xl backdrop-blur-md pointer-events-auto shadow-2xl scale-110 sm:scale-100">
