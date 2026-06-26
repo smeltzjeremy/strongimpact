@@ -1,40 +1,28 @@
-import React, { useEffect } from 'react';
-import { useVideoTexture } from '@react-three/drei';
+import React, { useEffect, useState } from 'react';
 import * as THREE from 'three';
 
 interface CinemaRoomProps {
-  videoUrl: string;
-  isPlaying: boolean;
-  isMuted: boolean;
+  videoElement: HTMLVideoElement;
 }
 
-export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomProps) {
-  // Pulls the stream directly using the original video texture strategy
-  const texture = useVideoTexture(videoUrl, {
-    unsuspended: 'canplay',
-    crossOrigin: 'anonymous',
-    muted: isMuted,
-    loop: true,
-    playsInline: true
-  });
+export default function CinemaRoom({ videoElement }: CinemaRoomProps) {
+  const [texture, setTexture] = useState<THREE.VideoTexture | null>(null);
 
   useEffect(() => {
-    if (texture) {
-      texture.colorSpace = THREE.SRGBColorSpace;
-      
-      // Grabs the real HTML video element hidden behind the texture
-      const video = texture.image as HTMLVideoElement;
-      if (video) {
-        // Direct execution of Play vs Pause commands
-        if (isPlaying) {
-          video.play().catch(err => console.log("Playback interaction wait:", err));
-        } else {
-          video.pause();
-        }
-        video.muted = isMuted;
-      }
-    }
-  }, [texture, isPlaying, isMuted]);
+    if (!videoElement) return;
+
+    // Creates the texture link explicitly using the stable background element
+    const videoTex = new THREE.VideoTexture(videoElement);
+    videoTex.colorSpace = THREE.SRGBColorSpace;
+    videoTex.minFilter = THREE.LinearFilter;
+    videoTex.magFilter = THREE.LinearFilter;
+    
+    setTexture(videoTex);
+
+    return () => {
+      videoTex.dispose();
+    };
+  }, [videoElement]);
 
   return (
     <>
@@ -47,15 +35,17 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
         {/* THE 3D SCREEN SURFACE MESH */}
         <mesh position={[0, 0.5, -5]}>
           <planeGeometry args={[7.1, 4.0]} />
-          <meshStandardMaterial 
-            map={texture} 
-            emissive="#ffffff"
-            emissiveMap={texture}
-            emissiveIntensity={0.3}
-            roughness={0.4}
-            metalness={0.1}
-            side={THREE.DoubleSide}
-          />
+          {texture && (
+            <meshStandardMaterial 
+              map={texture} 
+              emissive="#ffffff"
+              emissiveMap={texture}
+              emissiveIntensity={0.3}
+              roughness={0.4}
+              metalness={0.1}
+              side={THREE.DoubleSide}
+            />
+          )}
         </mesh>
 
         {/* SCREEN FRAME BEZEL */}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
@@ -12,6 +12,9 @@ export default function TheaterPage() {
   
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [isMuted, setIsMuted] = useState<boolean>(true);
+
+  // Direct reference point to lock onto the hardware video player element
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const fetchVideos = async () => {
     try {
@@ -39,17 +42,26 @@ export default function TheaterPage() {
     fetchVideos();
   }, []);
 
-  // Maximizes the entire wrapper container to guarantee full screen across all devices
+  // Sync state changes directly to our hardware video element reference
+  useEffect(() => {
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.play().catch(() => {});
+    } else {
+      videoRef.current.pause();
+    }
+    videoRef.current.muted = isMuted;
+  }, [isPlaying, isMuted, currentIndex]);
+
+  // Direct, unblocked hardware command to pop JUST the video full screen
   const handleEnlarge = () => {
-    const rootEl = document.getElementById('theater-root');
-    if (!rootEl) return;
+    const video = videoRef.current;
+    if (!video) return;
     
-    if (rootEl.requestFullscreen) {
-      rootEl.requestFullscreen();
-    } else if ((rootEl as any).webkitRequestFullscreen) {
-      (rootEl as any).webkitRequestFullscreen(); // Handles iOS Safari & Mobile Chrome
-    } else if ((rootEl as any).msRequestFullscreen) {
-      (rootEl as any).msRequestFullscreen();
+    if (video.requestFullscreen) {
+      video.requestFullscreen();
+    } else if ((video as any).webkitEnterFullscreen) {
+      (video as any).webkitEnterFullscreen(); // Direct native iOS full-screen media layout call
     }
   };
 
@@ -57,13 +69,24 @@ export default function TheaterPage() {
   const toggleMute = () => setIsMuted(!isMuted);
   const handleStop = () => {
     setIsPlaying(false);
-    const videoEl = document.querySelector('video');
-    if (videoEl) videoEl.currentTime = 0;
+    if (videoRef.current) videoRef.current.currentTime = 0;
   };
 
   return (
-    <div id="theater-root" className="fixed inset-0 bg-black text-white overflow-hidden w-screen h-[100dvh] flex flex-col justify-between">
+    <div className="fixed inset-0 bg-black text-white overflow-hidden w-screen h-[100dvh] flex flex-col justify-between">
       
+      {/* HIDDEN HARDWARE PLAYER: Feeds frames to 3D and takes direct full-screen orders */}
+      {!loading && videoUrls.length > 0 && (
+        <video
+          ref={videoRef}
+          src={videoUrls[currentIndex]}
+          loop
+          playsInline
+          muted={isMuted}
+          className="hidden"
+        />
+      )}
+
       {/* EXIT BUTTON LAYER */}
       <div className="w-full p-6 flex justify-between items-center z-[999] absolute top-0 left-0 pointer-events-none">
         <Link
@@ -90,11 +113,8 @@ export default function TheaterPage() {
             gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
             style={{ width: '100%', height: '100%' }}
           >
-            <CinemaRoom 
-              videoUrl={videoUrls[currentIndex]} 
-              isPlaying={isPlaying}
-              isMuted={isMuted}
-            />
+            {/* Pass the actual working video element reference directly to the 3D space */}
+            {videoRef.current && <CinemaRoom videoElement={videoRef.current} />}
             
             <OrbitControls 
               enableZoom={true}
