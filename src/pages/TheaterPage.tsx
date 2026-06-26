@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
@@ -10,7 +10,6 @@ export default function TheaterPage() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   
-  // Clean state boxes to track player settings safely
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [isMuted, setIsMuted] = useState<boolean>(true);
 
@@ -40,7 +39,6 @@ export default function TheaterPage() {
     fetchVideos();
   }, []);
 
-  // Simple, direct function to find the running video element and make it go full screen
   const handleEnlarge = () => {
     const videoEl = document.querySelector('video');
     if (!videoEl) return;
@@ -48,11 +46,10 @@ export default function TheaterPage() {
     if (videoEl.requestFullscreen) {
       videoEl.requestFullscreen();
     } else if ((videoEl as any).webkitEnterFullscreen) {
-      (videoEl as any).webkitEnterFullscreen(); // iOS Mobile backup
+      (videoEl as any).webkitEnterFullscreen();
     }
   };
 
-  // Safe control triggers that toggle the state boxes
   const togglePlay = () => setIsPlaying(!isPlaying);
   const toggleMute = () => setIsMuted(!isMuted);
   const handleStop = () => {
@@ -62,10 +59,10 @@ export default function TheaterPage() {
   };
 
   return (
-    <div className="fixed inset-0 bg-black text-white overflow-hidden w-screen h-screen">
+    <div className="fixed inset-0 bg-black text-white overflow-hidden w-screen h-[100dvh] flex flex-col justify-between">
       
-      {/* FLAT GLASS OVERLAY: Top Header Navigation */}
-      <div className="w-full p-6 flex justify-between items-center z-50 absolute top-0 left-0 pointer-events-none">
+      {/* EXIT BUTTON LAYER */}
+      <div className="w-full p-6 flex justify-between items-center z-[999] absolute top-0 left-0 pointer-events-none">
         <Link
           to="/gallery"
           className="px-5 py-3 bg-black/70 hover:bg-black border border-white/20 rounded-2xl text-sm font-medium transition backdrop-blur-md pointer-events-auto shadow-2xl"
@@ -90,7 +87,6 @@ export default function TheaterPage() {
             gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
             style={{ width: '100%', height: '100%' }}
           >
-            {/* The 3D room reads the state boxes instantly to adjust playback */}
             <CinemaRoom 
               videoUrl={videoUrls[currentIndex]} 
               isPlaying={isPlaying}
@@ -111,31 +107,23 @@ export default function TheaterPage() {
         )}
       </div>
 
-      {/* FLAT GLASS OVERLAY: Floating Graphic Control Dashboard (Lifted into safe view) */}
+      {/* GRAPHIC HUD CONTROL OVERLAY (Forced to absolute layout front via z-[999]) */}
       {!loading && videoUrls.length > 0 && (
-        <div className="w-full absolute bottom-8 left-0 z-50 flex flex-col items-center justify-center px-4 pointer-events-none">
-          <div className="flex items-center justify-center gap-6 bg-black/80 border border-white/10 px-6 py-3 rounded-2xl backdrop-blur-md pointer-events-auto shadow-2xl">
+        <div className="w-full absolute bottom-12 left-0 z-[999] flex flex-col items-center justify-center px-4 pointer-events-none">
+          <div className="flex items-center justify-center gap-5 bg-black/90 border border-white/20 px-6 py-3 rounded-2xl backdrop-blur-md pointer-events-auto shadow-2xl scale-110 sm:scale-100">
             
-            {/* PLAY / PAUSE SHAPES */}
             <button onClick={togglePlay} className="hover:text-red-500 transition text-xl px-2">
-              {isPlaying ? (
-                <span>‖</span> // Pause Parallel Bars
-              ) : (
-                <span>▶</span> // Play Triangle
-              )}
+              {isPlaying ? <span>‖</span> : <span>▶</span>}
             </button>
 
-            {/* STOP SHAPE */}
             <button onClick={handleStop} className="hover:text-red-500 transition text-lg px-2">
               ■
             </button>
 
-            {/* MUTE / UNMUTE SHAPES */}
             <button onClick={toggleMute} className="hover:text-red-500 transition text-xl px-2">
               {isMuted ? '🔇' : '🔊'}
             </button>
 
-            {/* TRACK SWITCHERS */}
             {videoUrls.length > 1 && (
               <div className="flex items-center gap-3 border-l border-r border-white/10 px-4 text-xs font-bold text-zinc-400 tracking-wider">
                 <button onClick={() => setCurrentIndex(prev => (prev - 1 + videoUrls.length) % videoUrls.length)} className="hover:text-white transition">
@@ -148,7 +136,6 @@ export default function TheaterPage() {
               </div>
             )}
 
-            {/* ENLARGE FULL SCREEN SHAPE */}
             <button onClick={handleEnlarge} className="hover:text-red-500 transition text-xl font-bold px-2">
               ⛶
             </button>

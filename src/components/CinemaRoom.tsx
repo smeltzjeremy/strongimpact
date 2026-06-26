@@ -4,14 +4,16 @@ import * as THREE from 'three';
 
 interface CinemaRoomProps {
   videoUrl: string;
+  isPlaying: boolean;
+  isMuted: boolean;
 }
 
-export default function CinemaRoom({ videoUrl }: CinemaRoomProps) {
-  // This is the exact original mechanic that "kind of worked" to pull frames directly into 3D
+export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomProps) {
+  // Pulls the stream directly using the original video texture strategy
   const texture = useVideoTexture(videoUrl, {
     unsuspended: 'canplay',
     crossOrigin: 'anonymous',
-    muted: true, // Started muted to prevent mobile browser blocking policies
+    muted: isMuted,
     loop: true,
     playsInline: true
   });
@@ -19,8 +21,20 @@ export default function CinemaRoom({ videoUrl }: CinemaRoomProps) {
   useEffect(() => {
     if (texture) {
       texture.colorSpace = THREE.SRGBColorSpace;
+      
+      // Grabs the real HTML video element hidden behind the texture
+      const video = texture.image as HTMLVideoElement;
+      if (video) {
+        // Direct execution of Play vs Pause commands
+        if (isPlaying) {
+          video.play().catch(err => console.log("Playback interaction wait:", err));
+        } else {
+          video.pause();
+        }
+        video.muted = isMuted;
+      }
     }
-  }, [texture]);
+  }, [texture, isPlaying, isMuted]);
 
   return (
     <>
