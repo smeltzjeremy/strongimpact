@@ -78,7 +78,7 @@ export default function TheaterPage() {
   return (
     <div className="fixed inset-0 bg-[#020205] text-white overflow-hidden select-none w-screen h-screen flex flex-col justify-between">
       
-      {/* Fixed Stream Engine: Kept structurally active to guarantee hardware frame decoding */}
+      {/* Off-screen active hardware player element */}
       {!loading && videoUrls.length > 0 && (
         <video
           ref={videoRef}
@@ -87,7 +87,7 @@ export default function TheaterPage() {
           playsInline
           webkit-playsinline="true"
           crossOrigin="anonymous"
-          className="absolute w-4 h-4 pointer-events-none opacity-0 left-0 top-0 z-0"
+          style={{ position: 'absolute', width: '1px', height: '1px', opacity: 0, pointerEvents: 'none' }}
         />
       )}
 
@@ -113,8 +113,7 @@ export default function TheaterPage() {
           </div>
         ) : videoUrls.length === 0 ? (
           <div className="w-full h-full flex items-center justify-center text-zinc-500 text-sm tracking-widest text-center px-4 bg-black">
-            🍿 NO VIDEOS UPLOADED YET <br />
-            <span className="text-xs text-zinc-600 font-normal mt-1 block">Add .mp4 tracks via the Admin CMS</span>
+            🍿 NO VIDEOS UPLOADED YET
           </div>
         ) : (
           <Canvas
