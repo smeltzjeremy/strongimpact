@@ -39,7 +39,17 @@ export default function TheaterPage() {
   return (
     <div className="fixed inset-0 bg-black text-white overflow-hidden w-screen h-screen">
       
-      {/* 3D CANVAS: Runs cleanly as the background layer */}
+      {/* SOLID OVERLAY LAYER: Fixed Exit Button (Guaranteed to work on PC & Mobile) */}
+      <div className="w-full p-6 flex justify-between items-center z-50 absolute top-0 left-0 pointer-events-none">
+        <Link
+          to="/gallery"
+          className="px-5 py-3 bg-black/70 hover:bg-black border border-white/20 rounded-2xl text-sm font-medium transition backdrop-blur-md pointer-events-auto shadow-2xl"
+        >
+          ← Exit Theater
+        </Link>
+      </div>
+
+      {/* 3D CANVAS BACKGROUND LAYER */}
       <div className="w-full h-full absolute inset-0 z-10 pointer-events-auto">
         {loading ? (
           <div className="w-full h-full flex items-center justify-center text-zinc-500 text-sm tracking-widest animate-pulse bg-black">
