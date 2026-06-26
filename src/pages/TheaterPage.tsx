@@ -10,9 +10,8 @@ export default function TheaterPage() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [isMuted, setIsMuted] = useState<boolean>(true);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false); // Strict data limit protection: Stopped by default
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
-  // True DOM reference to bind buttons and 3D projection together
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const fetchVideos = async () => {
@@ -41,7 +40,6 @@ export default function TheaterPage() {
     fetchVideos();
   }, []);
 
-  // Force stop and reset state whenever tracking indices alter
   useEffect(() => {
     setIsPlaying(false);
     if (videoRef.current) {
@@ -71,7 +69,7 @@ export default function TheaterPage() {
     if (videoRef.current.requestFullscreen) {
       videoRef.current.requestFullscreen();
     } else if ((videoRef.current as any).webkitEnterFullscreen) {
-      (videoRef.current as any).webkitEnterFullscreen(); // Solid iOS Safari patch
+      (videoRef.current as any).webkitEnterFullscreen(); 
     } else if ((videoRef.current as any).webkitRequestFullscreen) {
       (videoRef.current as any).webkitRequestFullscreen();
     }
@@ -80,7 +78,7 @@ export default function TheaterPage() {
   return (
     <div className="fixed inset-0 bg-[#020205] text-white overflow-hidden select-none w-screen h-screen flex flex-col justify-between">
       
-      {/* HTML Standard Video Core: Kept off-screen but active to handle device decoders */}
+      {/* Fixed Stream Engine: Kept structurally active to guarantee hardware frame decoding */}
       {!loading && videoUrls.length > 0 && (
         <video
           ref={videoRef}
@@ -89,7 +87,7 @@ export default function TheaterPage() {
           playsInline
           webkit-playsinline="true"
           crossOrigin="anonymous"
-          className="absolute width-1 height-1 pointer-events-none opacity-0 left-0 top-0"
+          className="absolute w-4 h-4 pointer-events-none opacity-0 left-0 top-0 z-0"
         />
       )}
 
@@ -124,7 +122,6 @@ export default function TheaterPage() {
             gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
             style={{ width: '100%', height: '100%' }}
           >
-            {/* Hand the video DOM node directly down into the 3D projection room matrix */}
             <CinemaRoom videoElement={videoRef.current} />
             
             <OrbitControls 
