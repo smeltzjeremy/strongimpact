@@ -3,7 +3,8 @@ import { HashRouter as Router, Routes, Route, Navigate, Link } from 'react-route
 import AdminDashboard from './pages/AdminDashboard';
 import SceneContainer from './components/3d/SceneContainer';
 import GalleryPage from './pages/GalleryPage';
-import PhotosPage from './pages/PhotosPage';   // ← added
+import PhotosPage from './pages/PhotosPage';
+import TheaterPage from './pages/TheaterPage'; // ← Securely integrated the new page location
 
 export default function App() {
   return (
@@ -56,6 +57,9 @@ export default function App() {
 
           {/* PHOTOS PAGE */}
           <Route path="/photos" element={<PhotosPage />} />
+
+          {/* THEATER CINEMA PLACEHOLDER ROUTE */}
+          <Route path="/theater" element={<TheaterPage />} />
 
           {/* ADMIN PAGE */}
           <Route path="/admin" element={<AdminDashboard />} />

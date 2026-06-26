@@ -15,7 +15,7 @@ export default function GalleryPage() {
             Photos
           </Link>
           <Link
-            to="/videos"
+            to="/theater" // ← Changed this from /videos to /theater to match our route map
             className="block px-10 py-5 bg-white/10 hover:bg-white/20 border border-white/30 rounded-3xl text-xl font-medium transition"
           >
             Videos
