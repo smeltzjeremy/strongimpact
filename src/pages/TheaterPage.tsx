@@ -10,6 +10,8 @@ export default function TheaterPage() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   
+  // State switches to manage separate screen views cleanly
+  const [isEnlargedMode, setIsEnlargedMode] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [isMuted, setIsMuted] = useState<boolean>(true);
 
@@ -39,55 +41,46 @@ export default function TheaterPage() {
     fetchVideos();
   }, []);
 
-  // Sync controls directly to our hidden background hardware player
-  useEffect(() => {
-    const video = document.getElementById('theater-video-core') as HTMLVideoElement;
-    if (!video) return;
-
-    if (isPlaying) {
-      video.play().catch(() => {});
-    } else {
-      video.pause();
-    }
-    video.muted = isMuted;
-  }, [isPlaying, isMuted, currentIndex, loading]);
-
-  const handleEnlarge = () => {
-    const video = document.getElementById('theater-video-core') as HTMLVideoElement;
-    if (!video) return;
-    
-    if (video.requestFullscreen) {
-      video.requestFullscreen();
-    } else if ((video as any).webkitEnterFullscreen) {
-      (video as any).webkitEnterFullscreen(); // Direct iOS full screen layout trigger
-    }
-  };
-
   const togglePlay = () => setIsPlaying(!isPlaying);
   const toggleMute = () => setIsMuted(!isMuted);
-  const handleStop = () => {
-    setIsPlaying(false);
-    const video = document.getElementById('theater-video-core') as HTMLVideoElement;
-    if (video) video.currentTime = 0;
-  };
 
+  // VIEW A: DESTINATION FULL SCREEN PLAN (Bypasses 3D completely to avoid layout traps)
+  if (isEnlargedMode && videoUrls.length > 0) {
+    return (
+      <div className="fixed inset-0 bg-black z-[9999] w-screen h-[100dvh] flex flex-col justify-between items-center p-4">
+        
+        {/* Top Floating Strip Controls */}
+        <div className="w-full max-w-4xl flex justify-between items-center z-50 py-2">
+          <span className="text-xs font-bold tracking-widest text-zinc-500 uppercase">
+            Track {currentIndex + 1} of {videoUrls.length}
+          </span>
+          <button 
+            onClick={() => setIsEnlargedMode(false)}
+            className="px-4 py-2 bg-zinc-900 border border-white/20 rounded-xl text-xs font-bold hover:bg-zinc-800 transition text-white"
+          >
+            ✕ Return to 3D Room
+          </button>
+        </div>
+
+        {/* Dedicated Native Hardware Player View */}
+        <div className="w-full max-w-4xl flex-1 flex items-center justify-center">
+          <video 
+            src={videoUrls[currentIndex]} 
+            autoPlay 
+            controls 
+            playsInline
+            className="w-full max-h-[80vh] rounded-xl shadow-2xl object-contain"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // VIEW B: ORIGINAL WORKING 3D CINEMA VIEW
   return (
-    <div className="fixed inset-0 bg-black text-white overflow-hidden w-screen h-[100dvh] flex flex-col justify-between">
+    <div id="theater-root" className="fixed inset-0 bg-black text-white overflow-hidden w-screen h-[100dvh] flex flex-col justify-between">
       
-      {/* THE HIDDEN ENGINE: Hidden safely out of view but active in the HTML layer */}
-      {!loading && videoUrls.length > 0 && (
-        <video
-          id="theater-video-core"
-          src={videoUrls[currentIndex]}
-          loop
-          playsInline
-          autoPlay
-          muted={isMuted}
-          style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '1px', height: '1px', opacity: 0 }}
-        />
-      )}
-
-      {/* EXIT BUTTON */}
+      {/* EXIT BUTTON LAYER */}
       <div className="w-full p-6 flex justify-between items-center z-[999] absolute top-0 left-0 pointer-events-none">
         <Link
           to="/gallery"
@@ -97,7 +90,7 @@ export default function TheaterPage() {
         </Link>
       </div>
 
-      {/* 3D CANVAS BACKGROUND */}
+      {/* 3D CANVAS BACKGROUND LAYER */}
       <div className="w-full h-full absolute inset-0 z-10 pointer-events-auto">
         {loading ? (
           <div className="w-full h-full flex items-center justify-center text-zinc-500 text-sm tracking-widest animate-pulse bg-black">
@@ -113,8 +106,11 @@ export default function TheaterPage() {
             gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
             style={{ width: '100%', height: '100%' }}
           >
-            {/* The room doesn't need props anymore; it grabs the core element directly */}
-            <CinemaRoom currentIndex={currentIndex} />
+            <CinemaRoom 
+              videoUrl={videoUrls[currentIndex]} 
+              isPlaying={isPlaying}
+              isMuted={isMuted}
+            />
             
             <OrbitControls 
               enableZoom={true}
@@ -130,17 +126,13 @@ export default function TheaterPage() {
         )}
       </div>
 
-      {/* CONTROL DOCK OVERLAY */}
+      {/* GRAPHIC HUD CONTROL OVERLAY */}
       {!loading && videoUrls.length > 0 && (
         <div className="w-full absolute bottom-12 left-0 z-[999] flex flex-col items-center justify-center px-4 pointer-events-none">
           <div className="flex items-center justify-center gap-5 bg-black/90 border border-white/20 px-6 py-3 rounded-2xl backdrop-blur-md pointer-events-auto shadow-2xl scale-110 sm:scale-100">
             
             <button onClick={togglePlay} className="hover:text-red-500 transition text-xl px-2">
               {isPlaying ? <span>‖</span> : <span>▶</span>}
-            </button>
-
-            <button onClick={handleStop} className="hover:text-red-500 transition text-lg px-2">
-              ■
             </button>
 
             <button onClick={toggleMute} className="hover:text-red-500 transition text-xl px-2">
@@ -159,7 +151,8 @@ export default function TheaterPage() {
               </div>
             )}
 
-            <button onClick={handleEnlarge} className="hover:text-red-500 transition text-xl font-bold px-2">
+            {/* Shifts layout execution to dedicated Fullscreen spot natively */}
+            <button onClick={() => setIsEnlargedMode(true)} className="hover:text-red-500 transition text-xl font-bold px-2">
               ⛶
             </button>
 

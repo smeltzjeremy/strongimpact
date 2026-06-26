@@ -1,36 +1,40 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useVideoTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface CinemaRoomProps {
-  currentIndex: number;
+  videoUrl: string;
+  isPlaying: boolean;
+  isMuted: boolean;
 }
 
-export default function CinemaRoom({ currentIndex }: CinemaRoomProps) {
-  const [texture, setTexture] = useState<THREE.VideoTexture | null>(null);
+export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomProps) {
+  // Pulls the stream directly using the original video texture strategy
+  const texture = useVideoTexture(videoUrl, {
+    unsuspended: 'canplay',
+    crossOrigin: 'anonymous',
+    muted: isMuted,
+    loop: true,
+    playsInline: true
+  });
 
   useEffect(() => {
-    // Target the core hardware element running behind the curtain
-    const videoElement = document.getElementById('theater-video-core') as HTMLVideoElement;
-    if (!videoElement) return;
-
-    const videoTex = new THREE.VideoTexture(videoElement);
-    videoTex.colorSpace = THREE.SRGBColorSpace;
-    videoTex.minFilter = THREE.LinearFilter;
-    videoTex.magFilter = THREE.LinearFilter;
-    
-    setTexture(videoTex);
-
-    // Keep the 3D frames synchronized constantly
-    const updateFrames = () => {
-      videoTex.needsUpdate = true;
-    };
-    videoElement.addEventListener('timeupdate', updateFrames);
-
-    return () => {
-      videoElement.removeEventListener('timeupdate', updateFrames);
-      videoTex.dispose();
-    };
-  }, [currentIndex]); // Refreshes instantly when changing tracks
+    if (texture) {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      
+      // Grabs the real HTML video element hidden behind the texture
+      const video = texture.image as HTMLVideoElement;
+      if (video) {
+        // Direct execution of Play vs Pause commands
+        if (isPlaying) {
+          video.play().catch(err => console.log("Playback interaction wait:", err));
+        } else {
+          video.pause();
+        }
+        video.muted = isMuted;
+      }
+    }
+  }, [texture, isPlaying, isMuted]);
 
   return (
     <>
@@ -45,10 +49,9 @@ export default function CinemaRoom({ currentIndex }: CinemaRoomProps) {
           <planeGeometry args={[7.1, 4.0]} />
           <meshStandardMaterial 
             map={texture} 
-            color="#ffffff"
             emissive="#ffffff"
-            emissiveMap={texture || null}
-            emissiveIntensity={texture ? 0.3 : 0}
+            emissiveMap={texture}
+            emissiveIntensity={0.3}
             roughness={0.4}
             metalness={0.1}
             side={THREE.DoubleSide}
