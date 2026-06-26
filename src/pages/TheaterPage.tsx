@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
@@ -10,8 +10,7 @@ export default function TheaterPage() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [isMuted, setIsMuted] = useState<boolean>(true);
-  
-  const canvasRef = useRef<HTMLDivElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
   const fetchVideos = async () => {
     try {
@@ -48,12 +47,12 @@ export default function TheaterPage() {
   };
 
   const handleTriggerFullScreen = () => {
-    const videoEl = document.querySelector('.r3f-video-source') as HTMLVideoElement;
+    const videoEl = document.getElementById('cinema-video-core') as HTMLVideoElement;
     if (videoEl) {
       if (videoEl.requestFullscreen) {
         videoEl.requestFullscreen();
       } else if ((videoEl as any).webkitEnterFullscreen) {
-        (videoEl as any).webkitEnterFullscreen(); // iOS Safari specific video override
+        (videoEl as any).webkitEnterFullscreen(); // Direct iOS Safari hook
       } else if ((videoEl as any).webkitRequestFullscreen) {
         (videoEl as any).webkitRequestFullscreen();
       }
@@ -61,97 +60,109 @@ export default function TheaterPage() {
   };
 
   const toggleMute = () => {
-    const videoEl = document.querySelector('.r3f-video-source') as HTMLVideoElement;
+    const videoEl = document.getElementById('cinema-video-core') as HTMLVideoElement;
     if (videoEl) {
       videoEl.muted = !videoEl.muted;
       setIsMuted(videoEl.muted);
     }
   };
 
+  const togglePlay = () => {
+    const videoEl = document.getElementById('cinema-video-core') as HTMLVideoElement;
+    if (videoEl) {
+      if (isPlaying) {
+        videoEl.pause();
+      } else {
+        videoEl.play().catch(e => console.log(e));
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#020205] text-white relative overflow-hidden select-none w-full h-screen">
+    <div className="fixed inset-0 bg-[#020205] text-white overflow-hidden select-none w-screen h-screen flex flex-col justify-between">
       
-      {/* Absolute Header Branding Overlays */}
-      <div className="absolute top-6 left-6 z-50 flex items-center gap-4">
+      {/* Top Header Row: Kept totally separate so buttons never smash together */}
+      <div className="w-full p-6 flex justify-between items-center z-50 bg-gradient-to-b from-black/80 to-transparent absolute top-0 left-0 pointer-events-none">
         <Link
           to="/gallery"
-          className="px-5 py-3 bg-black/60 hover:bg-black/80 border border-white/20 rounded-2xl text-sm font-medium transition backdrop-blur-md"
+          className="px-5 py-3 bg-black/70 hover:bg-black border border-white/20 rounded-2xl text-sm font-medium transition backdrop-blur-md pointer-events-auto"
         >
           ← Exit Theater
         </Link>
+        <div className="hidden sm:block text-center pointer-events-none">
+          <h1 className="text-xl font-bold tracking-tighter text-zinc-300">STRONG IMPACT THEATER</h1>
+        </div>
+        <div className="w-24 hidden sm:block"></div> {/* Spacer balance */}
       </div>
 
-      <div className="absolute top-6 right-6 z-50 flex items-center gap-3">
-        {videoUrls.length > 0 && !loading && (
-          <>
-            <button
-              onClick={toggleMute}
-              className="px-5 py-3 bg-black/60 hover:bg-black/80 border border-white/20 rounded-2xl text-sm font-medium transition backdrop-blur-md uppercase tracking-wider"
-            >
-              {isMuted ? '🔊 Unmute Audio' : '🔇 Mute Audio'}
-            </button>
-            <button
-              onClick={handleTriggerFullScreen}
-              className="px-5 py-3 bg-red-600 hover:bg-red-700 border border-white/10 rounded-2xl text-sm font-medium transition backdrop-blur-md uppercase tracking-wider font-bold"
-            >
-              🖥️ Enlarge Full Screen
-            </button>
-          </>
-        )}
-      </div>
-
-      {/* IMMERSIVE 3D CANVAS WORLD CONTAINER (Spans 100% instantly) */}
-      <div ref={canvasRef} className="absolute inset-0 z-10 w-full h-full touch-none">
+      {/* 100% IMMERSIVE 3D WORLD LAYER */}
+      <div className="w-full h-full absolute inset-0 z-10">
         {loading ? (
           <div className="w-full h-full flex items-center justify-center text-zinc-500 text-sm tracking-widest animate-pulse bg-black">
             ENGAGING 3D CINEMA PROJECTORS...
           </div>
         ) : videoUrls.length === 0 ? (
           <div className="w-full h-full flex items-center justify-center text-zinc-500 text-sm tracking-widest text-center px-4 bg-black">
-            🍿 NO VIDEOS UPLOADED YET <br />
-            <span className="text-xs text-zinc-600 font-normal mt-1 block">Add .mp4 tracks via the Admin CMS</span>
+            🍿 NO VIDEOS UPLOADED YET
           </div>
         ) : (
           <Canvas
-            camera={{ position: [0, 0, 1.6], fov: 55 }}
+            camera={{ position: [0, 0, 1.8], fov: 60 }}
             gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
             style={{ width: '100%', height: '100%' }}
           >
-            {/* The video plays automatically here in a muted state to bypass mobile safety blocks */}
-            <CinemaRoom videoUrl={videoUrls[currentIndex]} isPlaying={true} />
-            
+            <CinemaRoom videoUrl={videoUrls[currentIndex]} isPlaying={isPlaying} />
             <OrbitControls 
               enableZoom={true}
               enablePan={false}
               minDistance={0.5}
-              maxDistance={3.8}
+              maxDistance={4.0}
               minAzimuthAngle={-Math.PI / 3}
               maxAzimuthAngle={Math.PI / 3}
-              minPolarAngle={Math.PI / 2.6}
+              minPolarAngle={Math.PI / 2.5}
               maxPolarAngle={Math.PI / 1.6}
             />
           </Canvas>
         )}
       </div>
 
-      {/* Floating Track Selector Box HUD at bottom */}
-      {!loading && videoUrls.length > 1 && (
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-50 flex items-center justify-between bg-black/60 border border-white/10 max-w-xs w-full px-4 py-2 rounded-2xl backdrop-blur-md shadow-2xl">
-          <button 
-            onClick={handlePrev}
-            className="px-4 py-2 text-sm bg-black/40 hover:bg-white/10 rounded-xl transition border border-white/5 font-bold"
-          >
-            ←
-          </button>
-          <span className="text-[11px] font-bold tracking-widest text-zinc-400 uppercase">
-            Track {currentIndex + 1} of {videoUrls.length}
-          </span>
-          <button 
-            onClick={handleNext}
-            className="px-4 py-2 text-sm bg-black/40 hover:bg-white/10 rounded-xl transition border border-white/5 font-bold"
-          >
-            →
-          </button>
+      {/* BOTTOM CONTROL HUD LAYER: Clean, separated layout for all screen targets */}
+      {!loading && videoUrls.length > 0 && (
+        <div className="w-full p-6 absolute bottom-0 left-0 z-50 flex flex-col items-center gap-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none">
+          
+          {/* Main Controls Hub */}
+          <div className="flex flex-wrap items-center justify-center gap-3 pointer-events-auto max-w-lg w-full">
+            <button 
+              onClick={togglePlay}
+              className={`px-5 py-3 rounded-xl text-xs font-bold tracking-widest border transition text-white shadow-xl ${isPlaying ? 'bg-zinc-900/80 border-white/10' : 'bg-emerald-600 border-white/20'}`}
+            >
+              {isPlaying ? '⏸ Pause' : '▶ Play'}
+            </button>
+
+            <button
+              onClick={toggleMute}
+              className="px-5 py-3 bg-black/60 hover:bg-black border border-white/10 rounded-xl text-xs font-bold tracking-widest transition backdrop-blur-md"
+            >
+              {isMuted ? '🔊 Unmute' : '🔇 Mute'}
+            </button>
+
+            <button
+              onClick={handleTriggerFullScreen}
+              className="px-5 py-3 bg-red-600 hover:bg-red-700 border border-white/10 rounded-xl text-xs font-bold tracking-widest text-white transition font-bold shadow-xl"
+            >
+              🖥️ Enlarge Full Screen
+            </button>
+          </div>
+
+          {/* Track Switching Row */}
+          {videoUrls.length > 1 && (
+            <div className="flex items-center justify-between bg-black/80 border border-white/10 max-w-xs w-full px-4 py-2 rounded-xl backdrop-blur-md pointer-events-auto shadow-2xl">
+              <button onClick={handlePrev} className="px-3 py-1 bg-zinc-900 rounded-lg text-xs font-bold">←</button>
+              <span className="text-[10px] font-bold tracking-widest text-zinc-400 uppercase">Track {currentIndex + 1} of {videoUrls.length}</span>
+              <button onClick={handleNext} className="px-3 py-1 bg-zinc-900 rounded-lg text-xs font-bold">→</button>
+            </div>
+          )}
         </div>
       )}
     </div>

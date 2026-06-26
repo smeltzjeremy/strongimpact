@@ -9,14 +9,13 @@ interface CinemaRoomProps {
 
 export default function CinemaRoom({ videoUrl, isPlaying }: CinemaRoomProps) {
   
-  // Forces the video player to load up instantly and stream inside the canvas space
   const videoTexture = useVideoTexture(videoUrl, {
     unsuspend: 'canplay',
     crossOrigin: 'anonymous',
     loop: false,
-    muted: true,         // Vital for immediate mobile browser pass-through
-    playsInline: true,   // Blocks native mobile app player hijack on load
-    start: true          // Turn video rendering engine on immediately
+    muted: true, // Auto-mutes internally to force pass browser security blocks on load
+    playsInline: true,
+    start: true
   });
 
   videoTexture.colorSpace = THREE.SRGBColorSpace;
@@ -25,11 +24,13 @@ export default function CinemaRoom({ videoUrl, isPlaying }: CinemaRoomProps) {
     const videoEl = videoTexture.image as HTMLVideoElement;
     if (!videoEl) return;
 
-    // Direct string signature identifier for target elements
-    videoEl.className = 'r3f-video-source';
+    // Hardcode matching layout ID strings for standard device handlers
+    videoEl.id = 'cinema-video-core';
+    videoEl.setAttribute('playsinline', 'true');
+    videoEl.setAttribute('webkit-playsinline', 'true');
 
     if (isPlaying) {
-      videoEl.play().catch(err => console.log("Auto-stream frame initialization update:", err));
+      videoEl.play().catch(err => console.log("Engine sync update:", err));
     } else {
       videoEl.pause();
     }
@@ -37,13 +38,13 @@ export default function CinemaRoom({ videoUrl, isPlaying }: CinemaRoomProps) {
 
   return (
     <>
-      <ambientLight intensity={0.2} />
+      <ambientLight intensity={0.25} />
       <directionalLight position={[0, 4, -2]} intensity={2.0} color="#b0c0ff" />
       <pointLight position={[-5, -1.8, -1]} intensity={0.5} color="#ef4444" distance={8} />
       <pointLight position={[5, -1.8, -1]} intensity={0.5} color="#ef4444" distance={8} />
 
       <group position={[0, 0, 0]}>
-        {/* THE MOVIE SCREEN */}
+        {/* MOVIE SCREEN DISPLAY */}
         <mesh position={[0, 0.5, -5]}>
           <planeGeometry args={[7.1, 4.0]} />
           <meshStandardMaterial 
@@ -57,31 +58,31 @@ export default function CinemaRoom({ videoUrl, isPlaying }: CinemaRoomProps) {
           />
         </mesh>
 
-        {/* SCREEN BORDER BEZEL */}
+        {/* SCREEN BEZEL FRAME */}
         <mesh position={[0, 0.5, -5.02]}>
           <planeGeometry args={[7.4, 4.3]} />
           <meshStandardMaterial color="#050508" roughness={0.9} />
         </mesh>
 
-        {/* STAGE FLOOR */}
+        {/* WORKSPACE STAGE FLOOR */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.8, 0]}>
           <planeGeometry args={[16, 12]} />
           <meshStandardMaterial color="#0f0f15" roughness={0.6} metalness={0.2} />
         </mesh>
 
-        {/* REAR ACOUSTIC WALL */}
+        {/* BACK WALL */}
         <mesh position={[0, 2, -6]}>
           <planeGeometry args={[20, 10]} />
           <meshStandardMaterial color="#0a0a0f" roughness={0.8} />
         </mesh>
 
-        {/* LEFT ACOUSTIC PANEL */}
+        {/* LEFT PANEL */}
         <mesh rotation={[0, Math.PI / 2, 0]} position={[-6.5, 1, 0]}>
           <planeGeometry args={[12, 6]} />
           <meshStandardMaterial color="#0c0c12" roughness={0.7} />
         </mesh>
 
-        {/* RIGHT ACOUSTIC PANEL */}
+        {/* RIGHT PANEL */}
         <mesh rotation={[0, -Math.PI / 2, 0]} position={[6.5, 1, 0]}>
           <planeGeometry args={[12, 6]} />
           <meshStandardMaterial color="#0c0c12" roughness={0.7} />
