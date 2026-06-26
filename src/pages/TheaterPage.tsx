@@ -10,9 +10,9 @@ export default function TheaterPage() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   
-  // State switches to manage separate screen views cleanly
   const [isEnlargedMode, setIsEnlargedMode] = useState<boolean>(false);
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  // START AS FALSE: Forces the video to sit on a still frame shot until users interact
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(true);
 
   const fetchVideos = async () => {
@@ -44,15 +44,23 @@ export default function TheaterPage() {
   const togglePlay = () => setIsPlaying(!isPlaying);
   const toggleMute = () => setIsMuted(!isMuted);
 
-  // VIEW A: DESTINATION FULL SCREEN PLAN (Bypasses 3D completely to avoid layout traps)
+  // Safely swap tracks and reset playback state back to a still frame shot
+  const handleTrackChange = (direction: 'next' | 'prev') => {
+    setIsPlaying(false); // Pause the current player loop immediately
+    if (direction === 'next') {
+      setCurrentIndex(prev => (prev + 1) % videoUrls.length);
+    } else {
+      setCurrentIndex(prev => (prev - 1 + videoUrls.length) % videoUrls.length);
+    }
+  };
+
+  // VIEW A: DESTINATION FULL SCREEN PLAN
   if (isEnlargedMode && videoUrls.length > 0) {
     return (
       <div className="fixed inset-0 bg-black z-[9999] w-screen h-[100dvh] flex flex-col justify-between items-center p-4">
-        
-        {/* Top Floating Strip Controls */}
         <div className="w-full max-w-4xl flex justify-between items-center z-50 py-2">
           <span className="text-xs font-bold tracking-widest text-zinc-500 uppercase">
-            Track {currentIndex + 1} of {videoUrls.length}
+            Track {currentIndex + 1} of {videoUrls.length} — FULL SCREEN
           </span>
           <button 
             onClick={() => setIsEnlargedMode(false)}
@@ -62,11 +70,10 @@ export default function TheaterPage() {
           </button>
         </div>
 
-        {/* Dedicated Native Hardware Player View */}
         <div className="w-full max-w-4xl flex-1 flex items-center justify-center">
           <video 
             src={videoUrls[currentIndex]} 
-            autoPlay 
+            autoPlay={isPlaying} // Keeps play/pause choice in sync 
             controls 
             playsInline
             className="w-full max-h-[80vh] rounded-xl shadow-2xl object-contain"
@@ -131,27 +138,32 @@ export default function TheaterPage() {
         <div className="w-full absolute bottom-12 left-0 z-[999] flex flex-col items-center justify-center px-4 pointer-events-none">
           <div className="flex items-center justify-center gap-5 bg-black/90 border border-white/20 px-6 py-3 rounded-2xl backdrop-blur-md pointer-events-auto shadow-2xl scale-110 sm:scale-100">
             
+            {/* PLAY / PAUSE BUTTON */}
             <button onClick={togglePlay} className="hover:text-red-500 transition text-xl px-2">
               {isPlaying ? <span>‖</span> : <span>▶</span>}
             </button>
 
+            {/* AUDIO BUTTON */}
             <button onClick={toggleMute} className="hover:text-red-500 transition text-xl px-2">
               {isMuted ? '🔇' : '🔊'}
             </button>
 
+            {/* VIDEO SELECTOR GALLERY COMPONENT */}
             {videoUrls.length > 1 && (
               <div className="flex items-center gap-3 border-l border-r border-white/10 px-4 text-xs font-bold text-zinc-400 tracking-wider">
-                <button onClick={() => setCurrentIndex(prev => (prev - 1 + videoUrls.length) % videoUrls.length)} className="hover:text-white transition">
+                <button onClick={() => handleTrackChange('prev')} className="hover:text-white transition p-1">
                   ◀
                 </button>
-                <span>{currentIndex + 1} / {videoUrls.length}</span>
-                <button onClick={() => setCurrentIndex(prev => (prev + 1) % videoUrls.length)} className="hover:text-white transition">
+                <span className="min-w-[40px] text-center">
+                  {currentIndex + 1} / {videoUrls.length}
+                </span>
+                <button onClick={() => handleTrackChange('next')} className="hover:text-white transition p-1">
                   ▶
                 </button>
               </div>
             )}
 
-            {/* Shifts layout execution to dedicated Fullscreen spot natively */}
+            {/* ENLARGE BUTTON */}
             <button onClick={() => setIsEnlargedMode(true)} className="hover:text-red-500 transition text-xl font-bold px-2">
               ⛶
             </button>
