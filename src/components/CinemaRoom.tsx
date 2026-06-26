@@ -1,37 +1,63 @@
 import React from 'react';
+import { Html } from '@react-three/drei';
 
-export default function CinemaRoom() {
+interface CinemaRoomProps {
+  videoUrl: string;
+}
+
+export default function CinemaRoom({ videoUrl }: CinemaRoomProps) {
   return (
     <>
-      {/* Cinematic Studio Space Illumination Profile */}
+      {/* High-Contrast Lighting profile so you can see the structural 3D objects */}
       <ambientLight intensity={0.4} />
-      <directionalLight position={[0, 4, 3]} intensity={1.2} color="#ffffff" />
-      <pointLight position={[-6, -1.5, -1]} intensity={0.5} color="#ef4444" distance={10} />
-      <pointLight position={[6, -1.5, -1]} intensity={0.5} color="#ef4444" distance={10} />
+      <directionalLight position={[0, 5, 5]} intensity={1.5} color="#ffffff" />
+      
+      {/* Glowing room corner aesthetics */}
+      <pointLight position={[-8, -2, -2]} intensity={0.8} color="#ef4444" distance={15} />
+      <pointLight position={[8, -2, -2]} intensity={0.8} color="#ef4444" distance={15} />
 
       <group position={[0, 0, 0]}>
-        {/* Physical structural shadow backdrop behind the video screen container */}
-        <mesh position={[0, 0, -2]}>
-          <planeGeometry args={[3.2, 1.8]} />
-          <meshStandardMaterial color="#020204" roughness={0.9} />
+        
+        {/* THE 3D DISPLAY CONTAINER BOARD */}
+        <group position={[0, 0.5, -4]}>
+          
+          {/* Real standard HTML5 player perfectly localized inside the 3D scene grid spatial metrics */}
+          <Html
+            transform
+            occlude
+            distanceFactor={4.2}
+            position={[0, 0, 0.02]}
+            className="select-none pointer-events-auto"
+          >
+            <div className="w-[800px] aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+              <video
+                src={videoUrl}
+                controls
+                playsInline
+                webkit-playsinline="true"
+                crossOrigin="anonymous"
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </Html>
+
+          {/* Solid 3D Screen Border Frame/Bezel Background Mesh */}
+          <mesh position={[0, 0, 0]}>
+            <planeGeometry args={[7.4, 4.3]} />
+            <meshStandardMaterial color="#0c0c12" roughness={0.4} metalness={0.7} />
+          </mesh>
+        </group>
+
+        {/* CINEMA SPACE BASE LAYER STAGE FLOOR */}
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.2, 0]}>
+          <planeGeometry args={[20, 16]} />
+          <meshStandardMaterial color="#0a0a0f" roughness={0.8} />
         </mesh>
 
-        {/* Premium Outer Bezel Border Bezel Trim */}
-        <mesh position={[0, 0, -2.02]}>
-          <planeGeometry args={[3.4, 2.0]} />
-          <meshStandardMaterial color="#0c0c12" roughness={0.5} metalness={0.6} />
-        </mesh>
-
-        {/* Studio Room Floor Stage */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.2, 0]}>
-          <planeGeometry args={[12, 10]} />
-          <meshStandardMaterial color="#08080d" roughness={0.8} />
-        </mesh>
-
-        {/* Main Rear Wall Matrix */}
-        <mesh position={[0, 1.5, -3]}>
-          <planeGeometry args={[14, 7]} />
-          <meshStandardMaterial color="#040406" roughness={0.95} />
+        {/* CINEMA ROOM BACKSTAGE STRUCTURE WALL */}
+        <mesh position={[0, 2.5, -6]}>
+          <planeGeometry args={[24, 12]} />
+          <meshStandardMaterial color="#050508" roughness={0.95} />
         </mesh>
       </group>
     </>
