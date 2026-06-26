@@ -39,14 +39,17 @@ export default function TheaterPage() {
     fetchVideos();
   }, []);
 
+  // Maximizes the entire wrapper container to guarantee full screen across all devices
   const handleEnlarge = () => {
-    const videoEl = document.querySelector('video');
-    if (!videoEl) return;
+    const rootEl = document.getElementById('theater-root');
+    if (!rootEl) return;
     
-    if (videoEl.requestFullscreen) {
-      videoEl.requestFullscreen();
-    } else if ((videoEl as any).webkitEnterFullscreen) {
-      (videoEl as any).webkitEnterFullscreen();
+    if (rootEl.requestFullscreen) {
+      rootEl.requestFullscreen();
+    } else if ((rootEl as any).webkitRequestFullscreen) {
+      (rootEl as any).webkitRequestFullscreen(); // Handles iOS Safari & Mobile Chrome
+    } else if ((rootEl as any).msRequestFullscreen) {
+      (rootEl as any).msRequestFullscreen();
     }
   };
 
@@ -59,7 +62,7 @@ export default function TheaterPage() {
   };
 
   return (
-    <div className="fixed inset-0 bg-black text-white overflow-hidden w-screen h-[100dvh] flex flex-col justify-between">
+    <div id="theater-root" className="fixed inset-0 bg-black text-white overflow-hidden w-screen h-[100dvh] flex flex-col justify-between">
       
       {/* EXIT BUTTON LAYER */}
       <div className="w-full p-6 flex justify-between items-center z-[999] absolute top-0 left-0 pointer-events-none">
@@ -107,7 +110,7 @@ export default function TheaterPage() {
         )}
       </div>
 
-      {/* GRAPHIC HUD CONTROL OVERLAY (Forced to absolute layout front via z-[999]) */}
+      {/* GRAPHIC HUD CONTROL OVERLAY */}
       {!loading && videoUrls.length > 0 && (
         <div className="w-full absolute bottom-12 left-0 z-[999] flex flex-col items-center justify-center px-4 pointer-events-none">
           <div className="flex items-center justify-center gap-5 bg-black/90 border border-white/20 px-6 py-3 rounded-2xl backdrop-blur-md pointer-events-auto shadow-2xl scale-110 sm:scale-100">
