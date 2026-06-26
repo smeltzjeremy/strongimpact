@@ -9,11 +9,11 @@ export default function TheaterPage() {
   const [videoUrls, setVideoUrls] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const [videoLoaded, setVideoLoaded] = useState<boolean>(false);
   
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [isMuted, setIsMuted] = useState<boolean>(true);
 
-  // Direct reference point to lock onto the hardware video player element
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const fetchVideos = async () => {
@@ -42,7 +42,7 @@ export default function TheaterPage() {
     fetchVideos();
   }, []);
 
-  // Sync state changes directly to our hardware video element reference
+  // Force texture synchronization updates safely 
   useEffect(() => {
     if (!videoRef.current) return;
     if (isPlaying) {
@@ -51,9 +51,8 @@ export default function TheaterPage() {
       videoRef.current.pause();
     }
     videoRef.current.muted = isMuted;
-  }, [isPlaying, isMuted, currentIndex]);
+  }, [isPlaying, isMuted, currentIndex, videoLoaded]);
 
-  // Direct, unblocked hardware command to pop JUST the video full screen
   const handleEnlarge = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -61,7 +60,7 @@ export default function TheaterPage() {
     if (video.requestFullscreen) {
       video.requestFullscreen();
     } else if ((video as any).webkitEnterFullscreen) {
-      (video as any).webkitEnterFullscreen(); // Direct native iOS full-screen media layout call
+      (video as any).webkitEnterFullscreen();
     }
   };
 
@@ -75,7 +74,7 @@ export default function TheaterPage() {
   return (
     <div className="fixed inset-0 bg-black text-white overflow-hidden w-screen h-[100dvh] flex flex-col justify-between">
       
-      {/* HIDDEN HARDWARE PLAYER: Feeds frames to 3D and takes direct full-screen orders */}
+      {/* HARDWARE INTERACTION LINK: Positioned safely out of bounds instead of using display:none */}
       {!loading && videoUrls.length > 0 && (
         <video
           ref={videoRef}
@@ -83,7 +82,8 @@ export default function TheaterPage() {
           loop
           playsInline
           muted={isMuted}
-          className="hidden"
+          onLoadedMetadata={() => setVideoLoaded(true)}
+          style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '1px', height: '1px', opacity: 0 }}
         />
       )}
 
@@ -97,7 +97,7 @@ export default function TheaterPage() {
         </Link>
       </div>
 
-      {/* 3D CANVAS BACKGROUND LAYER */}
+      {/* 3D CANVAS LAYER */}
       <div className="w-full h-full absolute inset-0 z-10 pointer-events-auto">
         {loading ? (
           <div className="w-full h-full flex items-center justify-center text-zinc-500 text-sm tracking-widest animate-pulse bg-black">
@@ -113,8 +113,8 @@ export default function TheaterPage() {
             gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
             style={{ width: '100%', height: '100%' }}
           >
-            {/* Pass the actual working video element reference directly to the 3D space */}
-            {videoRef.current && <CinemaRoom videoElement={videoRef.current} />}
+            {/* Only drop into WebGL once the element pipeline is actively loaded and ready */}
+            {videoRef.current && videoLoaded && <CinemaRoom videoElement={videoRef.current} />}
             
             <OrbitControls 
               enableZoom={true}
