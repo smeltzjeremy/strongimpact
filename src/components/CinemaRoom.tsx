@@ -11,13 +11,18 @@ export default function CinemaRoom({ videoElement }: CinemaRoomProps) {
   useEffect(() => {
     if (!videoElement) return;
 
-    // Creates the texture link explicitly using the stable background element
+    // Build the video texture link explicitly
     const videoTex = new THREE.VideoTexture(videoElement);
     videoTex.colorSpace = THREE.SRGBColorSpace;
     videoTex.minFilter = THREE.LinearFilter;
     videoTex.magFilter = THREE.LinearFilter;
     
     setTexture(videoTex);
+
+    // This forces Three.js to constantly look at the video element for new frames
+    videoElement.addEventListener('timeupdate', () => {
+      videoTex.needsUpdate = true;
+    });
 
     return () => {
       videoTex.dispose();
@@ -35,17 +40,17 @@ export default function CinemaRoom({ videoElement }: CinemaRoomProps) {
         {/* THE 3D SCREEN SURFACE MESH */}
         <mesh position={[0, 0.5, -5]}>
           <planeGeometry args={[7.1, 4.0]} />
-          {texture && (
-            <meshStandardMaterial 
-              map={texture} 
-              emissive="#ffffff"
-              emissiveMap={texture}
-              emissiveIntensity={0.3}
-              roughness={0.4}
-              metalness={0.1}
-              side={THREE.DoubleSide}
-            />
-          )}
+          {/* If the video texture isn't ready yet, it falls back to a clean dark zinc material instead of crashing */}
+          <meshStandardMaterial 
+            map={texture || null} 
+            color={texture ? "#ffffff" : "#18181b"}
+            emissive={texture ? "#ffffff" : "#000000"}
+            emissiveMap={texture || null}
+            emissiveIntensity={texture ? 0.3 : 0}
+            roughness={0.4}
+            metalness={0.1}
+            side={THREE.DoubleSide}
+          />
         </mesh>
 
         {/* SCREEN FRAME BEZEL */}
