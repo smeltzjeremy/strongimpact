@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo } from 'react';
-import { useVideoTexture } from '@react-three/drei';
+import React, { useEffect } from 'react';
+import { useVideoTexture, Grid, Center } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface CinemaRoomProps {
@@ -32,126 +32,59 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
     }
   }, [texture, isPlaying, isMuted]);
 
-  // FIXED TEXTURE A: Architectural Linear Slat Wall Paneling
-  const wallTexture = useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      // Warm, visible luxury dark wood base color
-      ctx.fillStyle = '#292524'; 
-      ctx.fillRect(0, 0, 512, 512);
-      
-      // Crisp architectural linear slits
-      ctx.fillStyle = '#141414';
-      for (let i = 0; i < 512; i += 32) {
-        ctx.fillRect(i, 0, 8, 512);
-      }
-    }
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.wrapS = THREE.RepeatWrapping;
-    tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(6, 1);
-    tex.needsUpdate = true; // Forces WebGL to read the canvas instantly
-    return tex;
-  }, []);
-
-  // FIXED TEXTURE B: High-Contrast Plush Cinema Carpet Weave
-  const carpetTexture = useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 256;
-    canvas.height = 256;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      // Visible luxurious deep blue tone base
-      ctx.fillStyle = '#1e293b'; 
-      ctx.fillRect(0, 0, 256, 256);
-      
-      // Distinct micro-weave texture noise pattern
-      for (let i = 0; i < 3000; i++) {
-        const x = Math.random() * 256;
-        const y = Math.random() * 256;
-        ctx.fillStyle = Math.random() > 0.5 ? '#334155' : '#0f172a';
-        ctx.fillRect(x, y, 2, 2);
-      }
-    }
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.wrapS = THREE.RepeatWrapping;
-    tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(10, 10);
-    tex.needsUpdate = true; // Forces WebGL to read the canvas instantly
-    return tex;
-  }, []);
-
   return (
     <>
-      <ambientLight intensity={0.4} />
+      {/* HIGH-END METALLIC STUDIO LIGHTING */}
+      <ambientLight intensity={0.2} />
+      <directionalLight position={[5, 5, 5]} intensity={1.5} color="#ffffff" />
       
-      {/* Crisp Screen Glow - projects colors onto the newly painted floor/walls */}
-      <directionalLight position={[0, 3, -4]} intensity={1.5} color="#f0f9ff" />
-      
-      {/* Overhead warm studio downlight */}
-      <pointLight position={[0, 3.8, 1]} intensity={1.2} color="#fef08a" distance={15} />
+      {/* Intense Movie Screen Glow projecting crisp colors downwards */}
+      <pointLight position={[0, 0.5, -4.5]} intensity={2.0} color="#e0f2fe" distance={10} />
 
       <group position={[0, 0, 0]}>
         
-        {/* 1. THE 3D MAIN SCREEN SURFACE */}
+        {/* THE CORE SCREEN (Perfect, un-touched and brilliant) */}
         <mesh position={[0, 0.5, -5]}>
           <planeGeometry args={[7.1, 4.0]} />
           <meshStandardMaterial 
             map={texture} 
             emissive="#ffffff"
             emissiveMap={texture}
-            emissiveIntensity={isPlaying ? 0.6 : 0.2}
-            roughness={0.15}
-            metalness={0.0}
+            emissiveIntensity={isPlaying ? 0.65 : 0.25}
+            roughness={0.1}
+            metalness={0.1}
             side={THREE.DoubleSide}
           />
         </mesh>
 
-        {/* Brushed Metal Widescreen Framing border */}
-        <mesh position={[0, 0.5, -5.04]}>
+        {/* Premium Chiseled Glossy Outer Frame */}
+        <mesh position={[0, 0.5, -5.02]}>
           <planeGeometry args={[7.35, 4.25]} />
-          <meshStandardMaterial color="#1f2937" roughness={0.4} metalness={0.7} />
+          <meshStandardMaterial color="#111827" roughness={0.2} metalness={0.8} />
         </mesh>
 
-        {/* 2. THE FLOORS & CEILING WITH FIXED TEXTURE LAYERS */}
-        {/* Luxury Velvet Weave Carpet Floor */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.8, 0]}>
-          <planeGeometry args={[22, 18]} />
-          <meshStandardMaterial 
-            map={carpetTexture}
-            roughness={0.7}
-            metalness={0.1} 
+        {/* NEW GRAPHIC OVERLAY LAYER: Infinite Cyberpunk Architectural Floor Grid */}
+        {/* This bypasses basic flat color meshes entirely to draw real interactive scale lines */}
+        <group position={[0, -1.8, 0]}>
+          <Grid
+            renderOrder={-1}
+            position={[0, -0.01, 0]}
+            args={[30, 30]}
+            cellSize={0.6}
+            cellThickness={1}
+            cellColor="#334155"
+            sectionSize={3}
+            sectionThickness={1.5}
+            sectionColor="#1e293b"
+            fadeDistance={25}
+            infiniteGrid
           />
-        </mesh>
+        </group>
 
-        {/* Modern Studio Matte Ceiling */}
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 4.0, 0]}>
-          <planeGeometry args={[22, 18]} />
-          <meshStandardMaterial color="#1c1917" roughness={0.9} />
-        </mesh>
-
-        {/* 3. WALLS WITH FIXED WOOD SLAT PANELING PAINT LAYER */}
-        {/* Front Screen Stage Backdrop */}
-        <mesh position={[0, 1.1, -5.1]}>
-          <planeGeometry args={[22, 6.5]} />
-          <meshStandardMaterial color="#0c0a09" roughness={0.95} />
-        </mesh>
-
-        {/* Left Side Architectural Panel Wall */}
-        <mesh rotation={[0, Math.PI / 2, 0]} position={[-8.5, 1.1, 0]}>
-          <planeGeometry args={[18, 6.5]} />
-          <meshStandardMaterial map={wallTexture} roughness={0.5} metalness={0.1} />
-        </mesh>
-
-        {/* Right Side Architectural Panel Wall */}
-        <mesh rotation={[0, -Math.PI / 2, 0]} position={[8.5, 1.1, 0]}>
-          <planeGeometry args={[18, 6.5]} />
-          <meshStandardMaterial map={wallTexture} roughness={0.5} metalness={0.1} />
+        {/* Sleek Atmospheric Studio Horizon Enclosure */}
+        <mesh position={[0, 2, -5.5]}>
+          <planeGeometry args={[30, 15]} />
+          <meshStandardMaterial color="#030712" roughness={0.9} />
         </mesh>
 
       </group>
