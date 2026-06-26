@@ -1,40 +1,29 @@
-import React, { useEffect } from 'react';
-import { useVideoTexture } from '@react-three/drei';
+import React, { useEffect, useMemo } from 'react';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 interface CinemaRoomProps {
-  videoUrl: string;
-  isPlaying: boolean;
+  videoElement: HTMLVideoElement | null;
 }
 
-export default function CinemaRoom({ videoUrl, isPlaying }: CinemaRoomProps) {
+export default function CinemaRoom({ videoElement }: CinemaRoomProps) {
   
-  const videoTexture = useVideoTexture(videoUrl, {
-    unsuspend: 'canplay',
-    crossOrigin: 'anonymous',
-    loop: false,
-    muted: true, // Auto-mutes internally to force pass browser security blocks on load
-    playsInline: true,
-    start: true
-  });
+  // Transform the passed HTML element into a continuous 3D texture projection mapping
+  const videoTexture = useMemo(() => {
+    if (!videoElement) return null;
+    const texture = new THREE.VideoTexture(videoElement);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    return texture;
+  }, [videoElement]);
 
-  videoTexture.colorSpace = THREE.SRGBColorSpace;
-
-  useEffect(() => {
-    const videoEl = videoTexture.image as HTMLVideoElement;
-    if (!videoEl) return;
-
-    // Hardcode matching layout ID strings for standard device handlers
-    videoEl.id = 'cinema-video-core';
-    videoEl.setAttribute('playsinline', 'true');
-    videoEl.setAttribute('webkit-playsinline', 'true');
-
-    if (isPlaying) {
-      videoEl.play().catch(err => console.log("Engine sync update:", err));
-    } else {
-      videoEl.pause();
+  // Request continuous 3D viewport updates on every engine tick if the video is moving
+  useFrame(() => {
+    if (videoTexture && videoElement && !videoElement.paused) {
+      videoTexture.needsUpdate = true;
     }
-  }, [isPlaying, videoUrl, videoTexture]);
+  });
 
   return (
     <>
@@ -44,45 +33,45 @@ export default function CinemaRoom({ videoUrl, isPlaying }: CinemaRoomProps) {
       <pointLight position={[5, -1.8, -1]} intensity={0.5} color="#ef4444" distance={8} />
 
       <group position={[0, 0, 0]}>
-        {/* MOVIE SCREEN DISPLAY */}
+        {/* VIRTUAL SCREEN SPACE SURFACE MESH */}
         <mesh position={[0, 0.5, -5]}>
           <planeGeometry args={[7.1, 4.0]} />
           <meshStandardMaterial 
             map={videoTexture} 
-            emissive={'#ffffff'}
-            emissiveMap={videoTexture}
-            emissiveIntensity={0.4}
+            emissive={videoTexture ? '#ffffff' : '#040408'}
+            emissiveMap={videoTexture || undefined}
+            emissiveIntensity={videoTexture ? 0.4 : 0.05}
             roughness={0.3}
             metalness={0.1}
             side={THREE.DoubleSide}
           />
         </mesh>
 
-        {/* SCREEN BEZEL FRAME */}
+        {/* SCREEN FRAME BORDER BEZEL */}
         <mesh position={[0, 0.5, -5.02]}>
           <planeGeometry args={[7.4, 4.3]} />
           <meshStandardMaterial color="#050508" roughness={0.9} />
         </mesh>
 
-        {/* WORKSPACE STAGE FLOOR */}
+        {/* THE FLOORED INTERACTIVE PLATFORM */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.8, 0]}>
           <planeGeometry args={[16, 12]} />
           <meshStandardMaterial color="#0f0f15" roughness={0.6} metalness={0.2} />
         </mesh>
 
-        {/* BACK WALL */}
+        {/* BACK ACOUSTIC STRUCTURE WALL MESH */}
         <mesh position={[0, 2, -6]}>
           <planeGeometry args={[20, 10]} />
           <meshStandardMaterial color="#0a0a0f" roughness={0.8} />
         </mesh>
 
-        {/* LEFT PANEL */}
+        {/* LEFT STUDIO WALL LAYER */}
         <mesh rotation={[0, Math.PI / 2, 0]} position={[-6.5, 1, 0]}>
           <planeGeometry args={[12, 6]} />
           <meshStandardMaterial color="#0c0c12" roughness={0.7} />
         </mesh>
 
-        {/* RIGHT PANEL */}
+        {/* RIGHT STUDIO WALL LAYER */}
         <mesh rotation={[0, -Math.PI / 2, 0]} position={[6.5, 1, 0]}>
           <planeGeometry args={[12, 6]} />
           <meshStandardMaterial color="#0c0c12" roughness={0.7} />

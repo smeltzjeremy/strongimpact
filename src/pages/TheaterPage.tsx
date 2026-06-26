@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
@@ -10,7 +10,10 @@ export default function TheaterPage() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [isMuted, setIsMuted] = useState<boolean>(true);
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false); // Strict data limit protection: Stopped by default
+
+  // True DOM reference to bind buttons and 3D projection together
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const fetchVideos = async () => {
     try {
@@ -38,51 +41,59 @@ export default function TheaterPage() {
     fetchVideos();
   }, []);
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % videoUrls.length);
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + videoUrls.length) % videoUrls.length);
-  };
-
-  const handleTriggerFullScreen = () => {
-    const videoEl = document.getElementById('cinema-video-core') as HTMLVideoElement;
-    if (videoEl) {
-      if (videoEl.requestFullscreen) {
-        videoEl.requestFullscreen();
-      } else if ((videoEl as any).webkitEnterFullscreen) {
-        (videoEl as any).webkitEnterFullscreen(); // Direct iOS Safari hook
-      } else if ((videoEl as any).webkitRequestFullscreen) {
-        (videoEl as any).webkitRequestFullscreen();
-      }
+  // Force stop and reset state whenever tracking indices alter
+  useEffect(() => {
+    setIsPlaying(false);
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.load();
     }
+  }, [currentIndex]);
+
+  const togglePlay = () => {
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.pause();
+    } else {
+      videoRef.current.play().catch(err => console.log("Playback policy bypass:", err));
+    }
+    setIsPlaying(!isPlaying);
   };
 
   const toggleMute = () => {
-    const videoEl = document.getElementById('cinema-video-core') as HTMLVideoElement;
-    if (videoEl) {
-      videoEl.muted = !videoEl.muted;
-      setIsMuted(videoEl.muted);
-    }
+    if (!videoRef.current) return;
+    videoRef.current.muted = !videoRef.current.muted;
+    setIsMuted(videoRef.current.muted);
   };
 
-  const togglePlay = () => {
-    const videoEl = document.getElementById('cinema-video-core') as HTMLVideoElement;
-    if (videoEl) {
-      if (isPlaying) {
-        videoEl.pause();
-      } else {
-        videoEl.play().catch(e => console.log(e));
-      }
-      setIsPlaying(!isPlaying);
+  const handleTriggerFullScreen = () => {
+    if (!videoRef.current) return;
+    if (videoRef.current.requestFullscreen) {
+      videoRef.current.requestFullscreen();
+    } else if ((videoRef.current as any).webkitEnterFullscreen) {
+      (videoRef.current as any).webkitEnterFullscreen(); // Solid iOS Safari patch
+    } else if ((videoRef.current as any).webkitRequestFullscreen) {
+      (videoRef.current as any).webkitRequestFullscreen();
     }
   };
 
   return (
     <div className="fixed inset-0 bg-[#020205] text-white overflow-hidden select-none w-screen h-screen flex flex-col justify-between">
       
-      {/* Top Header Row: Kept totally separate so buttons never smash together */}
+      {/* HTML Standard Video Core: Kept off-screen but active to handle device decoders */}
+      {!loading && videoUrls.length > 0 && (
+        <video
+          ref={videoRef}
+          src={videoUrls[currentIndex]}
+          muted={isMuted}
+          playsInline
+          webkit-playsinline="true"
+          crossOrigin="anonymous"
+          className="absolute width-1 height-1 pointer-events-none opacity-0 left-0 top-0"
+        />
+      )}
+
+      {/* Top Header Controls Bar */}
       <div className="w-full p-6 flex justify-between items-center z-50 bg-gradient-to-b from-black/80 to-transparent absolute top-0 left-0 pointer-events-none">
         <Link
           to="/gallery"
@@ -93,10 +104,10 @@ export default function TheaterPage() {
         <div className="hidden sm:block text-center pointer-events-none">
           <h1 className="text-xl font-bold tracking-tighter text-zinc-300">STRONG IMPACT THEATER</h1>
         </div>
-        <div className="w-24 hidden sm:block"></div> {/* Spacer balance */}
+        <div className="w-24 hidden sm:block"></div>
       </div>
 
-      {/* 100% IMMERSIVE 3D WORLD LAYER */}
+      {/* IMMERSIVE 3D WEBGL SURFACE GRID */}
       <div className="w-full h-full absolute inset-0 z-10">
         {loading ? (
           <div className="w-full h-full flex items-center justify-center text-zinc-500 text-sm tracking-widest animate-pulse bg-black">
@@ -104,7 +115,8 @@ export default function TheaterPage() {
           </div>
         ) : videoUrls.length === 0 ? (
           <div className="w-full h-full flex items-center justify-center text-zinc-500 text-sm tracking-widest text-center px-4 bg-black">
-            🍿 NO VIDEOS UPLOADED YET
+            🍿 NO VIDEOS UPLOADED YET <br />
+            <span className="text-xs text-zinc-600 font-normal mt-1 block">Add .mp4 tracks via the Admin CMS</span>
           </div>
         ) : (
           <Canvas
@@ -112,7 +124,9 @@ export default function TheaterPage() {
             gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
             style={{ width: '100%', height: '100%' }}
           >
-            <CinemaRoom videoUrl={videoUrls[currentIndex]} isPlaying={isPlaying} />
+            {/* Hand the video DOM node directly down into the 3D projection room matrix */}
+            <CinemaRoom videoElement={videoRef.current} />
+            
             <OrbitControls 
               enableZoom={true}
               enablePan={false}
@@ -127,35 +141,33 @@ export default function TheaterPage() {
         )}
       </div>
 
-      {/* BOTTOM CONTROL HUD LAYER: Clean, separated layout for all screen targets */}
+      {/* Control Panel Footer Panel HUD */}
       {!loading && videoUrls.length > 0 && (
         <div className="w-full p-6 absolute bottom-0 left-0 z-50 flex flex-col items-center gap-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none">
           
-          {/* Main Controls Hub */}
           <div className="flex flex-wrap items-center justify-center gap-3 pointer-events-auto max-w-lg w-full">
             <button 
               onClick={togglePlay}
-              className={`px-5 py-3 rounded-xl text-xs font-bold tracking-widest border transition text-white shadow-xl ${isPlaying ? 'bg-zinc-900/80 border-white/10' : 'bg-emerald-600 border-white/20'}`}
+              className={`px-6 py-3 rounded-xl text-xs font-bold tracking-widest border transition text-white shadow-xl ${isPlaying ? 'bg-zinc-900/90 border-white/10 hover:bg-red-600' : 'bg-emerald-600 border-white/20 hover:bg-emerald-700'}`}
             >
-              {isPlaying ? '⏸ Pause' : '▶ Play'}
+              {isPlaying ? '⏸ Pause Movie' : '▶ Play Movie'}
             </button>
 
             <button
               onClick={toggleMute}
-              className="px-5 py-3 bg-black/60 hover:bg-black border border-white/10 rounded-xl text-xs font-bold tracking-widest transition backdrop-blur-md"
+              className="px-5 py-3 bg-black/60 hover:bg-black border border-white/10 rounded-xl text-xs font-bold tracking-widest transition backdrop-blur-md shadow-xl"
             >
               {isMuted ? '🔊 Unmute' : '🔇 Mute'}
             </button>
 
             <button
               onClick={handleTriggerFullScreen}
-              className="px-5 py-3 bg-red-600 hover:bg-red-700 border border-white/10 rounded-xl text-xs font-bold tracking-widest text-white transition font-bold shadow-xl"
+              className="px-5 py-3 bg-red-600 hover:bg-red-700 border border-white/10 rounded-xl text-xs font-bold tracking-widest text-white transition shadow-xl"
             >
               🖥️ Enlarge Full Screen
             </button>
           </div>
 
-          {/* Track Switching Row */}
           {videoUrls.length > 1 && (
             <div className="flex items-center justify-between bg-black/80 border border-white/10 max-w-xs w-full px-4 py-2 rounded-xl backdrop-blur-md pointer-events-auto shadow-2xl">
               <button onClick={handlePrev} className="px-3 py-1 bg-zinc-900 rounded-lg text-xs font-bold">←</button>
