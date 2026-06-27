@@ -34,61 +34,81 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
 
   return (
     <>
-      {/* GLOBAL ROOM VISIBILITY: Turn up ambient light so walls/ceilings are visible */}
-      <ambientLight intensity={0.4} />
+      {/* HIGH-VISIBILITY LIGHTING STREAM */}
+      <ambientLight intensity={0.6} />
+      <directionalLight position={[0, 6, 2]} intensity={2.0} color="#e2e8f0" />
       
-      {/* OVERHEAD AMBIENT DOWNLIGHT: Highlights the glossy floor and wall panels */}
-      <directionalLight position={[0, 5, 2]} intensity={1.8} color="#cbd5e1" />
+      {/* Wide white screen backlight halo */}
+      <pointLight position={[0, 1.2, -3.2]} intensity={5.0} color="#cbd5e1" distance={15} decay={1.2} />
       
-      {/* WIDER BACKLIGHT GLOW: Pushed further forward to bounce a real light cone into the room */}
-      <pointLight position={[0, 1.0, -3.5]} intensity={4.5} color="#cbd5e1" distance={15} decay={1.5} />
-      
-      {/* CRIMSON RIM LIGHTS: Perfectly washing down our side wall panels */}
-      <pointLight position={[-4.8, -1.0, -2]} intensity={3.0} color="#ef4444" distance={8} />
-      <pointLight position={[4.8, -1.0, -2]} intensity={3.0} color="#ef4444" distance={8} />
+      {/* Crimson lights tracking our physical side pillars */}
+      <pointLight position={[-4.5, -0.8, -2.5]} intensity={4.0} color="#ef4444" distance={8} />
+      <pointLight position={[4.5, -0.8, -2.5]} intensity={4.0} color="#ef4444" distance={8} />
 
       <group position={[0, 0, 0]}>
         
-        {/* MOVIE SCREEN PANEL */}
+        {/* 1. MOVIE SCREEN & FRAME */}
         <mesh position={[0, 0.5, -5]}>
           <planeGeometry args={[7.1, 4.0]} />
           <meshBasicMaterial map={texture} side={THREE.DoubleSide} toneMapped={false} />
         </mesh>
 
-        {/* Outer Matte Bezel Screen Trim Frame */}
         <mesh position={[0, 0.5, -5.01]}>
           <planeGeometry args={[7.35, 4.25]} />
-          <meshStandardMaterial color="#0c0c0f" roughness={0.8} metalness={0.2} />
+          <meshStandardMaterial color="#18181b" roughness={0.7} />
         </mesh>
 
-        {/* Polished Glossy Architectural Floor Plane */}
+        {/* 2. GLOSSY CARPETED INTERIOR FLOORS */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.8, -1]}>
-          <planeGeometry args={[12, 12]} />
-          <meshStandardMaterial color="#06060a" roughness={0.15} metalness={0.7} />
+          <planeGeometry args={[14, 14]} />
+          <meshStandardMaterial color="#1e1b4b" roughness={0.3} metalness={0.4} />
         </mesh>
 
-        {/* Ceiling */}
+        {/* Ceiling Panels */}
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 3.2, -1]}>
-          <planeGeometry args={[12, 12]} />
-          <meshStandardMaterial color="#040406" roughness={0.8} />
+          <planeGeometry args={[14, 14]} />
+          <meshStandardMaterial color="#111827" roughness={0.8} />
         </mesh>
 
-        {/* Tight Stage Backdrop Wall */}
+        {/* 3. REFLECTIVE STUDIO ARCHITECTURAL WALLS (Lightened Base Colors) */}
+        {/* Stage Back Wall */}
         <mesh position={[0, 0.7, -5.15]}>
-          <planeGeometry args={[12, 6.5]} />
-          <meshStandardMaterial color="#060609" roughness={0.6} metalness={0.2} />
+          <planeGeometry args={[14, 6.5]} />
+          <meshStandardMaterial color="#1f2937" roughness={0.5} />
         </mesh>
 
-        {/* Left Studio Flanking Wall Panel */}
-        <mesh position={[-5, 0.7, -1]} rotation={[0, Math.PI / 2, 0]}>
-          <planeGeometry args={[12, 6.5]} />
-          <meshStandardMaterial color="#050507" roughness={0.4} metalness={0.3} />
+        {/* Left Main Wall */}
+        <mesh position={[-5.5, 0.7, -1]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[14, 6.5]} />
+          <meshStandardMaterial color="#111827" roughness={0.5} />
         </mesh>
 
-        {/* Right Studio Flanking Wall Panel */}
-        <mesh position={[5, 0.7, -1]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[12, 6.5]} />
-          <meshStandardMaterial color="#050507" roughness={0.4} metalness={0.3} />
+        {/* Right Main Wall */}
+        <mesh position={[5.5, 0.7, -1]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[14, 6.5]} />
+          <meshStandardMaterial color="#111827" roughness={0.5} />
+        </mesh>
+
+        {/* 4. THEATER SEATING & PHYSICAL DETAILS */}
+        {/* VIP Lounge Sofa Row 1 (Right in front of viewpoint) */}
+        <mesh position={[0, -1.5, -1.5]}>
+          <boxGeometry args={[6.5, 0.6, 1.2]} />
+          <meshStandardMaterial color="#27272a" roughness={0.4} metalness={0.2} />
+        </mesh>
+        {/* Sofa Row 1 Backrest */}
+        <mesh position={[0, -1.0, -0.9]}>
+          <boxGeometry args={[6.5, 0.8, 0.25]} />
+          <meshStandardMaterial color="#18181b" roughness={0.4} />
+        </mesh>
+
+        {/* Luxury Wood Side Accent Trims (Grounds the space) */}
+        <mesh position={[-5.4, -1.7, -1]}>
+          <boxGeometry args={[0.1, 0.2, 14]} />
+          <meshStandardMaterial color="#78350f" roughness={0.2} />
+        </mesh>
+        <mesh position={[5.4, -1.7, -1]}>
+          <boxGeometry args={[0.1, 0.2, 14]} />
+          <meshStandardMaterial color="#78350f" roughness={0.2} />
         </mesh>
 
       </group>
