@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { useVideoTexture } from '@react-three/drei';
+import { useVideoTexture, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface CinemaRoomProps {
@@ -32,149 +32,127 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
     }
   }, [texture, isPlaying, isMuted]);
 
-  // BRIGHTENED MATERIALS: Shifting away from black to visible grey/red tones
-  const cushionMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#b91c1c", roughness: 0.5, metalness: 0.1 }), []); // Classic Red Velvet Seats
-  const armrestMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#292524", roughness: 0.6 }), []);
-  const curtainMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#450a0a", roughness: 0.6, metalness: 0.1 }), []); // Warm burgundy curtain columns
-  const wallMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#334155", roughness: 0.6 }), []); // Slate grey to show lighting details
+  // LUXURY FABRIC MATRICES
+  const luxuryCouchVelvet = useMemo(() => new THREE.MeshStandardMaterial({ color: "#4c0519", roughness: 0.7, metalness: 0.0 }), []); // Rich Rosewood Burgundy Velvet
+  const sleekConsoleMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#1c1917", roughness: 0.35, metalness: 0.3 }), []); // Polished Premium Trim Console
+  const customWallMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#1e293b", roughness: 0.75 }), []); // Matte Slate Wall Panels
+  const curtainMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#2d0612", roughness: 0.8 }), []);
 
   return (
     <>
-      {/* MASSIVE LIGHTING BOOST FOR VISIBILITY ASSESSMENT */}
-      <ambientLight intensity={1.8} />
-      <directionalLight position={[0, 8, 4]} intensity={2.5} color="#ffffff" />
+      {/* PERFECT ILLUMINATION SETTINGS FOR THEATER VISIBILITY */}
+      <ambientLight intensity={1.5} />
+      <directionalLight position={[0, 6, 2]} intensity={2.2} color="#ffffff" />
       
-      {/* Downward spotlights over the room features */}
-      <pointLight position={[0, 2.5, -2]} intensity={5.0} color="#ffffff" distance={15} />
-      <pointLight position={[-4.5, 0.5, -2.5]} intensity={6.0} color="#ff3333" distance={10} />
-      <pointLight position={[4.5, 0.5, -2.5]} intensity={6.0} color="#ff3333" distance={10} />
+      {/* Floor pathway light runners to ground your custom structures */}
+      <pointLight position={[-4.5, -0.2, -2.5]} intensity={4.5} color="#ef4444" distance={8} />
+      <pointLight position={[4.5, -0.2, -2.5]} intensity={4.5} color="#ef4444" distance={8} />
 
       <group position={[0, 0, 0]}>
         
-        {/* 1. MOVIE SCREEN & DEEP SCREEN GLOW ACCENT */}
-        {/* Slightly raised screen position to clear floor geometry */}
-        <mesh position={[0, 0.8, -5]}>
+        {/* 1. ELEVATED VIDEO SURFACE MESH CONTAINER */}
+        <mesh position={[0, 1.0, -5]}>
           <planeGeometry args={[7.1, 4.0]} />
           <meshBasicMaterial map={texture} side={THREE.DoubleSide} toneMapped={false} />
         </mesh>
 
-        {/* Screen Frame Outer Bezel */}
-        <mesh position={[0, 0.8, -5.02]}>
+        {/* Outer Frame Bezel - Staggered back to prevent clipping tracks */}
+        <mesh position={[0, 1.0, -5.02]}>
           <planeGeometry args={[7.35, 4.25]} />
-          <meshStandardMaterial color="#1e293b" roughness={0.5} />
+          <meshStandardMaterial color="#0f172a" roughness={0.6} />
         </mesh>
 
-        {/* 2. BASE PLATFORM ENVIRONMENT */}
+        {/* 2. BASE INTERIOR SURFACE GRID PLATFORMS */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.8, -1]}>
           <planeGeometry args={[14, 14]} />
-          <meshStandardMaterial color="#1e1b4b" roughness={0.4} metalness={0.2} />
+          <meshStandardMaterial color="#0f0e17" roughness={0.5} metalness={0.1} />
         </mesh>
 
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 3.2, -1]}>
           <planeGeometry args={[14, 14]} />
-          <meshStandardMaterial color="#1e2937" roughness={0.7} />
+          <meshStandardMaterial color="#111827" roughness={0.8} />
         </mesh>
 
-        {/* Stage Back Backdrop Wall Panel */}
+        {/* Stage Main Backrest Wall Panel */}
         <mesh position={[0, 0.7, -5.15]}>
           <planeGeometry args={[14, 6.5]} />
-          <primitive object={wallMaterial} attach="material" />
+          <primitive object={customWallMaterial} attach="material" />
         </mesh>
 
-        {/* 3. FLUTED VELVET SIDE WALL DRAPERIES */}
+        {/* 3. VERTICAL ACOUSTIC THEATER WALL PANEL SEPARATIONS */}
         {[-4, -2, 0, 2, 4].map((zOffset, index) => (
-          <group key={`drapery-${index}`}>
+          <group key={`flute-${index}`}>
             <mesh position={[-5.45, 0.7, zOffset]}>
-              <boxGeometry args={[0.15, 6.5, 0.6]} />
+              <boxGeometry args={[0.12, 6.5, 0.5]} />
               <primitive object={curtainMaterial} attach="material" />
             </mesh>
             <mesh position={[5.45, 0.7, zOffset]}>
-              <boxGeometry args={[0.15, 6.5, 0.6]} />
+              <boxGeometry args={[0.12, 6.5, 0.5]} />
               <primitive object={curtainMaterial} attach="material" />
             </mesh>
           </group>
         ))}
 
-        {/* Base Structural Side Walls */}
-        <mesh position={[-5.5, 0.7, -1]} rotation={[0, Math.PI / 2, 0]}>
-          <planeGeometry args={[14, 6.5]} />
-          <meshStandardMaterial color="#0f172a" roughness={0.7} />
-        </mesh>
-        <mesh position={[5.5, 0.7, -1]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[14, 6.5]} />
-          <meshStandardMaterial color="#0f172a" roughness={0.7} />
-        </mesh>
+        {/* 4. CURVED FURNITURE ENGINEERING (Sleek, Proportional, Faced Correctly) */}
+        {/* VIP Lounge Row 1 Setup: Lowered to Y=-0.4 to prevent screen overlaps completely */}
+        <group position={[0, -0.4, -2.4]}>
+          
+          {/* Main Seating Platform Base Frame with smooth edge curvature */}
+          <RoundedBox 
+            args={[6.4, 0.15, 0.9]} 
+            radius={0.03} // Curve radius parameter smoothing out sharp edges
+            smoothness={4} // Vertices segment resolution mapping
+            position={[0, -1.35, 0]}
+          >
+            <primitive object={sleekConsoleMaterial} attach="material" />
+          </RoundedBox>
+          
+          {/* CURVED REAR BACKREST: Shifted to front (+Z) to face the screen correctly */}
+          <RoundedBox 
+            args={[6.4, 0.6, 0.12]} 
+            radius={0.05} // Thick luxurious corner edge smoothing curves
+            smoothness={5}
+            position={[0, -0.9, 0.4]}
+          >
+            <primitive object={luxuryCouchVelvet} attach="material" />
+          </RoundedBox>
 
-        {/* 4. REPOSITIONED SEATING ROWS (LOWERED & PUSHED BACK) */}
-        {/* Row 1: Dropped down low and moved closer to the screen out of camera block range */}
-        <group position={[0, -0.2, -3.2]}>
-          {/* Main Lounge Base */}
-          <mesh position={[0, -1.5, 0]}>
-            <boxGeometry args={[6.6, 0.4, 1.0]} />
-            <meshStandardMaterial color="#1e293b" roughness={0.5} />
-          </mesh>
-          {/* Main Lounge Backrest */}
-          <mesh position={[0, -1.0, -0.4]}>
-            <boxGeometry args={[6.6, 0.6, 0.2]} />
-            <primitive object={cushionMaterial} attach="material" />
-          </mesh>
-          {/* Armrests */}
-          {[-3.2, -1.6, 0, 1.6, 3.2].map((xOffset, i) => (
-            <mesh key={`arm-r1-${i}`} position={[xOffset, -1.15, 0]}>
-              <boxGeometry args={[0.18, 0.4, 0.8]} />
-              <primitive object={armrestMaterial} attach="material" />
-            </mesh>
+          {/* INDIVIDUAL SMOOTH COUCH SEAT CUSHIONS */}
+          {[-2.3, -0.77, 0.77, 2.3].map((xOffset, i) => (
+            <RoundedBox 
+              key={`curved-cush-${i}`} 
+              args={[1.4, 0.12, 0.75]} 
+              radius={0.04} // Gives cushions a plush, curved texture profile
+              smoothness={4}
+              position={[xOffset, -1.22, 0.02]}
+            >
+              <primitive object={luxuryCouchVelvet} attach="material" />
+            </RoundedBox>
           ))}
-          {/* Cushions */}
-          {[-2.4, -0.8, 0.8, 2.4].map((xOffset, i) => (
-            <mesh key={`cushion-r1-${i}`} position={[xOffset, -1.28, 0]}>
-              <boxGeometry args={[1.3, 0.1, 0.7]} />
-              <primitive object={cushionMaterial} attach="material" />
-            </mesh>
+
+          {/* HIGH-END RAZOR CONSOLE ARMRESTS: Reduced thickness to 0.08 with beveled curves */}
+          {[-3.15, -1.55, 0, 1.55, 3.15].map((xOffset, i) => (
+            <RoundedBox 
+              key={`curved-arm-${i}`} 
+              args={[0.08, 0.35, 0.8]} 
+              radius={0.02} // Gives armrest dividers smooth luxury trim profiles
+              smoothness={4}
+              position={[xOffset, -1.1, 0.05]}
+            >
+              <primitive object={sleekConsoleMaterial} attach="material" />
+            </RoundedBox>
           ))}
+
         </group>
 
-        {/* Row 2: Placed further back behind the camera default view to avoid lens blockages */}
-        <group position={[0, 0.1, 1.5]}>
-          {/* Elevated Step Base Platform */}
-          <mesh position={[0, -1.65, 0]}>
-            <boxGeometry args={[7.2, 0.3, 1.2]} />
-            <meshStandardMaterial color="#0f172a" roughness={0.5} />
-          </mesh>
-          {/* Lounge Base Frame */}
-          <mesh position={[0, -1.35, 0]}>
-            <boxGeometry args={[6.6, 0.4, 1.0]} />
-            <meshStandardMaterial color="#1e293b" roughness={0.5} />
-          </mesh>
-          {/* Lounge Backrest */}
-          <mesh position={[0, -0.85, -0.4]}>
-            <boxGeometry args={[6.6, 0.6, 0.2]} />
-            <primitive object={cushionMaterial} attach="material" />
-          </mesh>
-          {/* Elevated Row Armrests */}
-          {[-3.2, -1.6, 0, 1.6, 3.2].map((xOffset, i) => (
-            <mesh key={`arm-r2-${i}`} position={[xOffset, -1.0, 0]}>
-              <boxGeometry args={[0.18, 0.4, 0.8]} />
-              <primitive object={armrestMaterial} attach="material" />
-            </mesh>
-          ))}
-          {/* Elevated Row Cushions */}
-          {[-2.4, -0.8, 0.8, 2.4].map((xOffset, i) => (
-            <mesh key={`cushion-r2-${i}`} position={[xOffset, -1.13, 0]}>
-              <boxGeometry args={[1.3, 0.1, 0.7]} />
-              <primitive object={cushionMaterial} attach="material" />
-            </mesh>
-          ))}
-        </group>
-
-        {/* Grounding Luxury Side Trims */}
+        {/* Luxury Room Base Trim Runners */}
         <mesh position={[-5.4, -1.7, -1]}>
-          <boxGeometry args={[0.1, 0.2, 14]} />
-          <meshStandardMaterial color="#9a3412" roughness={0.3} />
+          <boxGeometry args={[0.08, 0.15, 14]} />
+          <meshStandardMaterial color="#451a03" roughness={0.4} />
         </mesh>
         <mesh position={[5.4, -1.7, -1]}>
-          <boxGeometry args={[0.1, 0.2, 14]} />
-          <meshStandardMaterial color="#9a3412" roughness={0.3} />
+          <boxGeometry args={[0.08, 0.15, 14]} />
+          <meshStandardMaterial color="#451a03" roughness={0.4} />
         </mesh>
 
       </group>
