@@ -1,31 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
 import SceneContainer from './components/3d/SceneContainer';
 import GalleryPage from './pages/GalleryPage';
 import PhotosPage from './pages/PhotosPage';
 import TheaterPage from './pages/TheaterPage'; 
-import LinksPage from './components/LinksPage'; // ← Securely pulled in your custom directory component
+import LinksPage from './components/LinksPage'; // ← Isolated as its own page asset view
 
 export default function App() {
-  // Centralized toggle state to show/hide the dynamic Links page smoothly
-  const [showLinks, setShowLinks] = useState(false);
-
   return (
     <Router>
       <div className="min-h-screen bg-[#05050f] text-white font-sans antialiased overflow-hidden relative">
         <Routes>
-          {/* MAIN 3D PAGE */}
+          {/* 1. COMPLETELY ISOLATED MAIN 3D PORTAL VIEW */}
           <Route path="/" element={
             <div className="relative w-full h-dvh z-10 pointer-events-auto premium-bg">
               {/* HEADER WITH GALLERY LINK */}
               <header className="fixed top-0 left-0 w-full z-50 bg-black/70 backdrop-blur-xl border-b border-white/10 px-4 sm:px-6 py-3 flex justify-between items-center gap-4">
                 <div className="h-12 sm:h-16 w-28 sm:w-36 flex items-center justify-center bg-white rounded-xl overflow-hidden border border-white/10 shadow-lg shrink-0">
-                  <img
-                    src="https://ibb.co"
-                    alt="Strong Impact Logo"
-                    className="h-full w-full object-cover object-center scale-105 select-none pointer-events-none"
-                  />
+                  {/* SAFETY PATH FIX: Ensured fallback layout block until your official logo is attached */}
+                  <span className="text-zinc-900 font-black text-xs uppercase tracking-tight px-2">Strong Impact</span>
                 </div>
                 <div className="flex gap-3">
                   <Link
@@ -54,21 +48,21 @@ export default function App() {
                 </h1>
               </div>
 
-              {/* 3D ENGINE CONTAINER SURFACE */}
+              {/* 3D SCENE ROOT CANVAS LAYER */}
               <SceneContainer />
 
-              {/* DOCK BAR CAPSULES: Sits balanced at bottom layer above 3D environment */}
+              {/* DOCK BAR CAPSULES NAVIGATION SLAT */}
               <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 w-full max-w-sm sm:max-w-md px-4">
                 
-                {/* BUTTON A: CONNECT HOOK (SMOKY GLASS WITH TIGHT CRIMSON HOVER GLOW) */}
-                <button
-                  onClick={() => setShowLinks(true)}
+                {/* BUTTON A: ROUTE ENTRY LINK FOR DIRECT ENTITY SWITCH */}
+                <Link
+                  to="/links"
                   className="flex-1 px-4 py-3 sm:px-6 bg-zinc-900/60 backdrop-blur-md border border-zinc-800/80 text-white font-black text-[11px] sm:text-xs uppercase tracking-widest rounded-full shadow-2xl transition-all duration-300 hover:border-red-600 hover:scale-105 hover:bg-zinc-900/80 active:scale-95 text-center"
                 >
                   🔗 Connect Links
-                </button>
+                </Link>
 
-                {/* BUTTON B: LEGACY PORTAL ARCHIVE (MUTED METALLIC SLATE TEXTURES) */}
+                {/* BUTTON B: LEGACY PORTAL ARCHIVE LINKS */}
                 <a
                   href="https://your-old-site-url-here.com" 
                   target="_blank"
@@ -79,12 +73,12 @@ export default function App() {
                 </a>
 
               </div>
-
-              {/* CONDITIONAL LINKS PAGE OVERLAY MODAL HOOK */}
-              {showLinks && <LinksPage onClose={() => setShowLinks(false)} />}
-
             </div>
           } />
+
+          {/* 2. THE NEW DEDICATED LINKS ENTITY ROUTE */}
+          {/* Passing native navigate utility back to base URL directory upon closure click */}
+          <Route path="/links" element={<LinksPage onClose={() => window.location.hash = '#/'} />} />
 
           {/* GALLERY STEPPING STONE */}
           <Route path="/gallery" element={<GalleryPage />} />
