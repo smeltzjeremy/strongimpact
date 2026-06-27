@@ -77,16 +77,14 @@ export default function LinksPage({ onClose }: LinksPageProps) {
   return (
     <div className="fixed inset-0 bg-[#040408] z-50 flex flex-col items-center justify-between p-4 sm:p-6 overflow-y-auto select-none perspective-[1200px]">
       
-      {/* 1. HIGH-CONTRAST LIGHT ENGINE (Forces translucent bleeding behind glass) */}
+      {/* 1. HIGH-CONTRAST LIGHT ENGINE (Grid lines removed for clean presentation) */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        {/* Intense Crimson Core Glow */}
+        {/* Deep Crimson Core Glow */}
         <div className="absolute top-[15%] left-[10%] w-[80vw] h-[80vw] max-w-[600px] bg-red-600/20 rounded-full blur-[110px] animate-[pulse_6s_infinite_alternate]" />
-        {/* Intense Royal Blue Base Glow */}
+        {/* Deep Royal Blue Base Glow */}
         <div className="absolute bottom-[10%] right-[5%] w-[80vw] h-[80vw] max-w-[650px] bg-blue-600/15 rounded-full blur-[130px] animate-[pulse_8s_infinite_alternate_1s]" />
         
-        {/* Luxury Linear Grid Matrix Overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:45px_45px]" />
-        {/* Deep perimeter shadow frame */}
+        {/* Smooth perimeter shadow vignette frame */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,#040408_98%)]" />
       </div>
 
@@ -153,13 +151,12 @@ export default function LinksPage({ onClose }: LinksPageProps) {
                 onMouseLeave={handleMouseLeave}
                 className={`group ${link.gridSpan} block p-4 bg-white/[0.02] hover:bg-white/[0.05] rounded-2xl backdrop-blur-2xl backdrop-saturate-[180%] transition-all duration-200 ease-out relative overflow-hidden flex flex-col justify-between transform-style-3d`}
                 style={{
-                  // SKEUOMORPHIC SHADOW DESIGN: Deep ambient shadow combined with high-contrast sharp white top edge reflection
                   border: '1px solid transparent',
                   borderImage: 'linear-gradient(to bottom right, rgba(255,255,255,0.15), rgba(255,255,255,0.02) 40%, transparent) 1',
                   boxShadow: `0 35px 70px -15px rgba(0, 0, 0, 0.95), inset 0 1px 0px 0 rgba(255, 255, 255, 0.12), inset 0 -3px 12px 0 rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,255,0.02)`
                 }}
               >
-                {/* DYNAMIC RADIAL SPECULAR GLOW CONDUIT: Follows mouse track over frosted textures */}
+                {/* RADIAL SPECULAR GLOW CONDUITS */}
                 <div 
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none mix-blend-overlay"
                   style={{
