@@ -22,26 +22,26 @@ interface DonationConfig {
 }
 
 export default function GetInvolvedDetails() {
-  // 📊 DATA CORES: Preserving your exact structural text mapping blocks
+  // 📊 DATA CORES: Real community-focused operational copy fields
   const [volunteer] = useState<VolunteerModule>({
-    label: "Launch Core",
-    title: "3D Studio",
-    description: "Open optimized movie theater room mesh.",
-    formUrl: "https://forms.google.com" // Ready for your link
+    label: "Join Roster",
+    title: "Volunteer Portal",
+    description: "Sign up to assist with on-field logistics, player check-ins, or local community holiday food distributions.",
+    formUrl: "https://forms.google.com"
   });
 
   const [sponsor] = useState<SponsorModule>({
-    label: "Directory",
-    title: "Links Portal",
-    description: "Connect directly with community networks.",
-    portalUrl: "https://forms.google.com" // Ready for your link
+    label: "Partners",
+    title: "Sponsorship Tiers",
+    description: "Review structural backing tiers and corporate resource packages designed to maximize community impact.",
+    portalUrl: "https://forms.google.com"
   });
 
   const [donation] = useState<DonationConfig>({
-    tagline: "NEON LIQUID",
-    subLabel: "System Core Portal",
-    processorUrl: "https://www.paypal.com", // Ready for your processor link
-    actionText: "System Blueprint Logs"
+    tagline: "FOUNDATION DONATIONS",
+    subLabel: "Direct Community Support Pipeline",
+    processorUrl: "https://www.paypal.com",
+    actionText: "Initialize Processing Terminal"
   });
 
   return (
@@ -72,7 +72,7 @@ export default function GetInvolvedDetails() {
       {/* TOP HEADER CONTROLS */}
       <div className="w-full max-w-sm mx-auto flex justify-between items-center mt-2 z-10">
         <span className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-black bg-zinc-950/50 border border-white/5 px-3.5 py-1.5 rounded-full backdrop-blur-md">
-          3D Compositor Active
+          Portal Gateway Active
         </span>
       </div>
 
@@ -97,14 +97,14 @@ export default function GetInvolvedDetails() {
               {donation.tagline}
             </h2>
             <p className="text-[10px] font-black uppercase tracking-[0.35em] mt-3 text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-500 to-red-600 [filter:drop-shadow(0_2px_6px_rgba(239,68,68,0.25))]">
-              3D Layered Suite
+              SUPPORT SYSTEM
             </p>
           </div>
 
           {/* Mini Base Information Row */}
           <div className="w-full bg-white/[0.01] border border-white/[0.03] p-3 rounded-2xl flex justify-between items-center text-[9px] uppercase tracking-widest font-black text-zinc-500 shadow-inner">
-            <span>Diagnostics</span>
-            <span className="text-emerald-400 font-mono">60fps / Safe</span>
+            <span>Secure Terminal</span>
+            <span className="text-emerald-400 font-mono">Verified / Encrypted</span>
           </div>
 
           {/* The Outline Button sitting safely inside the base plate */}
@@ -156,11 +156,11 @@ export default function GetInvolvedDetails() {
             }}
           >
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[8px] uppercase font-black tracking-widest text-zinc-500 group-hover/card2:text-red-400 transition-colors">
+              <span className="text-[8px] uppercase tracking-widest text-zinc-500 group-hover/card2:text-red-400 transition-colors">
                 {sponsor.label}
               </span>
               <span className="text-[8px] font-mono text-zinc-600 bg-black/40 px-1.5 py-0.5 rounded border border-white/5">
-                v3
+                TIERS
               </span>
             </div>
             <h3 className="text-sm font-black uppercase tracking-tight text-white text-left">
