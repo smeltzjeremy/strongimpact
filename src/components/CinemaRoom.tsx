@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useVideoTexture } from '@react-three/drei';
+import React, { useEffect, useMemo } from 'react';
+import { useVideoTexture, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface CinemaRoomProps {
@@ -43,70 +43,73 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
     }
   }, [texture, isPlaying, isMuted]);
 
+  // LUXURY MATERIAL FINISHES
+  const luxuryCouchVelvet = useMemo(() => new THREE.MeshStandardMaterial({ color: "#4c0519", roughness: 0.7, metalness: 0.0 }), []); // Rich Rosewood Burgundy Velvet
+  const sleekConsoleMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#1c1917", roughness: 0.35, metalness: 0.3 }), []); // Polished Premium Trim Console
+  const customWallMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#1e293b", roughness: 0.75 }), []); // Matte Slate Wall Panels
+  const curtainMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#310512", roughness: 0.85, metalness: 0.0 }), []); // Velvet Red Drapery
+
   return (
     <>
-      {/* PERMANENT SHOWCASE LIGHTING: High visibility across the entire room */}
+      {/* HIGH-VISIBILITY ENVIRONMENT LIGHTING */}
       <ambientLight intensity={1.4} />
       <directionalLight position={[0, 6, 3]} intensity={1.8} color="#ffffff" />
       
-      {/* Downward stage spotlights over the screen and curtains */}
-      <pointLight position={[0, 2.5, -2]} intensity={4.0} color="#ffffff" distance={15} />
-      <pointLight position={[-4.0, 0.5, -2.5]} intensity={5.0} color="#ff4444" distance={10} />
-      <pointLight position={[4.0, 0.5, -2.5]} intensity={5.0} color="#ff4444" distance={10} />
+      {/* Red accent spots angled directly down the new wavy curtain valleys */}
+      <pointLight position={[-4.0, 0.5, -2.5]} intensity={5.0} color="#ff3333" distance={10} />
+      <pointLight position={[4.0, 0.5, -2.5]} intensity={5.0} color="#ff3333" distance={10} />
 
       <group position={[0, 0, 0]}>
         
-        {/* 1. THE CORE MOVIE SCREEN */}
-        <mesh position={[0, 0.6, -5]}>
+        {/* 1. MOVIE SCREEN & FRAME BEZEL */}
+        <mesh position={[0, 1.0, -5]}>
           <planeGeometry args={[7.1, 4.0]} />
           <meshBasicMaterial map={texture} side={THREE.DoubleSide} toneMapped={false} />
         </mesh>
 
-        {/* Premium Dark Bezel Frame */}
-        <mesh position={[0, 0.6, -5.01]}>
+        <mesh position={[0, 1.0, -5.02]}>
           <planeGeometry args={[7.35, 4.25]} />
-          <meshStandardMaterial color="#1e293b" roughness={0.5} />
+          <meshStandardMaterial color="#0f172a" roughness={0.6} />
         </mesh>
 
-        {/* 2. BASE ENVIRONMENT PLATFORMS */}
+        {/* 2. ENV PLATFORMS */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.8, -1]}>
           <planeGeometry args={[14, 14]} />
-          <meshStandardMaterial color="#1e1b4b" roughness={0.4} metalness={0.2} />
+          <meshStandardMaterial color="#0f0e17" roughness={0.5} metalness={0.1} />
         </mesh>
 
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 3.2, -1]}>
           <planeGeometry args={[14, 14]} />
-          <meshStandardMaterial color="#1e2937" roughness={0.7} />
+          <meshStandardMaterial color="#111827" roughness={0.8} />
         </mesh>
 
-        {/* Slate Grey Backdrop Stage Wall */}
         <mesh position={[0, 0.7, -5.15]}>
           <planeGeometry args={[14, 6.5]} />
-          <meshStandardMaterial color="#334155" roughness={0.6} />
+          <primitive object={customWallMaterial} attach="material" />
         </mesh>
 
-        {/* 3. FLOWING VELVET SIDE WALL DRAPERIES - Moved inward to frame the screen closely */}
-        {/* Left Side Curtain Assembly */}
-        <group position={[-4.3, 0.7, -1]}>
-          {[-4.5, -3.5, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5].map((zOffset, index) => (
-            <mesh key={`left-curtain-${index}`} position={[Math.sin(index * 2) * 0.08, 0, zOffset]}>
-              <cylinderGeometry args={[0.22, 0.22, 6.5, 16]} />
-              <meshStandardMaterial color="#450a0a" roughness={0.6} metalness={0.1} />
-            </mesh>
-          ))}
-        </group>
+        {/* 3. CONTINUOUS FLUTED THEATER CURTAINS (True Mathematical Folds) */}
+        {/* Generates a tightly woven, seamless wavy pattern along the side boundaries */}
+        {Array.from({ length: 45 }).map((_, i) => {
+          const zPos = -4.5 + i * 0.2; // Spacing along the depth vector
+          const waveOffset = Math.sin(i * 1.4) * 0.12; // True high-frequency curve pleat equation
+          return (
+            <group key={`theater-curtain-folds-${i}`}>
+              {/* Left Wing Drapery */}
+              <mesh position={[-4.4 + waveOffset, 0.7, zPos]}>
+                <cylinderGeometry args={[0.1, 0.1, 6.5, 8]} />
+                <primitive object={curtainMaterial} attach="material" />
+              </mesh>
+              {/* Right Wing Drapery */}
+              <mesh position={[4.4 - waveOffset, 0.7, zPos]}>
+                <cylinderGeometry args={[0.1, 0.1, 6.5, 8]} />
+                <primitive object={curtainMaterial} attach="material" />
+              </mesh>
+            </group>
+          );
+        })}
 
-        {/* Right Side Curtain Assembly */}
-        <group position={[4.3, 0.7, -1]}>
-          {[-4.5, -3.5, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5].map((zOffset, index) => (
-            <mesh key={`right-curtain-${index}`} position={[Math.sin(index * 2) * 0.08, 0, zOffset]}>
-              <cylinderGeometry args={[0.22, 0.22, 6.5, 16]} />
-              <meshStandardMaterial color="#450a0a" roughness={0.6} metalness={0.1} />
-            </mesh>
-          ))}
-        </group>
-
-        {/* Structural Boundary Side Walls */}
+        {/* Outer Boundary Shell Walls */}
         <mesh position={[-5.5, 0.7, -1]} rotation={[0, Math.PI / 2, 0]}>
           <planeGeometry args={[14, 6.5]} />
           <meshStandardMaterial color="#0f172a" roughness={0.7} />
@@ -116,7 +119,32 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
           <meshStandardMaterial color="#0f172a" roughness={0.7} />
         </mesh>
 
-        {/* Grounding Trim Runners */}
+        {/* 4. RESTORED SEATING ARCHITECTURE (Faced Forward & Unobstructed) */}
+        <group position={[0, -0.4, -2.4]}>
+          
+          <RoundedBox args={[6.4, 0.15, 0.9]} radius={0.03} smoothness={4} position={[0, -1.35, 0]}>
+            <primitive object={sleekConsoleMaterial} attach="material" />
+          </RoundedBox>
+          
+          <RoundedBox args={[6.4, 0.6, 0.12]} radius={0.05} smoothness={5} position={[0, -0.9, 0.4]}>
+            <primitive object={luxuryCouchVelvet} attach="material" />
+          </RoundedBox>
+
+          {[-2.3, -0.77, 0.77, 2.3].map((xOffset, i) => (
+            <RoundedBox key={`cush-${i}`} args={[1.4, 0.12, 0.75]} radius={0.04} smoothness={4} position={[xOffset, -1.22, 0.02]}>
+              <primitive object={luxuryCouchVelvet} attach="material" />
+            </RoundedBox>
+          ))}
+
+          {[-3.15, -1.55, 0, 1.55, 3.15].map((xOffset, i) => (
+            <RoundedBox key={`arm-${i}`} args={[0.08, 0.35, 0.8]} radius={0.02} smoothness={4} position={[xOffset, -1.1, 0.05]}>
+              <primitive object={sleekConsoleMaterial} attach="material" />
+            </RoundedBox>
+          ))}
+
+        </group>
+
+        {/* Base Side Wood Trims */}
         <mesh position={[-5.4, -1.7, -1]}>
           <boxGeometry args={[0.08, 0.15, 14]} />
           <meshStandardMaterial color="#9a3412" roughness={0.3} />
