@@ -17,29 +17,29 @@ export default function EventsPage(): React.JSX.Element {
   const hubs: BentoHub[] = [
     {
       name: "Upcoming Calendar",
-      description: "Football camps, fundraisers, and community activities schedules.",
-      path: "/events/calendar",
+      description: "Track live administrative community camps and schedule blocks.",
+      path: "/events/details",
       gridSpan: "col-span-2 h-[125px]",
-      brandColor: "bg-gradient-to-tr from-red-600 to-rose-600",
-      glowColor: "rgba(220, 38, 38, 0.3)",
+      brandColor: "bg-gradient-to-tr from-crimson-600 via-red-500 to-rose-500",
+      glowColor: "rgba(239, 68, 68, 0.3)",
       icon: "📅"
     },
     {
       name: "Special Guests",
-      description: "Profiles of collegiate and professional athletes coaching camps.",
-      path: "/events/guests",
+      description: "Collegiate and professional consulting rosters.",
+      path: "/events/details",
       gridSpan: "col-span-1 h-[130px]",
-      brandColor: "bg-gradient-to-tr from-purple-600 to-blue-600",
-      glowColor: "rgba(147, 51, 234, 0.3)",
-      icon: "🌟"
+      brandColor: "bg-gradient-to-tr from-zinc-800 to-zinc-950",
+      glowColor: "rgba(255, 255, 255, 0.08)",
+      icon: "👤"
     },
     {
       name: "Registration Hub",
-      description: "Secure placement forms for upcoming development sessions.",
-      path: "/events/register",
+      description: "Secure baseline processing portal options.",
+      path: "/events/details",
       gridSpan: "col-span-1 h-[130px]",
-      brandColor: "bg-gradient-to-tr from-emerald-600 to-teal-600",
-      glowColor: "rgba(16, 185, 129, 0.3)",
+      brandColor: "bg-gradient-to-tr from-red-600 to-amber-600",
+      glowColor: "rgba(220, 38, 38, 0.3)",
       icon: "📝"
     }
   ];
@@ -47,7 +47,7 @@ export default function EventsPage(): React.JSX.Element {
   return (
     <div className="fixed inset-0 bg-[#030306] z-10 flex flex-col items-center justify-between p-4 sm:p-6 overflow-y-auto select-none perspective-[1200px]">
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute bottom-[20%] right-[10%] w-[70vw] h-[70vw] bg-blue-600/5 rounded-full blur-[120px] animate-[pulse_8s_infinite_alternate]" />
+        <div className="absolute top-[20%] right-[10%] w-[70vw] h-[70vw] bg-red-600/10 rounded-full blur-[120px] animate-[pulse_6s_infinite_alternate]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,#030306_98%)]" />
       </div>
       
@@ -56,10 +56,10 @@ export default function EventsPage(): React.JSX.Element {
         <span className="text-[9px] uppercase font-black tracking-widest text-zinc-500 opacity-60">Stepping Stone 04</span>
       </div>
 
-      <div className="w-full max-w-md flex flex-col justify-center items-center z-10 py-6">
+      <div className="w-full max-w-md flex flex-col justify-center items-center z-10 py-6 my-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-400 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">FOUNDATION <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-rose-600 font-black">EVENTS</span></h1>
-          <p className="text-[8px] uppercase tracking-widest text-zinc-400 font-black mt-3 bg-white/[0.02] border border-white/10 px-4 py-2 rounded-full inline-block backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">Schedules & Action</p>
+          <p className="text-[8px] uppercase tracking-widest text-zinc-400 font-black mt-3 bg-white/[0.02] border border-white/10 px-4 py-2 rounded-full inline-block backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">Schedules & Action Hub</p>
         </div>
 
         <div className="w-full grid grid-cols-2 gap-4">
@@ -106,7 +106,7 @@ export default function EventsPage(): React.JSX.Element {
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none mix-blend-screen" style={{ background: `radial-gradient(100px circle at var(--mx, 0px) var(--my, 0px), ${hub.glowColor}, transparent 100%)` }} />
 
                 <div className="flex items-center justify-between w-full relative z-10 pointer-events-none">
-                  <div className={`p-2.5 rounded-xl ${hub.brandColor} text-white shadow-lg shadow-black/40 group-hover:scale-105 transition-transform`}>{hub.icon}</div>
+                  <div className="p-2.5 rounded-xl bg-zinc-900 border border-white/10 text-white shadow-lg shadow-black/40 group-hover:scale-105 transition-transform">{hub.icon}</div>
                   <div className="text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all text-xs font-black">➔</div>
                 </div>
                 <div className="text-left w-full relative z-10 mt-2 pointer-events-none">

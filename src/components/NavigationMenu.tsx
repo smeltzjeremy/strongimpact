@@ -41,9 +41,9 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
       parent: 'Events',
       parentPath: '/events', 
       subCategories: [
-        { title: 'Upcoming Calendar', path: '/events' },
-        { title: 'Special Guests', path: '/events' },
-        { title: 'Registration Hub', path: '/events' }
+        { title: 'Upcoming Calendar', path: '/events/details' },
+        { title: 'Special Guests', path: '/events/details' },
+        { title: 'Registration Hub', path: '/events/details' }
       ]
     },
     {
