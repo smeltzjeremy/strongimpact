@@ -18,23 +18,24 @@ interface NavigationMenuProps {
 }
 
 export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps) {
+  // 🛠️ FIXING THE CROSS-WIRED ROUTE MATRIX HERE
   const categories: MenuCategory[] = [
     {
       parent: 'About Us',
       parentPath: '/about', 
       subCategories: [
-        { title: 'Our Story', path: '/about/details?section=story' },
-        { title: 'Core Values', path: '/about/details?section=values' },
-        { title: 'Meet Our Team', path: '/about/details?section=team' }
+        { title: 'Our Story', path: '/about/details' },
+        { title: 'Core Values', path: '/about/details' },
+        { title: 'Meet Our Team', path: '/about/details' }
       ]
     },
     {
       parent: 'Programs',
       parentPath: '/programs', 
       subCategories: [
-        { title: 'Youth Development', path: '/programs/details' }, // ← Fixed Path
-        { title: 'Education & Mentorship', path: '/programs/details' }, // ← Fixed Path
-        { title: 'Community Outreach', path: '/programs/details' } // ← Fixed Path
+        { title: 'Youth Development', path: '/programs/details' }, 
+        { title: 'Education & Mentorship', path: '/programs/details' }, 
+        { title: 'Community Outreach', path: '/programs/details' } 
       ]
     },
     {
@@ -50,17 +51,17 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
       parent: 'Gallery',
       parentPath: '/gallery', 
       subCategories: [
-        { title: 'Photos Hub', path: '/photos' },
-        { title: '3D Cinema Suite', path: '/theater' }
+        { title: 'Photos Hub', path: '/photos' }, // ← Fixed: Straight routing line mapping to App router
+        { title: '3D Cinema Suite', path: '/theater' } // ← Fixed: Straight routing line mapping to App router
       ]
     },
     {
       parent: 'Get Involved',
       parentPath: '/get-involved', 
       subCategories: [
-        { title: 'Volunteer Portal', path: '/get-involved' },
-        { title: 'Sponsorship Tiers', path: '/get-involved' },
-        { title: 'Donation Processor', path: '/get-involved' }
+        { title: 'Volunteer Portal', path: '/get-involved/details' }, // ← Fixed: Points directly to standalone layout view
+        { title: 'Sponsorship Tiers', path: '/get-involved/details' }, // ← Fixed: Points directly to standalone layout view
+        { title: 'Donation Processor', path: '/get-involved/details' } // ← Fixed: Points directly to standalone layout view
       ]
     },
     {
@@ -76,11 +77,11 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex justify-end animate-in fade-in duration-300 select-none">
+    <div className="fixed inset-0 z-[100] flex justify-end select-none">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
       <div 
-        className="w-full max-w-md h-full bg-zinc-950/75 border-l border-white/10 backdrop-blur-3xl backdrop-saturate-[180%] p-6 sm:p-10 flex flex-col justify-between shadow-[-10px_0_50px_rgba(0,0,0,0.9)] overflow-y-auto relative z-10 animate-in slide-in-from-right duration-300 ease-out"
+        className="w-full max-w-md h-full bg-zinc-950/75 border-l border-white/10 backdrop-blur-3xl backdrop-saturate-[180%] p-6 sm:p-10 flex flex-col justify-between shadow-[-10px_0_50px_rgba(0,0,0,0.95)] overflow-y-auto relative z-10"
         style={{
           boxShadow: 'inset 1px 0 0 0 rgba(255, 255, 255, 0.08), inset 0 3px 12px 0 rgba(0, 0, 0, 0.5)'
         }}
@@ -115,7 +116,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
                     key={sIdx}
                     to={sub.path}
                     onClick={onClose}
-                    className="text-[11px] sm:text-xs font-bold text-zinc-400 hover:text-red-500 tracking-wide transition-colors duration-200 whitespace-nowrap relative after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[1px] after:bg-red-600 hover:after:w-full after:transition-all after:duration-300"
+                    className="text-[11px] sm:text-xs font-bold text-zinc-400 hover:text-red-500 tracking-wide transition-colors duration-200 whitespace-nowrap relative"
                   >
                     {sub.title}
                   </Link>
