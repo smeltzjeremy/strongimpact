@@ -1,27 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { supabase } from '../lib/supabaseClient';
 import CinemaRoom from '../components/CinemaRoom';
-import * as THREE from 'three';
-
-// Synchronization Component running directly inside the animation loop
-function CameraSynchronizer({ mainControlsRef, videoCameraRef }: { 
-  mainControlsRef: React.RefObject<any>; 
-  videoCameraRef: React.RefObject<THREE.Camera | null>; 
-}) {
-  useFrame(() => {
-    // Directly copy the matrix coordinates from Canvas 1 to Canvas 2 with zero lag
-    if (mainControlsRef.current && videoCameraRef.current) {
-      const mainCamera = mainControlsRef.current.object;
-      videoCameraRef.current.position.copy(mainCamera.position);
-      videoCameraRef.current.quaternion.copy(mainCamera.quaternion);
-      videoCameraRef.current.updateMatrixWorld();
-    }
-  });
-  return null;
-}
 
 export default function TheaterPage() {
   const [videoUrls, setVideoUrls] = useState<string[]>([]);
@@ -31,10 +13,6 @@ export default function TheaterPage() {
   const [isEnlargedMode, setIsEnlargedMode] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(true);
-
-  // Hardware Memory Hooks - No Lag, No State Re-renders
-  const mainControlsRef = useRef<any>(null);
-  const videoCameraRef = useRef<THREE.Camera | null>(null);
 
   const fetchVideos = async () => {
     try {
@@ -81,46 +59,15 @@ export default function TheaterPage() {
         </Link>
       </div>
 
-      {/* LAYER 1 (BOTTOM): INTERACTIVE DECORATION ROOM CANVAS */}
+      {/* SINGLE UNIFIED HIGH-PERFORMANCE CANVAS */}
       <div className="w-full h-full absolute inset-0 z-10 pointer-events-auto">
         {!loading && videoUrls.length > 0 && (
-          <Canvas camera={{ position: [0, 0, 4.5], fov: 50 }}>
-            <ambientLight intensity={0.5} />
-            <pointLight position={[0, 3, 0]} intensity={1} color="#fde047" />
-            
-            {/* Base room floor structure */}
-            <mesh position={[0, -1.8, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-              <planeGeometry args={[20, 20]} />
-              <meshStandardMaterial color="#0b0f19" roughness={0.9} />
-            </mesh>
-            
-            <OrbitControls 
-              ref={mainControlsRef}
-              enableZoom={true} 
-              enablePan={false} 
-              minDistance={2.0} 
-              maxDistance={7.0} 
-            />
-            
-            {/* Bridge component syncing the hardware positions directly */}
-            <CameraSynchronizer mainControlsRef={mainControlsRef} videoCameraRef={videoCameraRef} />
-          </Canvas>
-        )}
-      </div>
-
-      {/* LAYER 2 (TOP): TRANSPARENT VIDEO SCREEN STREAM CANVAS */}
-      <div className="w-full h-full absolute inset-0 z-20 pointer-events-none">
-        {!loading && videoUrls.length > 0 && (
           <Canvas 
-            camera={{ position: [0, 0, 4.5], fov: 50 }} 
-            gl={{ alpha: true }} 
-            style={{ background: 'transparent' }}
-            onCreated={({ camera }) => {
-              videoCameraRef.current = camera;
-              camera.matrixAutoUpdate = false; // Gives complete manual matrix authority over this layer
-            }}
+            camera={{ position: [0, 0, 4.5], fov: 50 }}
+            gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
           >
             <CinemaRoom videoUrl={videoUrls[currentIndex]} isPlaying={isPlaying} isMuted={isMuted} />
+            <OrbitControls enableZoom={true} enablePan={false} minDistance={2.0} maxDistance={7.0} />
           </Canvas>
         )}
       </div>
