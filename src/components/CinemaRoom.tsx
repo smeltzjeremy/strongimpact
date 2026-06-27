@@ -23,7 +23,7 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
       const video = texture.image as HTMLVideoElement;
       if (video) {
         if (isPlaying) {
-          video.play().catch(err => console.log("Playback interaction wait:", err));
+          video.play().catch(err => console.log("3D media play wait:", err));
         } else {
           video.pause();
         }
@@ -34,76 +34,57 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
 
   return (
     <>
-      {/* ATMOSPHERIC STUDIO LIGHTING */}
-      <ambientLight intensity={0.1} />
-      <directionalLight position={[0, 5, -2]} intensity={1.5} color="#e2e8f0" />
+      <ambientLight intensity={0.05} />
       
-      {/* RED ACCENT SOURCE LIGHTS - Lowered position to wash across the floor panels */}
-      <pointLight position={[-7, -1.5, -4]} intensity={1.8} color="#ef4444" distance={12} />
-      <pointLight position={[7, -1.5, -4]} intensity={1.8} color="#ef4444" distance={12} />
+      {/* Real ambient light projecting from behind the frame map onto the walls smoothly */}
+      <pointLight position={[0, 0.5, -4.9]} intensity={3.5} color="#cbd5e1" distance={8} decay={2} />
+      
+      {/* Crimson lights repositioned to perfectly hit the custom close-quarters walls */}
+      <pointLight position={[-4.8, -1.0, -3]} intensity={2.5} color="#ef4444" distance={6} />
+      <pointLight position={[4.8, -1.0, -3]} intensity={2.5} color="#ef4444" distance={6} />
 
       <group position={[0, 0, 0]}>
         
-        {/* 1. THE CORE VIDEO MESH SURFACE */}
+        {/* MOVIE SCREEN PANEL */}
         <mesh position={[0, 0.5, -5]}>
           <planeGeometry args={[7.1, 4.0]} />
           <meshBasicMaterial map={texture} side={THREE.DoubleSide} toneMapped={false} />
         </mesh>
 
-        {/* GLOWING SCREEN BACKLIGHT HALO */}
-        {/* This bleeds the video colors outward behind the screen onto your studio walls */}
-        <mesh position={[0, 0.5, -5.08]}>
-          <planeGeometry args={[8.8, 5.2]} />
-          <meshStandardMaterial 
-            color="#ffffff" 
-            emissiveMap={texture} 
-            emissive="#ffffff" 
-            emissiveIntensity={1.5} 
-            transparent 
-            opacity={0.4} 
-          />
+        {/* Outer Matte Bezel Screen Trim Frame */}
+        <mesh position={[0, 0.5, -5.01]}>
+          <planeGeometry args={[7.35, 4.25]} />
+          <meshStandardMaterial color="#0c0c0f" roughness={0.8} metalness={0.2} />
         </mesh>
 
-        {/* Premium Dark Outer Bezel Frame */}
-        <mesh position={[0, 0.5, -5.04]}>
-          <planeGeometry args={[7.4, 4.3]} />
-          <meshStandardMaterial color="#09090b" roughness={0.7} metalness={0.3} />
+        {/* Polished Glossy Architectural Floor Plane */}
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.8, -1]}>
+          <planeGeometry args={[12, 12]} />
+          <meshStandardMaterial color="#06060a" roughness={0.15} metalness={0.7} />
         </mesh>
 
-        {/* 2. GLOSSY ARCHITECTURAL SURFACES */}
-        {/* Reflective Studio Charcoal Flooring Panels */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.8, -2]}>
-          <planeGeometry args={[24, 16]} />
-          <meshStandardMaterial 
-            color="#0a0a0f" 
-            roughness={0.18} // Low roughness makes it glossy like dark polished concrete
-            metalness={0.6}  // Reflects the movie screen backlight halo beautifully
-          />
+        {/* Ceiling */}
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 3.2, -1]}>
+          <planeGeometry args={[12, 12]} />
+          <meshStandardMaterial color="#040406" roughness={0.8} />
         </mesh>
 
-        {/* Acoustic Matte Ceiling Dropper */}
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 3.8, -2]}>
-          <planeGeometry args={[24, 16]} />
-          <meshStandardMaterial color="#07070a" roughness={0.6} metalness={0.2} />
+        {/* Tight Stage Backdrop Wall */}
+        <mesh position={[0, 0.7, -5.15]}>
+          <planeGeometry args={[12, 6.5]} />
+          <meshStandardMaterial color="#060609" roughness={0.6} metalness={0.2} />
         </mesh>
 
-        {/* 3. PUSHED-BACK ROOM WALLS (Creates Depth) */}
-        {/* Rear Studio Stage Wall - Pushed back safely behind the screen setup */}
-        <mesh position={[0, 1.0, -8]}>
-          <planeGeometry args={[24, 12]} />
-          <meshStandardMaterial color="#050507" roughness={0.35} metalness={0.5} />
+        {/* Left Studio Flanking Wall Panel */}
+        <mesh position={[-5, 0.7, -1]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[12, 6.5]} />
+          <meshStandardMaterial color="#050507" roughness={0.4} metalness={0.3} />
         </mesh>
 
-        {/* Left Side Wall Flanking Profile */}
-        <mesh position={[-12, 1.0, -2]} rotation={[0, Math.PI / 2, 0]}>
-          <planeGeometry args={[16, 12]} />
-          <meshStandardMaterial color="#07070a" roughness={0.25} metalness={0.4} />
-        </mesh>
-
-        {/* Right Side Wall Flanking Profile */}
-        <mesh position={[12, 1.0, -2]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[16, 12]} />
-          <meshStandardMaterial color="#07070a" roughness={0.25} metalness={0.4} />
+        {/* Right Studio Flanking Wall Panel */}
+        <mesh position={[5, 0.7, -1]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[12, 6.5]} />
+          <meshStandardMaterial color="#050507" roughness={0.4} metalness={0.3} />
         </mesh>
 
       </group>
