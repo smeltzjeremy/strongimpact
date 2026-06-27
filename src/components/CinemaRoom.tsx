@@ -1,4 +1,4 @@
-Import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useVideoTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
