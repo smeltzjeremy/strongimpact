@@ -18,7 +18,7 @@ export default function ProgramsPage(): React.JSX.Element {
     {
       name: "Youth Development",
       description: "Football camps, athletic training, and leadership workshops.",
-      path: "/programs/development",
+      path: "/programs/details", // ← Fixed
       gridSpan: "col-span-1 h-[130px]",
       brandColor: "bg-gradient-to-tr from-purple-600 to-indigo-600",
       glowColor: "rgba(124, 58, 237, 0.3)",
@@ -27,7 +27,7 @@ export default function ProgramsPage(): React.JSX.Element {
     {
       name: "Education & Mentorship",
       description: "Academic tracking, college readiness, and guest speakers.",
-      path: "/programs/mentorship",
+      path: "/programs/details", // ← Fixed
       gridSpan: "col-span-1 h-[130px]",
       brandColor: "bg-gradient-to-tr from-emerald-600 to-teal-600",
       glowColor: "rgba(16, 185, 129, 0.3)",
@@ -36,7 +36,7 @@ export default function ProgramsPage(): React.JSX.Element {
     {
       name: "Community Outreach",
       description: "Holiday givebacks, school supply drives, and family support.",
-      path: "/programs/outreach",
+      path: "/programs/details", // ← Fixed
       gridSpan: "col-span-2 h-[125px]",
       brandColor: "bg-gradient-to-tr from-red-600 to-rose-600",
       glowColor: "rgba(220, 38, 38, 0.3)",
