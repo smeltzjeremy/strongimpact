@@ -9,9 +9,10 @@ import LinksPage from './components/LinksPage';
 import NavigationMenu from './components/NavigationMenu';
 
 import AboutPage from './pages/AboutPage';
-import AboutDetails from './pages/AboutDetails'; // ← Fully Imported
+import AboutDetails from './pages/AboutDetails';
 import ProgramsPage from './pages/ProgramsPage';
 import EventsPage from './pages/EventsPage';
+import EventDetails from './pages/EventDetails'; // ← Fully Imported
 import GetInvolvedPage from './pages/GetInvolvedPage';
 
 export default function App() {
@@ -86,6 +87,7 @@ export default function App() {
           <Route path="/about/details" element={<AboutDetails />} />
           <Route path="/programs" element={<ProgramsPage />} />
           <Route path="/events" element={<EventsPage />} />
+          <Route path="/events/details" element={<EventDetails />} /> {/* ← Registered */}
           <Route path="/get-involved" element={<GetInvolvedPage />} />
           
           <Route path="/links" element={<LinksPage onClose={() => window.location.hash = '#/'} />} />
