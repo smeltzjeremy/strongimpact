@@ -4,12 +4,13 @@ import { Html } from '@react-three/drei';
 import { useNavigate } from 'react-router-dom';
 import * as THREE from 'three';
 
+// UPDATED BRAND CONFIGURATION DATA LAYER WITH CORRECT ACTIVE ROUTES
 const MENU_ITEMS = [
-  { id: 1, label: 'GRAPHICS', color: '#00ffcc' },
-  { id: 2, label: 'PIPELINE', color: '#3399ff' },
-  { id: 3, label: 'DATABASE', color: '#ff3366' },
-  { id: 4, label: 'GALLERY', color: '#ff3344' }, 
-  { id: 5, label: 'NETWORKS', color: '#b833ff' }
+  { id: 1, label: 'ABOUT US', path: '/about', color: '#00ffcc' },
+  { id: 2, label: 'PROGRAMS', path: '/programs', color: '#3399ff' },
+  { id: 3, label: 'EVENTS', path: '/events', color: '#ff3366' },
+  { id: 4, label: 'GALLERY', path: '/gallery', color: '#ff3344' }, 
+  { id: 5, label: 'GET INVOLVED', path: '/get-involved', color: '#b833ff' }
 ];
 
 function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
@@ -34,12 +35,11 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
     }
   });
 
+  // SURGICAL INTERACTION OVERRIDE: Routes flawlessly to each matching category sub-page
   const handlePipelineLaunch = (e) => {
     e.stopPropagation();
-    if (item.label === 'GALLERY') {
-      navigate('/gallery');
-    } else {
-      alert(`Opening ${item.label} Pipeline...`);
+    if (item.path) {
+      navigate(item.path);
     }
   };
 
@@ -70,10 +70,10 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
         />
       </mesh>
 
-      {/* 🏷️ LABEL ON CARD (Centered directly over the glass crystal plane) */}
+      {/* 🏷️ LABEL ON CARD */}
       <Html position={[0, 0, 0.06]} center style={{ pointerEvents: 'none' }}>
         <span 
-          className="font-black text-xs tracking-widest uppercase select-none bg-black/70 px-4 py-1.5 rounded-full backdrop-blur-md border transition-all duration-300 shadow" 
+          className="font-black text-xs tracking-widest uppercase select-none bg-black/70 px-4 py-1.5 rounded-full backdrop-blur-md border transition-all duration-300 shadow whitespace-nowrap" 
           style={{ 
             color: hovered ? item.color : '#ffffff',
             borderColor: hovered ? `${item.color}44` : 'rgba(255,255,255,0.1)'
@@ -83,7 +83,7 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
         </span>
       </Html>
 
-      {/* 🏈 HOLOGRAPHIC FOOTBALL TARGET (Lowered position with custom hover metadata) */}
+      {/* 🏈 HOLOGRAPHIC LAUNCH BUTTON TARGET */}
       <Html position={[0, 0.65, 0]} center style={{ pointerEvents: 'auto' }}>
         <div className="flex flex-col items-center gap-1.5 select-none">
           
@@ -122,7 +122,7 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
             />
           </button>
 
-          {/* Contextual Hover Label (Fades in dynamically) */}
+          {/* Contextual Hover Label */}
           <div 
             className={`transition-all duration-300 transform pointer-events-none ${
               hovered ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-1 scale-95'
