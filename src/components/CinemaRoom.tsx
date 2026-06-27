@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useVideoTexture, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -43,19 +43,13 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
     }
   }, [texture, isPlaying, isMuted]);
 
-  // LUXURY MATERIAL FINISHES
-  const luxuryCouchVelvet = useMemo(() => new THREE.MeshStandardMaterial({ color: "#4c0519", roughness: 0.7, metalness: 0.0 }), []); // Rich Rosewood Burgundy Velvet
-  const sleekConsoleMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#1c1917", roughness: 0.35, metalness: 0.3 }), []); // Polished Premium Trim Console
-  const customWallMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#1e293b", roughness: 0.75 }), []); // Matte Slate Wall Panels
-  const curtainMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#310512", roughness: 0.85, metalness: 0.0 }), []); // Velvet Red Drapery
-
   return (
     <>
       {/* HIGH-VISIBILITY ENVIRONMENT LIGHTING */}
       <ambientLight intensity={1.4} />
       <directionalLight position={[0, 6, 3]} intensity={1.8} color="#ffffff" />
       
-      {/* Red accent spots angled directly down the new wavy curtain valleys */}
+      {/* Red accent spots angled directly down the curtain folds */}
       <pointLight position={[-4.0, 0.5, -2.5]} intensity={5.0} color="#ff3333" distance={10} />
       <pointLight position={[4.0, 0.5, -2.5]} intensity={5.0} color="#ff3333" distance={10} />
 
@@ -85,25 +79,25 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
 
         <mesh position={[0, 0.7, -5.15]}>
           <planeGeometry args={[14, 6.5]} />
-          <primitive object={customWallMaterial} attach="material" />
+          <meshStandardMaterial color="#1e293b" roughness={0.75} />
         </mesh>
 
-        {/* 3. CONTINUOUS FLUTED THEATER CURTAINS (True Mathematical Folds) */}
-        {/* Generates a tightly woven, seamless wavy pattern along the side boundaries */}
+        {/* 3. OPTIMIZED HIGH-PERFORMANCE VELVET CURTAINS */}
+        {/* Lowered cylinder resolution definitions to instantly fix rendering lags */}
         {Array.from({ length: 45 }).map((_, i) => {
-          const zPos = -4.5 + i * 0.2; // Spacing along the depth vector
-          const waveOffset = Math.sin(i * 1.4) * 0.12; // True high-frequency curve pleat equation
+          const zPos = -4.5 + i * 0.2; 
+          const waveOffset = Math.sin(i * 1.4) * 0.12; 
           return (
             <group key={`theater-curtain-folds-${i}`}>
               {/* Left Wing Drapery */}
               <mesh position={[-4.4 + waveOffset, 0.7, zPos]}>
-                <cylinderGeometry args={[0.1, 0.1, 6.5, 8]} />
-                <primitive object={curtainMaterial} attach="material" />
+                <cylinderGeometry args={[0.1, 0.1, 6.5, 5]} />
+                <meshStandardMaterial color="#310512" roughness={0.85} metalness={0.0} />
               </mesh>
               {/* Right Wing Drapery */}
               <mesh position={[4.4 - waveOffset, 0.7, zPos]}>
-                <cylinderGeometry args={[0.1, 0.1, 6.5, 8]} />
-                <primitive object={curtainMaterial} attach="material" />
+                <cylinderGeometry args={[0.1, 0.1, 6.5, 5]} />
+                <meshStandardMaterial color="#310512" roughness={0.85} metalness={0.0} />
               </mesh>
             </group>
           );
@@ -119,26 +113,26 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
           <meshStandardMaterial color="#0f172a" roughness={0.7} />
         </mesh>
 
-        {/* 4. RESTORED SEATING ARCHITECTURE (Faced Forward & Unobstructed) */}
+        {/* 4. SEATING ARCHITECTURE */}
         <group position={[0, -0.4, -2.4]}>
           
-          <RoundedBox args={[6.4, 0.15, 0.9]} radius={0.03} smoothness={4} position={[0, -1.35, 0]}>
-            <primitive object={sleekConsoleMaterial} attach="material" />
+          <RoundedBox args={[6.4, 0.15, 0.9]} radius={0.03} smoothness={3} position={[0, -1.35, 0]}>
+            <meshStandardMaterial color="#1c1917" roughness={0.35} metalness={0.3} />
           </RoundedBox>
           
-          <RoundedBox args={[6.4, 0.6, 0.12]} radius={0.05} smoothness={5} position={[0, -0.9, 0.4]}>
-            <primitive object={luxuryCouchVelvet} attach="material" />
+          <RoundedBox args={[6.4, 0.6, 0.12]} radius={0.05} smoothness={3} position={[0, -0.9, 0.4]}>
+            <meshStandardMaterial color="#4c0519" roughness={0.7} metalness={0.0} />
           </RoundedBox>
 
           {[-2.3, -0.77, 0.77, 2.3].map((xOffset, i) => (
-            <RoundedBox key={`cush-${i}`} args={[1.4, 0.12, 0.75]} radius={0.04} smoothness={4} position={[xOffset, -1.22, 0.02]}>
-              <primitive object={luxuryCouchVelvet} attach="material" />
+            <RoundedBox key={`cush-${i}`} args={[1.4, 0.12, 0.75]} radius={0.04} smoothness={3} position={[xOffset, -1.22, 0.02]}>
+              <meshStandardMaterial color="#4c0519" roughness={0.7} metalness={0.0} />
             </RoundedBox>
           ))}
 
           {[-3.15, -1.55, 0, 1.55, 3.15].map((xOffset, i) => (
-            <RoundedBox key={`arm-${i}`} args={[0.08, 0.35, 0.8]} radius={0.02} smoothness={4} position={[xOffset, -1.1, 0.05]}>
-              <primitive object={sleekConsoleMaterial} attach="material" />
+            <RoundedBox key={`arm-${i}`} args={[0.08, 0.35, 0.8]} radius={0.02} smoothness={3} position={[xOffset, -1.1, 0.05]}>
+              <meshStandardMaterial color="#1c1917" roughness={0.35} metalness={0.3} />
             </RoundedBox>
           ))}
 
