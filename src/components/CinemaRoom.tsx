@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useVideoTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -32,83 +32,166 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
     }
   }, [texture, isPlaying, isMuted]);
 
+  // ATMOSPHERIC DYNAMIC GLOW MATERIAL
+  const reactiveGlowMaterial = useMemo(() => new THREE.MeshStandardMaterial({
+    color: "#ffffff",
+    emissive: new THREE.Color("#ffffff"),
+    emissiveMap: texture,
+    emissiveIntensity: 2.2, 
+    transparent: true,
+    opacity: 0.35,
+  }), [texture]);
+
+  // Premium Custom Materials for Classic Theater Look
+  const cushionMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#1c1917", roughness: 0.6, metalness: 0.1 }), []);
+  const armrestMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#0c0a09", roughness: 0.8 }), []);
+  const curtainMaterial = useMemo(() => new THREE.MeshStandardMaterial({ color: "#181414", roughness: 0.7, metalness: 0.0 }), []);
+
   return (
     <>
-      {/* HIGH-VISIBILITY LIGHTING STREAM */}
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[0, 6, 2]} intensity={2.0} color="#e2e8f0" />
+      <ambientLight intensity={0.25} />
+      <directionalLight position={[0, 6, 2]} intensity={0.6} color="#cbd5e1" />
       
-      {/* Wide white screen backlight halo */}
-      <pointLight position={[0, 1.2, -3.2]} intensity={5.0} color="#cbd5e1" distance={15} decay={1.2} />
+      {/* Dynamic Backlight tracker positioning */}
+      <pointLight position={[0, 1.2, -4.8]} intensity={2.0} color="#cbd5e1" distance={10} />
       
-      {/* Crimson lights tracking our physical side pillars */}
-      <pointLight position={[-4.5, -0.8, -2.5]} intensity={4.0} color="#ef4444" distance={8} />
-      <pointLight position={[4.5, -0.8, -2.5]} intensity={4.0} color="#ef4444" distance={8} />
+      {/* Crimson accent point lights reflecting across our new structured assets */}
+      <pointLight position={[-5.0, -1.0, -2.5]} intensity={4.5} color="#ef4444" distance={9} />
+      <pointLight position={[5.0, -1.0, -2.5]} intensity={4.5} color="#ef4444" distance={9} />
 
       <group position={[0, 0, 0]}>
         
-        {/* 1. MOVIE SCREEN & FRAME */}
+        {/* 1. MOVIE SCREEN & DEEP SCREEN GLOW ACCENT */}
         <mesh position={[0, 0.5, -5]}>
           <planeGeometry args={[7.1, 4.0]} />
           <meshBasicMaterial map={texture} side={THREE.DoubleSide} toneMapped={false} />
         </mesh>
 
-        <mesh position={[0, 0.5, -5.01]}>
-          <planeGeometry args={[7.35, 4.25]} />
-          <meshStandardMaterial color="#18181b" roughness={0.7} />
+        {/* Dynamic Halo Glow Layer Backing Panel */}
+        <mesh position={[0, 0.5, -5.08]}>
+          <planeGeometry args={[9.5, 5.5]} />
+          <primitive object={reactiveGlowMaterial} attach="material" />
         </mesh>
 
-        {/* 2. GLOSSY CARPETED INTERIOR FLOORS */}
+        {/* Screen Frame Outer Bezel */}
+        <mesh position={[0, 0.5, -5.02]}>
+          <planeGeometry args={[7.35, 4.25]} />
+          <meshStandardMaterial color="#09090b" roughness={0.9} />
+        </mesh>
+
+        {/* 2. BASE PLATFORM ENVIRONMENT */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.8, -1]}>
           <planeGeometry args={[14, 14]} />
-          <meshStandardMaterial color="#1e1b4b" roughness={0.3} metalness={0.4} />
+          <meshStandardMaterial color="#0b0914" roughness={0.35} metalness={0.3} />
         </mesh>
 
-        {/* Ceiling Panels */}
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 3.2, -1]}>
           <planeGeometry args={[14, 14]} />
-          <meshStandardMaterial color="#111827" roughness={0.8} />
+          <meshStandardMaterial color="#090d16" roughness={0.8} />
         </mesh>
 
-        {/* 3. REFLECTIVE STUDIO ARCHITECTURAL WALLS (Lightened Base Colors) */}
-        {/* Stage Back Wall */}
+        {/* Stage Back Backdrop Wall Panel */}
         <mesh position={[0, 0.7, -5.15]}>
           <planeGeometry args={[14, 6.5]} />
-          <meshStandardMaterial color="#1f2937" roughness={0.5} />
+          <meshStandardMaterial color="#0f172a" roughness={0.6} />
         </mesh>
 
-        {/* Left Main Wall */}
+        {/* 3. FLUTED VELVET SIDE WALL DRAPERIES */}
+        {[-4, -2, 0, 2, 4].map((zOffset, index) => (
+          <group key={`drapery-${index}`}>
+            {/* Left Column Flute */}
+            <mesh position={[-5.45, 0.7, zOffset]}>
+              <boxGeometry args={[0.15, 6.5, 0.6]} />
+              <primitive object={curtainMaterial} attach="material" />
+            </mesh>
+            {/* Right Column Flute */}
+            <mesh position={[5.45, 0.7, zOffset]}>
+              <boxGeometry args={[0.15, 6.5, 0.6]} />
+              <primitive object={curtainMaterial} attach="material" />
+            </mesh>
+          </group>
+        ))}
+
+        {/* Base Structural Side Walls behind the flutes */}
         <mesh position={[-5.5, 0.7, -1]} rotation={[0, Math.PI / 2, 0]}>
           <planeGeometry args={[14, 6.5]} />
-          <meshStandardMaterial color="#111827" roughness={0.5} />
+          <meshStandardMaterial color="#09090d" roughness={0.8} />
         </mesh>
-
-        {/* Right Main Wall */}
         <mesh position={[5.5, 0.7, -1]} rotation={[0, -Math.PI / 2, 0]}>
           <planeGeometry args={[14, 6.5]} />
-          <meshStandardMaterial color="#111827" roughness={0.5} />
+          <meshStandardMaterial color="#09090d" roughness={0.8} />
         </mesh>
 
-        {/* 4. THEATER SEATING & PHYSICAL DETAILS */}
-        {/* VIP Lounge Sofa Row 1 (Right in front of viewpoint) */}
-        <mesh position={[0, -1.5, -1.5]}>
-          <boxGeometry args={[6.5, 0.6, 1.2]} />
-          <meshStandardMaterial color="#27272a" roughness={0.4} metalness={0.2} />
-        </mesh>
-        {/* Sofa Row 1 Backrest */}
-        <mesh position={[0, -1.0, -0.9]}>
-          <boxGeometry args={[6.5, 0.8, 0.25]} />
-          <meshStandardMaterial color="#18181b" roughness={0.4} />
-        </mesh>
+        {/* 4. MULTI-TIER LUXURY SEATING ROWS & ARMRESTS */}
+        {/* Row 1: Low Foreground Tier Seating Profile */}
+        <group position={[0, 0, 0]}>
+          {/* Main Lounge Base */}
+          <mesh position={[0, -1.5, -1.5]}>
+            <boxGeometry args={[6.6, 0.5, 1.2]} />
+            <meshStandardMaterial color="#1c1917" roughness={0.5} />
+          </mesh>
+          {/* Main Lounge Backrest */}
+          <mesh position={[0, -0.95, -2.0]}>
+            <boxGeometry args={[6.6, 0.8, 0.2]} />
+            <meshStandardMaterial color="#141211" roughness={0.6} />
+          </mesh>
+          {/* Procedural Armrests */}
+          {[-3.2, -1.6, 0, 1.6, 3.2].map((xOffset, i) => (
+            <mesh key={`arm-r1-${i}`} position={[xOffset, -1.15, -1.4]}>
+              <boxGeometry args={[0.18, 0.45, 1.0]} />
+              <primitive object={armrestMaterial} attach="material" />
+            </mesh>
+          ))}
+          {/* Staggered seat cushion divisions */}
+          {[-2.4, -0.8, 0.8, 2.4].map((xOffset, i) => (
+            <mesh key={`cushion-r1-${i}`} position={[xOffset, -1.22, -1.4]}>
+              <boxGeometry args={[1.3, 0.1, 0.9]} />
+              <primitive object={cushionMaterial} attach="material" />
+            </mesh>
+          ))}
+        </group>
 
-        {/* Luxury Wood Side Accent Trims (Grounds the space) */}
+        {/* Row 2: Elevated Balcony / Stadium Tier Seating Profile */}
+        <group position={[0, 0.35, 1.8]}>
+          {/* Elevated Step Base Platform */}
+          <mesh position={[0, -1.65, -1.5]}>
+            <boxGeometry args={[7.2, 0.4, 1.5]} />
+            <meshStandardMaterial color="#0c0a0f" roughness={0.4} />
+          </mesh>
+          {/* Lounge Base Frame */}
+          <mesh position={[0, -1.35, -1.5]}>
+            <boxGeometry args={[6.6, 0.5, 1.2]} />
+            <meshStandardMaterial color="#1c1917" roughness={0.5} />
+          </mesh>
+          {/* Lounge Backrest */}
+          <mesh position={[0, -0.8, -2.0]}>
+            <boxGeometry args={[6.6, 0.8, 0.2]} />
+            <meshStandardMaterial color="#141211" roughness={0.6} />
+          </mesh>
+          {/* Elevated Row Armrests */}
+          {[-3.2, -1.6, 0, 1.6, 3.2].map((xOffset, i) => (
+            <mesh key={`arm-r2-${i}`} position={[xOffset, -1.0, -1.4]}>
+              <boxGeometry args={[0.18, 0.45, 1.0]} />
+              <primitive object={armrestMaterial} attach="material" />
+            </mesh>
+          ))}
+          {/* Elevated Row Cushions */}
+          {[-2.4, -0.8, 0.8, 2.4].map((xOffset, i) => (
+            <mesh key={`cushion-r2-${i}`} position={[xOffset, -1.07, -1.4]}>
+              <boxGeometry args={[1.3, 0.1, 0.9]} />
+              <primitive object={cushionMaterial} attach="material" />
+            </mesh>
+          ))}
+        </group>
+
+        {/* Grounding Luxury Side Trims */}
         <mesh position={[-5.4, -1.7, -1]}>
           <boxGeometry args={[0.1, 0.2, 14]} />
-          <meshStandardMaterial color="#78350f" roughness={0.2} />
+          <meshStandardMaterial color="#572507" roughness={0.3} />
         </mesh>
         <mesh position={[5.4, -1.7, -1]}>
           <boxGeometry args={[0.1, 0.2, 14]} />
-          <meshStandardMaterial color="#78350f" roughness={0.2} />
+          <meshStandardMaterial color="#572507" roughness={0.3} />
         </mesh>
 
       </group>
