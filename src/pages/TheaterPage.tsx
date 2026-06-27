@@ -4,21 +4,20 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { supabase } from '../lib/supabaseClient';
 import CinemaRoom from '../components/CinemaRoom';
+import * as THREE from 'three';
 
-// A tiny invisible listener that steals the background camera coordinates
-function CameraMirror({ onChange }: { onChange: (matrix: number[]) => void }) {
-  useFrame(({ camera }) => {
-    onChange(camera.matrix.toArray());
-  });
-  return null;
-}
-
-// A tiny receiver that forces the foreground movie screen to match the angle
-function CameraReceiver({ matrixArray }: { matrixArray: number[] | null }) {
-  useFrame(({ camera }) => {
-    if (matrixArray) {
-      camera.matrix.fromArray(matrixArray);
-      camera.matrix.decompose(camera.position, camera.quaternion, camera.scale);
+// Synchronization Component running directly inside the animation loop
+function CameraSynchronizer({ mainControlsRef, videoCameraRef }: { 
+  mainControlsRef: React.RefObject<any>; 
+  videoCameraRef: React.RefObject<THREE.Camera | null>; 
+}) {
+  useFrame(() => {
+    // Directly copy the matrix coordinates from Canvas 1 to Canvas 2 with zero lag
+    if (mainControlsRef.current && videoCameraRef.current) {
+      const mainCamera = mainControlsRef.current.object;
+      videoCameraRef.current.position.copy(mainCamera.position);
+      videoCameraRef.current.quaternion.copy(mainCamera.quaternion);
+      videoCameraRef.current.updateMatrixWorld();
     }
   });
   return null;
@@ -33,8 +32,9 @@ export default function TheaterPage() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(true);
 
-  // The secret synchronization bridge
-  const [sharedCameraMatrix, setSharedCameraMatrix] = useState<number[] | null>(null);
+  // Hardware Memory Hooks - No Lag, No State Re-renders
+  const mainControlsRef = useRef<any>(null);
+  const videoCameraRef = useRef<THREE.Camera | null>(null);
 
   const fetchVideos = async () => {
     try {
@@ -74,49 +74,58 @@ export default function TheaterPage() {
   return (
     <div className="fixed inset-0 bg-black text-white overflow-hidden w-screen h-[100dvh]">
       
-      {/* BUTTONS OVERLAY */}
+      {/* EXIT OVERLAY BUTTON */}
       <div className="w-full p-6 flex justify-between items-center z-[999] absolute top-0 left-0 pointer-events-none">
         <Link to="/gallery" className="px-5 py-3 bg-black/70 border border-white/20 rounded-2xl text-sm font-medium pointer-events-auto shadow-2xl">
           ← Exit Theater
         </Link>
       </div>
 
-      {/* LAYER 1 (BOTTOM): THE HIGH-END DECORATIONS LAYER */}
-      {/* This holds all the luxury furniture, styling, and main controls */}
+      {/* LAYER 1 (BOTTOM): INTERACTIVE DECORATION ROOM CANVAS */}
       <div className="w-full h-full absolute inset-0 z-10 pointer-events-auto">
         {!loading && videoUrls.length > 0 && (
           <Canvas camera={{ position: [0, 0, 4.5], fov: 50 }}>
             <ambientLight intensity={0.5} />
             <pointLight position={[0, 3, 0]} intensity={1} color="#fde047" />
             
-            {/* FUTURE HIGH-END ROOM MODEL GOES RIGHT HERE */}
+            {/* Base room floor structure */}
             <mesh position={[0, -1.8, 0]} rotation={[-Math.PI / 2, 0, 0]}>
               <planeGeometry args={[20, 20]} />
               <meshStandardMaterial color="#0b0f19" roughness={0.9} />
             </mesh>
             
-            {/* Steals the tracking data from your finger swipes */}
-            <CameraMirror onChange={setSharedCameraMatrix} />
-            <OrbitControls enableZoom={true} enablePan={false} minDistance={2.0} maxDistance={7.0} />
+            <OrbitControls 
+              ref={mainControlsRef}
+              enableZoom={true} 
+              enablePan={false} 
+              minDistance={2.0} 
+              maxDistance={7.0} 
+            />
+            
+            {/* Bridge component syncing the hardware positions directly */}
+            <CameraSynchronizer mainControlsRef={mainControlsRef} videoCameraRef={videoCameraRef} />
           </Canvas>
         )}
       </div>
 
-      {/* LAYER 2 (TOP): THE ULTRA-CRISP PURE MOVIE CANVAS */}
-      {/* Pointer-events-none makes it completely invisible to clicks, so it never blocks the camera */}
+      {/* LAYER 2 (TOP): TRANSPARENT VIDEO SCREEN STREAM CANVAS */}
       <div className="w-full h-full absolute inset-0 z-20 pointer-events-none">
         {!loading && videoUrls.length > 0 && (
-          <Canvas camera={{ position: [0, 0, 4.5], fov: 50 }} gl={{ alpha: true }} style={{ background: 'transparent' }}>
-            {/* Receives the camera coordinates and locks itself to Layer 1 */}
-            <CameraReceiver matrixArray={sharedCameraMatrix} />
-            
-            {/* Your pristine, untouched working movie screen engine */}
+          <Canvas 
+            camera={{ position: [0, 0, 4.5], fov: 50 }} 
+            gl={{ alpha: true }} 
+            style={{ background: 'transparent' }}
+            onCreated={({ camera }) => {
+              videoCameraRef.current = camera;
+              camera.matrixAutoUpdate = false; // Gives complete manual matrix authority over this layer
+            }}
+          >
             <CinemaRoom videoUrl={videoUrls[currentIndex]} isPlaying={isPlaying} isMuted={isMuted} />
           </Canvas>
         )}
       </div>
 
-      {/* CONTROL BAR HUD OVERLAY */}
+      {/* FLOATING HUD CONTROLS */}
       {!loading && videoUrls.length > 0 && (
         <div className="w-full absolute bottom-12 left-0 z-[999] flex justify-center px-4 pointer-events-none">
           <div className="flex items-center gap-5 bg-black/90 border border-white/20 px-6 py-3 rounded-2xl pointer-events-auto shadow-2xl">
