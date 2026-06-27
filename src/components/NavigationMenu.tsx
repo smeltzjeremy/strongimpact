@@ -32,9 +32,9 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
       parent: 'Programs',
       parentPath: '/programs', 
       subCategories: [
-        { title: 'Youth Development', path: '/programs' },
-        { title: 'Education & Mentorship', path: '/programs' },
-        { title: 'Community Outreach', path: '/programs' }
+        { title: 'Youth Development', path: '/programs/details' }, // ← Fixed Path
+        { title: 'Education & Mentorship', path: '/programs/details' }, // ← Fixed Path
+        { title: 'Community Outreach', path: '/programs/details' } // ← Fixed Path
       ]
     },
     {
