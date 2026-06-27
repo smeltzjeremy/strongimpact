@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
 import SceneContainer from './components/3d/SceneContainer';
 import GalleryPage from './pages/GalleryPage';
 import PhotosPage from './pages/PhotosPage';
-import TheaterPage from './pages/TheaterPage'; // ← Securely integrated the new page location
+import TheaterPage from './pages/TheaterPage'; 
+import LinksPage from './components/LinksPage'; // ← Securely pulled in your custom directory component
 
 export default function App() {
+  // Centralized toggle state to show/hide the dynamic Links page smoothly
+  const [showLinks, setShowLinks] = useState(false);
+
   return (
     <Router>
       <div className="min-h-screen bg-[#05050f] text-white font-sans antialiased overflow-hidden relative">
@@ -38,6 +42,7 @@ export default function App() {
                   </Link>
                 </div>
               </header>
+
               {/* HERO TITLE */}
               <div className="fixed top-28 sm:top-36 left-1/2 -translate-x-1/2 z-40 text-center pointer-events-none w-full max-w-[90vw]">
                 <div className="inline-flex items-center gap-2 px-5 py-1.5 mb-5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium tracking-widest uppercase">
@@ -48,7 +53,36 @@ export default function App() {
                   <span className="bg-gradient-to-b from-red-400 via-red-500 to-red-700 bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(239,68,68,0.6)]">IMPACT</span>
                 </h1>
               </div>
+
+              {/* 3D ENGINE CONTAINER SURFACE */}
               <SceneContainer />
+
+              {/* DOCK BAR CAPSULES: Sits balanced at bottom layer above 3D environment */}
+              <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 w-full max-w-sm sm:max-w-md px-4">
+                
+                {/* BUTTON A: CONNECT HOOK (SMOKY GLASS WITH TIGHT CRIMSON HOVER GLOW) */}
+                <button
+                  onClick={() => setShowLinks(true)}
+                  className="flex-1 px-4 py-3 sm:px-6 bg-zinc-900/60 backdrop-blur-md border border-zinc-800/80 text-white font-black text-[11px] sm:text-xs uppercase tracking-widest rounded-full shadow-2xl transition-all duration-300 hover:border-red-600 hover:scale-105 hover:bg-zinc-900/80 active:scale-95 text-center"
+                >
+                  🔗 Connect Links
+                </button>
+
+                {/* BUTTON B: LEGACY PORTAL ARCHIVE (MUTED METALLIC SLATE TEXTURES) */}
+                <a
+                  href="https://your-old-site-url-here.com" 
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex-1 px-4 py-3 sm:px-6 bg-zinc-950/40 backdrop-blur-md border border-zinc-900/80 text-zinc-400 font-bold text-[11px] sm:text-xs uppercase tracking-widest rounded-full shadow-xl transition-all duration-300 hover:border-zinc-700 hover:text-white hover:scale-105 active:scale-95 text-center truncate"
+                >
+                  Old Style Site
+                </a>
+
+              </div>
+
+              {/* CONDITIONAL LINKS PAGE OVERLAY MODAL HOOK */}
+              {showLinks && <LinksPage onClose={() => setShowLinks(false)} />}
+
             </div>
           } />
 
