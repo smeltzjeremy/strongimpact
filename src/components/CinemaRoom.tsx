@@ -34,14 +34,18 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
 
   return (
     <>
-      <ambientLight intensity={0.05} />
+      {/* GLOBAL ROOM VISIBILITY: Turn up ambient light so walls/ceilings are visible */}
+      <ambientLight intensity={0.4} />
       
-      {/* Real ambient light projecting from behind the frame map onto the walls smoothly */}
-      <pointLight position={[0, 0.5, -4.9]} intensity={3.5} color="#cbd5e1" distance={8} decay={2} />
+      {/* OVERHEAD AMBIENT DOWNLIGHT: Highlights the glossy floor and wall panels */}
+      <directionalLight position={[0, 5, 2]} intensity={1.8} color="#cbd5e1" />
       
-      {/* Crimson lights repositioned to perfectly hit the custom close-quarters walls */}
-      <pointLight position={[-4.8, -1.0, -3]} intensity={2.5} color="#ef4444" distance={6} />
-      <pointLight position={[4.8, -1.0, -3]} intensity={2.5} color="#ef4444" distance={6} />
+      {/* WIDER BACKLIGHT GLOW: Pushed further forward to bounce a real light cone into the room */}
+      <pointLight position={[0, 1.0, -3.5]} intensity={4.5} color="#cbd5e1" distance={15} decay={1.5} />
+      
+      {/* CRIMSON RIM LIGHTS: Perfectly washing down our side wall panels */}
+      <pointLight position={[-4.8, -1.0, -2]} intensity={3.0} color="#ef4444" distance={8} />
+      <pointLight position={[4.8, -1.0, -2]} intensity={3.0} color="#ef4444" distance={8} />
 
       <group position={[0, 0, 0]}>
         
