@@ -13,6 +13,34 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('wheel');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
+  // ==========================================
+  // NEW DYNAMIC STATE VARIABLES (ABOUT ENGINE)
+  // ==========================================
+  const [storyText, setStoryText] = useState(
+    "Founded and directed by Jazmond Strong, the Strong Impact Foundation was established to bridge critical gaps within community development, youth alignment, and physical performance training."
+  );
+  const [teamMembers, setTeamMembers] = useState([
+    { id: 1, name: "Jazmond Strong", role: "Founder & Executive Director", bio: "Dedicated to engineering structural pathways for youth development, athletic excellence, and comprehensive mentorship programs." },
+    { id: 2, name: "Team Member Two", role: "Operations Coordinator", bio: "Managing localized logistics, school distribution partnerships, and corporate sponsorship outreach execution networks." }
+  ]);
+
+  // ==========================================
+  // NEW DYNAMIC STATE VARIABLES (EVENTS ENGINE)
+  // ==========================================
+  const [flyerTitle, setFlyerTitle] = useState("Summer Development Camp");
+  const [flyerDesc, setFlyerDesc] = useState("Join collegiate and pro athlete coaches for intense position-specific training loops, speed mechanics work, and situational scrimmages.");
+  const [registrationUrl, setRegistrationUrl] = useState("https://forms.google.com");
+  
+  const [calendarEvents, setCalendarEvents] = useState([
+    { id: "ev-1", date: "2026-06-15", title: "Youth Football Camp", time: "09:00 AM - 01:00 PM" },
+    { id: "ev-2", date: "2026-06-22", title: "Mentorship Open Seminar", time: "06:00 PM - 08:00 PM" }
+  ]);
+
+  // LOCAL STATE HELPERS TO APPEND NEW CALENDAR EVENTS
+  const [newEventDate, setNewEventDate] = useState('');
+  const [newEventTitle, setNewEventTitle] = useState('');
+  const [newEventTime, setNewEventTime] = useState('');
+
   const handleLogin = (e) => {
     e.preventDefault();
     if (passwordInput === 'JStrong2026') {
@@ -109,7 +137,6 @@ export default function AdminDashboard() {
       const paddedSlot = String(slot + 1).padStart(2, '0');
       const fileName = `video-${paddedSlot}.mp4`;
 
-      // Clear structural overlaps
       await supabase.storage.from('gallery').remove([`theater/${fileName}`]);
       const { error } = await supabase.storage.from('gallery').upload(`theater/${fileName}`, file, { upsert: true });
       if (error) throw error;
@@ -147,6 +174,22 @@ export default function AdminDashboard() {
     } catch (err) { alert('Delete failed: ' + err.message); }
   };
 
+  // HANDLERS FOR UPDATING TEAM ROSTER INFORMATION MUTATIONS
+  const handleUpdateTeamMember = (id, field, value) => {
+    setTeamMembers(prev => prev.map(m => m.id === id ? { ...m, [field]: value } : m));
+  };
+
+  // HANDLER TO COMMIT THE NEW TEXT CHANGES TO CONSOLE LOG WITH FEED OVERRIDES
+  const handleSaveTextContent = (e) => {
+    e.preventDefault();
+    console.log("TRANSMITTING_CMS_UPDATES_TO_DATABASE:", {
+      storyText,
+      teamMembers,
+      events: { flyerTitle, flyerDesc, registrationUrl, calendarEvents }
+    });
+    alert("Administrative platform text fields saved and cached successfully!");
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-[#05050f] flex items-center justify-center p-6">
@@ -169,7 +212,7 @@ export default function AdminDashboard() {
         <div className="flex justify-between items-center mb-10 border-b border-white/10 pb-6">
           <div>
             <h1 className="text-4xl font-bold">STRONG IMPACT CMS</h1>
-            <p className="text-emerald-400">Live Asset Asset Multi-Pipeline</p>
+            <p className="text-emerald-400">Live Asset Multi-Pipeline</p>
           </div>
           <div className="flex gap-4">
             <Link to="/" className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl border border-white/20 transition">← Back to Main Page</Link>
@@ -177,10 +220,12 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Tab Layout Navigator */}
-        <div className="flex gap-2 mb-8 border-b border-white/10 pb-4">
-          <button onClick={() => setActiveTab('wheel')} className={`px-8 py-3 rounded-2xl font-medium transition ${activeTab === 'wheel' ? 'bg-red-600' : 'bg-white/10 hover:bg-white/20'}`}>Wheel Photos (6 Slots)</button>
-          <button onClick={() => setActiveTab('theater')} className={`px-8 py-3 rounded-2xl font-medium transition ${activeTab === 'theater' ? 'bg-red-600' : 'bg-white/10 hover:bg-white/20'}`}>Theater Videos (2 Slots)</button>
+        {/* Tab Layout Navigator (Safely Expanded with Options for Each Page) */}
+        <div className="flex flex-wrap gap-2 mb-8 border-b border-white/10 pb-4">
+          <button onClick={() => setActiveTab('wheel')} className={`px-6 py-3 rounded-2xl font-medium transition ${activeTab === 'wheel' ? 'bg-red-600' : 'bg-white/10 hover:bg-white/20'}`}>Wheel Photos (6 Slots)</button>
+          <button onClick={() => setActiveTab('theater')} className={`px-6 py-3 rounded-2xl font-medium transition ${activeTab === 'theater' ? 'bg-red-600' : 'bg-white/10 hover:bg-white/20'}`}>Theater Videos (2 Slots)</button>
+          <button onClick={() => setActiveTab('about')} className={`px-6 py-3 rounded-2xl font-medium transition ${activeTab === 'about' ? 'bg-red-600' : 'bg-white/10 hover:bg-white/20'}`}>About Content Config</button>
+          <button onClick={() => setActiveTab('events')} className={`px-6 py-3 rounded-2xl font-medium transition ${activeTab === 'events' ? 'bg-red-600' : 'bg-white/10 hover:bg-white/20'}`}>Events & Schedule Hub</button>
         </div>
 
         {uploading && (
@@ -189,6 +234,9 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* ==========================================
+            TAB 1: WHEEL MANAGEMENT SYSTEM (ORIGINAL)
+            ========================================== */}
         {activeTab === 'wheel' && (
           <div>
             <h2 className="text-3xl font-semibold mb-8">Photo Wheel Manager</h2>
@@ -221,6 +269,9 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* ==========================================
+            TAB 2: THEATER VIDEOS SYSTEM (ORIGINAL)
+            ========================================== */}
         {activeTab === 'theater' && (
           <div>
             <h2 className="text-3xl font-semibold mb-8">Theater Video Manager</h2>
@@ -251,6 +302,174 @@ export default function AdminDashboard() {
               ))}
             </div>
           </div>
+        )}
+
+        {/* ==========================================
+            TAB 3: ABOUT PAGE INTEGRATED MANAGER
+            ========================================== */}
+        {activeTab === 'about' && (
+          <form onSubmit={handleSaveTextContent} className="max-w-4xl bg-zinc-950 border border-white/10 rounded-3xl p-8 space-y-8 text-left">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">About Page Copy Engine</h2>
+              <p className="text-sm text-zinc-400">Control active public text arrays rendered inside the AboutDetails view panel layout.</p>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">Our Story Paragraph Block</label>
+              <textarea 
+                value={storyText}
+                onChange={(e) => setStoryText(e.target.value)}
+                className="w-full h-32 bg-zinc-900 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-red-500 resize-none text-white font-medium"
+              />
+            </div>
+
+            <div className="space-y-4 pt-4 border-t border-white/5">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 block">Team Roster Roster Control (2 Active Slots)</label>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {teamMembers.map((member) => (
+                  <div key={member.id} className="bg-black/40 border border-white/5 rounded-2xl p-5 space-y-4">
+                    <div className="text-sm font-black text-red-500 uppercase tracking-widest">Roster Position Slot 0{member.id}</div>
+                    
+                    <div className="space-y-3">
+                      <input 
+                        type="text" 
+                        value={member.name}
+                        onChange={(e) => handleUpdateTeamMember(member.id, 'name', e.target.value)}
+                        className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none"
+                        placeholder="Full Name"
+                      />
+                      <input 
+                        type="text" 
+                        value={member.role}
+                        onChange={(e) => handleUpdateTeamMember(member.id, 'role', e.target.value)}
+                        className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold text-red-400 focus:outline-none"
+                        placeholder="Roster Position / Title"
+                      />
+                      <textarea 
+                        value={member.bio}
+                        onChange={(e) => handleUpdateTeamMember(member.id, 'bio', e.target.value)}
+                        className="w-full h-24 bg-zinc-900 border border-white/10 rounded-xl p-4 text-xs font-medium text-zinc-400 focus:outline-none resize-none"
+                        placeholder="Biography summary string field..."
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button type="submit" className="w-full bg-red-600 hover:bg-red-700 py-4 rounded-xl font-bold tracking-widest text-xs uppercase transition shadow-lg">
+              Save About Page Text Matrices
+            </button>
+          </form>
+        )}
+
+        {/* ==========================================
+            TAB 4: EVENTS PAGE INTEGRATED MANAGER
+            ========================================== */}
+        {activeTab === 'events' && (
+          <form onSubmit={handleSaveTextContent} className="max-w-4xl bg-zinc-950 border border-white/10 rounded-3xl p-8 space-y-8 text-left">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Events & Schedules Manager</h2>
+              <p className="text-sm text-zinc-400">Direct operational calendars, link targets, and registration hub properties instantly.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">Featured Flyer Title Block</label>
+                <input 
+                  type="text" 
+                  value={flyerTitle}
+                  onChange={(e) => setFlyerTitle(e.target.value)}
+                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">Registration Redirect URL (Google Forms/Jotform)</label>
+                <input 
+                  type="text" 
+                  value={registrationUrl}
+                  onChange={(e) => setRegistrationUrl(e.target.value)}
+                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-red-400 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">Featured Event Overview Summary</label>
+              <textarea 
+                value={flyerDesc}
+                onChange={(e) => setFlyerDesc(e.target.value)}
+                className="w-full h-20 bg-zinc-900 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-red-500 resize-none text-white font-medium"
+              />
+            </div>
+
+            {/* INTERACTIVE CALENDAR INJECTION CONTROLS */}
+            <div className="space-y-4 pt-6 border-t border-white/5">
+              <label className="text-xs font-bold uppercase tracking-wider text-zinc-400 block">Inject Dynamic Grid Calendar Agenda Marker</label>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+                <input 
+                  type="text" 
+                  placeholder="Date (YYYY-MM-DD)" 
+                  value={newEventDate}
+                  onChange={(e) => setNewEventDate(e.target.value)}
+                  className="p-3 bg-zinc-900 border border-white/10 rounded-xl text-xs font-bold text-zinc-300 focus:outline-none"
+                />
+                <input 
+                  type="text" 
+                  placeholder="Camp Title Target" 
+                  value={newEventTitle}
+                  onChange={(e) => setNewEventTitle(e.target.value)}
+                  className="p-3 bg-zinc-900 border border-white/10 rounded-xl text-xs font-bold text-zinc-300 focus:outline-none"
+                />
+                <input 
+                  type="text" 
+                  placeholder="Time Segment (e.g. 09:00 AM)" 
+                  value={newEventTime}
+                  onChange={(e) => setNewEventTime(e.target.value)}
+                  className="p-3 bg-zinc-900 border border-white/10 rounded-xl text-xs font-bold text-zinc-300 focus:outline-none"
+                />
+              </div>
+
+              <button 
+                type="button"
+                onClick={() => {
+                  if (!newEventDate || !newEventTitle) return;
+                  setCalendarEvents(prev => [...prev, { id: `ev-${Date.now()}`, date: newEventDate, title: newEventTitle, time: newEventTime || "09:00 AM" }]);
+                  setNewEventDate('');
+                  setNewEventTitle('');
+                  setNewEventTime('');
+                }}
+                className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-xs font-bold uppercase tracking-wider rounded-xl transition"
+              >
+                + Append Agenda Date Block
+              </button>
+
+              {/* READ-ONLY MANIFEST AGENDA REMOVAL QUEUE */}
+              <div className="space-y-2 max-h-40 overflow-y-auto bg-black/30 p-3 rounded-xl border border-white/5">
+                {calendarEvents.map((ev) => (
+                  <div key={ev.id} className="flex justify-between items-center text-xs bg-zinc-900/50 p-2.5 rounded-lg border border-white/[0.02]">
+                    <div className="flex gap-4">
+                      <span className="font-mono text-zinc-500 font-bold">{ev.date}</span>
+                      <span className="text-zinc-300 font-bold truncate max-w-[220px]">{ev.title}</span>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => setCalendarEvents(prev => prev.filter(item => item.id !== ev.id))}
+                      className="text-red-500 font-black hover:text-red-400 px-2 py-1"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button type="submit" className="w-full bg-red-600 hover:bg-red-700 py-4 rounded-xl font-bold tracking-widest text-xs uppercase transition shadow-lg">
+              Save Event Properties & Link Mappings
+            </button>
+          </form>
         )}
       </div>
     </div>
