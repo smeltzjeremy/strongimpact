@@ -6,7 +6,13 @@ import GalleryPage from './pages/GalleryPage';
 import PhotosPage from './pages/PhotosPage';
 import TheaterPage from './pages/TheaterPage'; 
 import LinksPage from './components/LinksPage';
-import NavigationMenu from './components/NavigationMenu'; // ← Pull in your new TSX component
+import NavigationMenu from './components/NavigationMenu';
+
+// 📂 IMPORT YOUR 4 NEW STEPPING STONE PAGES HERE:
+import AboutPage from './pages/AboutPage';
+import ProgramsPage from './pages/ProgramsPage';
+import EventsPage from './pages/EventsPage';
+import GetInvolvedPage from './pages/GetInvolvedPage';
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -15,7 +21,7 @@ export default function App() {
     <Router>
       <div className="min-h-screen bg-[#05050f] text-white font-sans antialiased overflow-hidden relative">
         
-        {/* GLOBAL NAVIGATION HAMBURGER MODULE AVAILABLE ACCROSS EVERY ROUTE LAYER */}
+        {/* GLOBAL NAVIGATION HAMBURGER BUTTON */}
         <div className="fixed top-4 right-4 z-50">
           <button
             onClick={() => setMenuOpen(true)}
@@ -28,14 +34,13 @@ export default function App() {
           </button>
         </div>
 
-        {/* Renders global slider drawer overlay dynamically when active */}
+        {/* Global Slide Drawer Overlay */}
         <NavigationMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
 
         <Routes>
           {/* 1. COMPLETELY ISOLATED MAIN 3D PORTAL VIEW */}
           <Route path="/" element={
             <div className="relative w-full h-dvh z-10 pointer-events-auto premium-bg">
-              {/* CLEAN HEADER ARCHITECTURE WITH JUST THE CORE LOGO */}
               <header className="fixed top-0 left-0 w-full z-40 bg-black/40 backdrop-blur-md border-b border-white/5 px-4 sm:px-6 py-3 flex justify-between items-center gap-4">
                 <div className="h-12 sm:h-14 w-28 sm:w-32 flex items-center justify-center bg-white rounded-xl overflow-hidden border border-white/10 shadow-lg shrink-0">
                   <span className="text-zinc-900 font-black text-xs uppercase tracking-tight px-2">Strong Impact</span>
@@ -76,7 +81,12 @@ export default function App() {
             </div>
           } />
 
-          {/* DEDICATED FULL ROUTE ENTITIES */}
+          {/* REGISTERED PORTAL LINK PATHWAYS */}
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/programs" element={<ProgramsPage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/get-involved" element={<GetInvolvedPage />} />
+          
           <Route path="/links" element={<LinksPage onClose={() => window.location.hash = '#/'} />} />
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/photos" element={<PhotosPage />} />

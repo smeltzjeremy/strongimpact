@@ -1,9 +1,7 @@
 import React, { useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export default function GalleryPage() {
-  const navigate = useNavigate();
-
   const structuralHubs = [
     {
       name: 'Photos Hub',
@@ -37,29 +35,28 @@ export default function GalleryPage() {
   return (
     <div className="fixed inset-0 bg-[#030306] z-10 flex flex-col items-center justify-between p-4 sm:p-6 overflow-y-auto select-none perspective-[1200px]">
       
-      {/* 1. LAYERED LIGHT ENGINE BACKGROUND */}
+      {/* BACKGROUND INTERACTION LIGHTS */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[20%] right-[10%] w-[70vw] h-[70vw] bg-red-600/10 rounded-full blur-[120px] animate-[pulse_6s_infinite_alternate]" />
         <div className="absolute bottom-[20%] left-[10%] w-[70vw] h-[70vw] bg-blue-600/10 rounded-full blur-[140px] animate-[pulse_8s_infinite_alternate_1s]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,#030306_98%)]" />
       </div>
 
-      {/* TOP NAVIGATION ACTIONS */}
+      {/* TOP NAVIGATION ACTIONS (Explicitly targeted back to home page root direction now) */}
       <div className="w-full max-w-md flex justify-between items-center mt-2 z-10">
-        <button 
-          onClick={() => navigate(-1)}
-          className="text-[9px] uppercase font-black tracking-widest text-zinc-400 hover:text-white px-5 py-2.5 bg-white/[0.03] border border-white/5 rounded-full backdrop-blur-xl transition-all hover:scale-105 active:scale-95"
+        <Link 
+          to="/"
+          className="text-[9px] uppercase font-black tracking-widest text-zinc-300 hover:text-white px-5 py-2.5 bg-white/[0.03] border border-white/5 rounded-full backdrop-blur-xl transition-all hover:scale-105 active:scale-95 shadow-md"
         >
-          ← Back
-        </button>
+          ← Home
+        </Link>
         <span className="text-[9px] uppercase font-black tracking-widest text-zinc-500 opacity-60">
           Stepping Stone 01
         </span>
       </div>
 
-      {/* 2. BENTO HUB BLOCK CONTENT */}
+      {/* BENTO HUB STACK */}
       <div className="w-full max-w-md flex flex-col justify-center items-center z-10 py-10">
-        
         <div className="text-center mb-10">
           <h1 className="text-4xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-400 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
             MEDIA <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-rose-600 font-black">GALLERY</span>
@@ -69,7 +66,6 @@ export default function GalleryPage() {
           </p>
         </div>
 
-        {/* HIGH-TACTILE SHADER BENTO MODULES */}
         <div className="w-full grid grid-cols-2 gap-4">
           {structuralHubs.map((hub, index) => {
             const cardRef = useRef(null);
@@ -83,7 +79,6 @@ export default function GalleryPage() {
               
               const xc = rect.width / 2;
               const yc = rect.height / 2;
-              
               const angleX = (yc - y) / 5; 
               const angleY = (x - xc) / 5;
 
@@ -112,7 +107,6 @@ export default function GalleryPage() {
                   boxShadow: `0 35px 70px -15px rgba(0, 0, 0, 0.95), inset 0 1px 0px 0 rgba(255, 255, 255, 0.12), inset 0 -3px 12px 0 rgba(0, 0, 0, 0.6)`
                 }}
               >
-                {/* SPECULAR INTERACTION GLOWS */}
                 <div 
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none mix-blend-overlay"
                   style={{ background: `radial-gradient(130px circle at var(--mx, 0px) var(--my, 0px), rgba(255, 255, 255, 0.08), transparent 100%)` }}
@@ -145,7 +139,6 @@ export default function GalleryPage() {
         </div>
       </div>
 
-      {/* FOOTER BOUNDARY */}
       <div className="w-full text-center pb-2 z-10">
         <span className="text-[9px] uppercase tracking-widest text-zinc-600 font-black opacity-30">
           Building Stronger Foundations © 2026
