@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 interface VolunteerModule {
   label: string;
@@ -22,48 +21,50 @@ interface DonationConfig {
   actionText: string;
 }
 
-export default function GetInvolvedDetails(): React.JSX.Element {
-  const navigate = useNavigate();
-
-  // 📊 ADMINISTRATIVE ROUTING SCHEMAS
+export default function GetInvolvedDetails() {
+  // 📊 DATA CORES: Preserving your exact structural text mapping blocks
   const [volunteer] = useState<VolunteerModule>({
     label: "Launch Core",
     title: "3D Studio",
     description: "Open optimized movie theater room mesh.",
-    formUrl: "https://forms.google.com" 
+    formUrl: "https://forms.google.com" // Ready for your link
   });
 
   const [sponsor] = useState<SponsorModule>({
     label: "Directory",
     title: "Links Portal",
     description: "Connect directly with community networks.",
-    portalUrl: "https://forms.google.com"
+    portalUrl: "https://forms.google.com" // Ready for your link
   });
 
   const [donation] = useState<DonationConfig>({
     tagline: "NEON LIQUID",
     subLabel: "System Core Portal",
-    processorUrl: "https://www.paypal.com",
+    processorUrl: "https://www.paypal.com", // Ready for your processor link
     actionText: "System Blueprint Logs"
   });
 
   return (
     <div className="min-h-screen bg-[#020204] text-white flex flex-col justify-between p-4 sm:p-6 overflow-y-auto selection:bg-red-500/30 relative select-none font-sans">
       
-      {/* 🔮 1. BACKGROUND LAYER: FLUID LIQUID AURORAS */}
+      {/* 🔮 1. BACKGROUND LAYER: FLUID LIQUID AURORAS (Passing behind everything) */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 bg-[#020204]">
+        {/* Core Neon Crimson Blob - Top Right */}
         <div className="absolute top-[-10%] right-[-10%] w-[90vw] h-[55vh] rounded-[45%_55%_70%_30%_/_45%_45%_65%_55%]
           bg-gradient-to-tr from-red-600 via-rose-700 to-red-500 opacity-35 blur-[45px]
           animate-[pulse_9s_infinite_alternate_ease-in-out]" />
 
+        {/* Deep Ruby Fluid Flow - Center Left */}
         <div className="absolute bottom-[10%] left-[-15%] w-[85vw] h-[50vh] rounded-[60%_40%_45%_55%_/_50%_40%_60%_50%]
           bg-gradient-to-br from-red-950 via-red-700 to-rose-900 opacity-25 blur-[55px]
           animate-[pulse_11s_infinite_alternate_ease-in-out_1s]" />
 
+        {/* Crisp Silver-White Lighting Source - Bottom Right */}
         <div className="absolute bottom-[-10%] right-[10%] w-[35vw] h-[35vw] rounded-full
           bg-gradient-to-tr from-white via-zinc-400 to-zinc-900 opacity-15 blur-[35px]
           animate-[pulse_7s_infinite_alternate_ease-in-out_3s]" />
 
+        {/* Tech Grid Mask Overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff01_1px,transparent_1px),linear-gradient(to_bottom,#ffffff01_1px,transparent_1px)] bg-[size:40px_40px] mix-blend-overlay" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,#020204_95%)]" />
       </div>
@@ -106,21 +107,19 @@ export default function GetInvolvedDetails(): React.JSX.Element {
             <span className="text-emerald-400 font-mono">60fps / Safe</span>
           </div>
 
-          {/* Outline Action Trigger Link */}
+          {/* The Outline Button sitting safely inside the base plate */}
           <div className="w-full flex justify-center mt-4">
             <a 
               href={donation.processorUrl}
               target="_blank"
               rel="noreferrer"
-              className="w-full text-center py-3 bg-transparent border border-white/10 hover:border-white/30 rounded-2xl text-[9px] uppercase font-black tracking-widest text-zinc-400 hover:text-white block transition-all duration-300 shadow-lg"
+              className="w-full py-3 bg-transparent border border-white/10 hover:border-white/30 rounded-2xl text-[9px] uppercase font-black tracking-widest text-zinc-400 hover:text-white transition-all duration-300 shadow-lg block text-center"
             >
               {donation.actionText}
             </a>
           </div>
 
-          {/* =====================================================================
-              🚀 3. FOREGROUND LAYER: FLOATING OVERLAY GLASS CARDS (Raised 3D Breakout)
-              ===================================================================== */}
+          {/* 🚀 3. FOREGROUND LAYER: FLOATING OVERLAY GLASS CARDS (Raised 3D effect) */}
           
           {/* OVERLAY CARD A: Upper Right Float */}
           <a 
