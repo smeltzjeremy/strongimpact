@@ -8,6 +8,7 @@ interface SubCategory {
 
 interface MenuCategory {
   parent: string;
+  parentPath: string; // ← Explicitly added a path for the top-level click action
   subCategories: SubCategory[];
 }
 
@@ -20,6 +21,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
   const categories: MenuCategory[] = [
     {
       parent: 'About Us',
+      parentPath: '/about',
       subCategories: [
         { title: 'Our Story', path: '/about' },
         { title: 'Core Values', path: '/about' },
@@ -28,6 +30,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
     },
     {
       parent: 'Programs',
+      parentPath: '/programs',
       subCategories: [
         { title: 'Youth Development', path: '/programs' },
         { title: 'Education & Mentorship', path: '/programs' },
@@ -36,6 +39,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
     },
     {
       parent: 'Events',
+      parentPath: '/events',
       subCategories: [
         { title: 'Upcoming Calendar', path: '/events' },
         { title: 'Special Guests', path: '/events' },
@@ -44,6 +48,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
     },
     {
       parent: 'Gallery',
+      parentPath: '/gallery', // ← Clicking the word "GALLERY" lands exactly on your index route
       subCategories: [
         { title: 'Photos Hub', path: '/photos' },
         { title: '3D Cinema Suite', path: '/theater' }
@@ -51,6 +56,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
     },
     {
       parent: 'Get Involved',
+      parentPath: '/get-involved',
       subCategories: [
         { title: 'Volunteer Portal', path: '/get-involved' },
         { title: 'Sponsorship Tiers', path: '/get-involved' },
@@ -59,6 +65,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
     },
     {
       parent: 'Channels',
+      parentPath: '/links',
       subCategories: [
         { title: '🔗 Connect Links Directory', path: '/links' },
         { title: 'Admin Dashboard', path: '/admin' }
@@ -73,7 +80,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
       {/* Tap-outside backdrop dismiss layer */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
-      {/* HIGH-CONTRAST SKEUOMORPHIC DRAWER CONTAINER */}
+      {/* SKEUOMORPHIC DRAWER CONTAINER */}
       <div 
         className="w-full max-w-md h-full bg-zinc-950/75 border-l border-white/10 backdrop-blur-3xl backdrop-saturate-[180%] p-6 sm:p-10 flex flex-col justify-between shadow-[-10px_0_50px_rgba(0,0,0,0.9)] overflow-y-auto relative z-10 animate-in slide-in-from-right duration-300 ease-out"
         style={{
@@ -93,16 +100,21 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
           </button>
         </div>
 
-        {/* REFACTORED HIGH-CONTRAST PORTAL LIST */}
+        {/* HIGH-CONTRAST DUAL-ACTION NAVIGATION LIST */}
         <div className="my-auto py-6 space-y-6 sm:space-y-7">
           {categories.map((cat, idx) => (
-            <div key={idx} className="group text-left">
-              {/* Parent Heading: High-contrast legible bold zinc typography */}
-              <h2 className="font-black text-2xl sm:text-3xl text-zinc-100 uppercase tracking-tighter drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] leading-none">
+            <div key={idx} className="text-left">
+              
+              {/* Parent Heading converted to an active router Link with a subtle lift hover state */}
+              <Link
+                to={cat.parentPath}
+                onClick={onClose}
+                className="block font-black text-2xl sm:text-3xl text-zinc-100 hover:text-white uppercase tracking-tighter drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] leading-none transition-all hover:translate-x-1 active:scale-98 inline-block"
+              >
                 {cat.parent}
-              </h2>
+              </Link>
 
-              {/* Sub-Category Targets: Crisp, clean minimal links layout with crimson glows */}
+              {/* Sub-Category Targets */}
               <div className="flex flex-wrap gap-x-4 gap-y-2 mt-2.5 pl-0.5">
                 {cat.subCategories.map((sub, sIdx) => (
                   <Link
@@ -115,6 +127,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
                   </Link>
                 ))}
               </div>
+
             </div>
           ))}
         </div>
