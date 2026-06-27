@@ -49,13 +49,14 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
 
   return (
     <>
-      <ambientLight intensity={0.25} />
-      <directionalLight position={[0, 6, 2]} intensity={0.6} color="#cbd5e1" />
+      {/* BRIGHTNESS BOOST: Raised baseline illumination so features stand out clearly */}
+      <ambientLight intensity={0.55} />
+      <directionalLight position={[0, 6, 2]} intensity={1.2} color="#cbd5e1" />
       
-      {/* Dynamic Backlight tracker positioning */}
-      <pointLight position={[0, 1.2, -4.8]} intensity={2.0} color="#cbd5e1" distance={10} />
+      {/* Backlight halo glow projection intensity tracking */}
+      <pointLight position={[0, 1.2, -4.8]} intensity={4.0} color="#cbd5e1" distance={12} />
       
-      {/* Crimson accent point lights reflecting across our new structured assets */}
+      {/* Crimson accent point lights */}
       <pointLight position={[-5.0, -1.0, -2.5]} intensity={4.5} color="#ef4444" distance={9} />
       <pointLight position={[5.0, -1.0, -2.5]} intensity={4.5} color="#ef4444" distance={9} />
 
@@ -151,8 +152,8 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
           ))}
         </group>
 
-        {/* Row 2: Elevated Balcony / Stadium Tier Seating Profile */}
-        <group position={[0, 0.35, 1.8]}>
+        {/* Row 2: Elevated Stadium Tier Seating Profile - Pushed back safely to clear camera lens path */}
+        <group position={[0, 0.35, 3.5]}>
           {/* Elevated Step Base Platform */}
           <mesh position={[0, -1.65, -1.5]}>
             <boxGeometry args={[7.2, 0.4, 1.5]} />
