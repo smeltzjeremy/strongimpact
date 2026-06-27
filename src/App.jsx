@@ -11,10 +11,11 @@ import NavigationMenu from './components/NavigationMenu';
 import AboutPage from './pages/AboutPage';
 import AboutDetails from './pages/AboutDetails';
 import ProgramsPage from './pages/ProgramsPage';
-import ProgramDetails from './pages/ProgramDetails'; // ← Fully Imported
+import ProgramDetails from './pages/ProgramDetails';
 import EventsPage from './pages/EventsPage';
 import EventDetails from './pages/EventDetails';
 import GetInvolvedPage from './pages/GetInvolvedPage';
+import GetInvolvedDetails from './pages/GetInvolvedDetails';
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -43,7 +44,7 @@ export default function App() {
           {/* MAIN 3D PORTAL ENGINE VIEW */}
           <Route path="/" element={
             <div className="relative w-full h-dvh z-10 pointer-events-auto">
-              <header className="fixed top-0 left-0 w-full z-40 bg-black/40 backdrop-blur-md border-b border-white/5 px-4 sm:px-6 py-3 flex justify-between items-center gap-4">
+              <header className="fixed top-0 left-0 w-full z-40 bg-black/40 backdrop-blur-md border-b border-b-white/5 px-4 sm:px-6 py-3 flex justify-between items-center gap-4">
                 <div className="h-12 sm:h-14 w-28 sm:w-32 flex items-center justify-center bg-white rounded-xl overflow-hidden border border-white/10 shadow-lg shrink-0">
                   <span className="text-zinc-900 font-black text-xs uppercase tracking-tight px-2">Strong Impact</span>
                 </div>
@@ -87,10 +88,11 @@ export default function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/about/details" element={<AboutDetails />} />
           <Route path="/programs" element={<ProgramsPage />} />
-          <Route path="/programs/details" element={<ProgramDetails />} /> {/* ← Registered */}
+          <Route path="/programs/details" element={<ProgramDetails />} /> 
           <Route path="/events" element={<EventsPage />} />
           <Route path="/events/details" element={<EventDetails />} />
           <Route path="/get-involved" element={<GetInvolvedPage />} />
+          <Route path="/get-involved/details" element={<GetInvolvedDetails />} />
           
           <Route path="/links" element={<LinksPage onClose={() => window.location.hash = '#/'} />} />
           <Route path="/gallery" element={<GalleryPage />} />
