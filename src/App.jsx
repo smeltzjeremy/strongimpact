@@ -11,8 +11,9 @@ import NavigationMenu from './components/NavigationMenu';
 import AboutPage from './pages/AboutPage';
 import AboutDetails from './pages/AboutDetails';
 import ProgramsPage from './pages/ProgramsPage';
+import ProgramDetails from './pages/ProgramDetails'; // ← Fully Imported
 import EventsPage from './pages/EventsPage';
-import EventDetails from './pages/EventDetails'; // ← Fully Imported
+import EventDetails from './pages/EventDetails';
 import GetInvolvedPage from './pages/GetInvolvedPage';
 
 export default function App() {
@@ -86,8 +87,9 @@ export default function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/about/details" element={<AboutDetails />} />
           <Route path="/programs" element={<ProgramsPage />} />
+          <Route path="/programs/details" element={<ProgramDetails />} /> {/* ← Registered */}
           <Route path="/events" element={<EventsPage />} />
-          <Route path="/events/details" element={<EventDetails />} /> {/* ← Registered */}
+          <Route path="/events/details" element={<EventDetails />} />
           <Route path="/get-involved" element={<GetInvolvedPage />} />
           
           <Route path="/links" element={<LinksPage onClose={() => window.location.hash = '#/'} />} />
