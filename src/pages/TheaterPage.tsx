@@ -50,16 +50,9 @@ export default function TheaterPage() {
   }
 
   return (
-    <div className="fixed inset-0 bg-black text-white overflow-hidden w-screen h-[100dvh]">
+    <div className="fixed inset-0 bg-[#050508] text-white overflow-hidden w-screen h-[100dvh]">
       
-      {/* EXIT OVERLAY BUTTON */}
-      <div className="w-full p-6 flex justify-between items-center z-[999] absolute top-0 left-0 pointer-events-none">
-        <Link to="/gallery" className="px-5 py-3 bg-black/70 border border-white/20 rounded-2xl text-sm font-medium pointer-events-auto shadow-2xl">
-          ← Exit Theater
-        </Link>
-      </div>
-
-      {/* SINGLE UNIFIED HIGH-PERFORMANCE CANVAS */}
+      {/* LAYER 1: BASE 3D CANVAS (100% UNTOUCHED, LIGHTNING FAST) */}
       <div className="w-full h-full absolute inset-0 z-10 pointer-events-auto">
         {!loading && videoUrls.length > 0 && (
           <Canvas 
@@ -72,16 +65,61 @@ export default function TheaterPage() {
         )}
       </div>
 
-      {/* FLOATING HUD CONTROLS */}
-      {!loading && videoUrls.length > 0 && (
-        <div className="w-full absolute bottom-12 left-0 z-[999] flex justify-center px-4 pointer-events-none">
-          <div className="flex items-center gap-5 bg-black/90 border border-white/20 px-6 py-3 rounded-2xl pointer-events-auto shadow-2xl">
-            <button onClick={() => setIsPlaying(!isPlaying)} className="text-xl px-2">{isPlaying ? '‖' : '▶'}</button>
-            <button onClick={() => setIsMuted(!isMuted)} className="text-xl px-2">{isMuted ? '🔇' : '🔊'}</button>
-            <button onClick={() => setIsEnlargedMode(true)} className="text-xl font-bold px-2">⛶</button>
+      {/* LAYER 2: INTERACTIVE LUXURY GLASS OVERLAY FRAME */}
+      {/* pointer-events-none permits 60fps camera rotation control sweeps right through open spaces */}
+      <div className="absolute inset-0 z-20 pointer-events-none flex flex-col justify-between p-6 bg-[radial-gradient(circle,rgba(0,0,0,0)_35%,rgba(9,9,14,0.65)_70%,rgba(5,5,8,0.95)_100%)]">
+        
+        {/* Modern Studio Top Bar */}
+        <div className="w-full flex justify-between items-center">
+          <Link to="/gallery" className="px-5 py-3 bg-zinc-950/50 border border-white/10 rounded-2xl text-xs uppercase tracking-wider font-semibold pointer-events-auto backdrop-blur-md shadow-2xl hover:bg-zinc-900/80 transition text-zinc-300">
+            ← Exit Suite
+          </Link>
+          <div className="px-4 py-2 bg-zinc-950/30 border border-white/5 rounded-xl text-[10px] tracking-widest uppercase font-bold text-zinc-500 backdrop-blur-sm">
+            Studio Room Mode
           </div>
         </div>
-      )}
+
+        {/* Framing Atmospheric Side Shadows - Let crimson lights bleed into the room edges */}
+        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#050508]/90 to-transparent" />
+        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#050508]/90 to-transparent" />
+
+        {/* MINIMALIST STUDIO INTERACTIVE CONSOLE */}
+        {/* pointer-events-auto reactivates touch selection solely for our interactive island buttons */}
+        <div className="w-full flex justify-center mb-6 z-30">
+          <div className="flex items-center gap-6 bg-[#0c0c14]/70 border border-white/10 px-8 py-3.5 rounded-2xl pointer-events-auto backdrop-blur-xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,255,255,0.05)] transition-all">
+            
+            {/* Play/Pause Button with custom filter micro-glow tracking */}
+            <button 
+              onClick={() => setIsPlaying(!isPlaying)} 
+              className={`text-xs font-mono tracking-widest transition-all duration-300 ${isPlaying ? 'text-zinc-400' : 'text-emerald-400 [filter:drop-shadow(0_0_6px_#10b981)]'}`}
+            >
+              {isPlaying ? 'PAUSE' : 'PLAY'}
+            </button>
+            
+            <div className="h-4 w-[1px] bg-white/10" />
+            
+            {/* Audio Toggle Trigger */}
+            <button 
+              onClick={() => setIsMuted(!isMuted)} 
+              className={`text-xs font-mono tracking-widest transition-all duration-300 ${isMuted ? 'text-rose-400 [filter:drop-shadow(0_0_6px_#f43f5e)]' : 'text-zinc-400'}`}
+            >
+              {isMuted ? 'UNMUTE' : 'MUTE'}
+            </button>
+            
+            <div className="h-4 w-[1px] bg-white/10" />
+            
+            {/* Fullscreen Player Mode Link */}
+            <button 
+              onClick={() => setIsEnlargedMode(true)} 
+              className="text-xs font-mono tracking-widest text-zinc-400 hover:text-white transition-colors"
+            >
+              EXPAND
+            </button>
+
+          </div>
+        </div>
+
+      </div>
 
     </div>
   );
