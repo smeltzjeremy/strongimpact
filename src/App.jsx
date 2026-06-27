@@ -8,8 +8,8 @@ import TheaterPage from './pages/TheaterPage';
 import LinksPage from './components/LinksPage';
 import NavigationMenu from './components/NavigationMenu';
 
-// 📂 IMPORT YOUR 4 NEW STEPPING STONE PAGES HERE:
 import AboutPage from './pages/AboutPage';
+import AboutDetails from './pages/AboutDetails'; // ← Fully Imported
 import ProgramsPage from './pages/ProgramsPage';
 import EventsPage from './pages/EventsPage';
 import GetInvolvedPage from './pages/GetInvolvedPage';
@@ -38,9 +38,9 @@ export default function App() {
         <NavigationMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
 
         <Routes>
-          {/* 1. COMPLETELY ISOLATED MAIN 3D PORTAL VIEW */}
+          {/* MAIN 3D PORTAL ENGINE VIEW */}
           <Route path="/" element={
-            <div className="relative w-full h-dvh z-10 pointer-events-auto premium-bg">
+            <div className="relative w-full h-dvh z-10 pointer-events-auto">
               <header className="fixed top-0 left-0 w-full z-40 bg-black/40 backdrop-blur-md border-b border-white/5 px-4 sm:px-6 py-3 flex justify-between items-center gap-4">
                 <div className="h-12 sm:h-14 w-28 sm:w-32 flex items-center justify-center bg-white rounded-xl overflow-hidden border border-white/10 shadow-lg shrink-0">
                   <span className="text-zinc-900 font-black text-xs uppercase tracking-tight px-2">Strong Impact</span>
@@ -70,7 +70,7 @@ export default function App() {
                   🔗 Connect Links
                 </Link>
                 <a
-                  href="https://your-old-site-url-here.com" 
+                  href="https://strongimpact.pages.dev" 
                   target="_blank"
                   rel="noreferrer"
                   className="flex-1 px-4 py-3 sm:px-6 bg-zinc-950/40 backdrop-blur-md border border-zinc-900/80 text-zinc-400 font-bold text-[11px] sm:text-xs uppercase tracking-widest rounded-full shadow-xl transition-all duration-300 hover:border-zinc-700 hover:text-white hover:scale-105 active:scale-95 text-center truncate"
@@ -83,6 +83,7 @@ export default function App() {
 
           {/* REGISTERED PORTAL LINK PATHWAYS */}
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/about/details" element={<AboutDetails />} />
           <Route path="/programs" element={<ProgramsPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/get-involved" element={<GetInvolvedPage />} />

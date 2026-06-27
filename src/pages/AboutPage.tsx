@@ -18,7 +18,7 @@ export default function AboutPage(): React.JSX.Element {
     {
       name: "Our Story",
       description: "Founded by Jazmond Strong to create community pathways.",
-      path: "/about/story",
+      path: "/about/details?section=story",
       gridSpan: "col-span-2 h-[125px]",
       brandColor: "bg-gradient-to-tr from-purple-600 via-pink-500 to-red-500",
       glowColor: "rgba(236, 72, 153, 0.3)",
@@ -27,7 +27,7 @@ export default function AboutPage(): React.JSX.Element {
     {
       name: "Core Values",
       description: "Leadership, Accountability, Service, Discipline, Excellence.",
-      path: "/about/values",
+      path: "/about/details?section=values",
       gridSpan: "col-span-1 h-[130px]",
       brandColor: "bg-gradient-to-tr from-zinc-800 to-zinc-950",
       glowColor: "rgba(255, 255, 255, 0.08)",
@@ -36,7 +36,7 @@ export default function AboutPage(): React.JSX.Element {
     {
       name: "Meet Our Team",
       description: "Connect with our directors, board members, and volunteers.",
-      path: "/about/team",
+      path: "/about/details?section=team",
       gridSpan: "col-span-1 h-[130px]",
       brandColor: "bg-gradient-to-tr from-blue-600 to-indigo-600",
       glowColor: "rgba(37, 99, 235, 0.3)",
