@@ -28,9 +28,7 @@ export default function ProceduralChromeBackground({
 
   useFrame(() => {
     uniforms.uResolution.value.set(size.width, size.height);
-    if (isCrimson) {
-      uniforms.uTime.value = clock.getElapsedTime();
-    }
+    uniforms.uTime.value = clock.getElapsedTime();
   });
 
   const material = useMemo(() => {
@@ -66,7 +64,7 @@ export default function ProceduralChromeBackground({
           float value = 0.0;
           float amp = 0.75;
           float freq = 0.95;
-          float t = uTime * 0.14 * uCrimsonMix;
+          float t = uTime * 0.14;
 
           for (int i = 0; i < 3; i++) {
             p *= rot(0.95 + t * 0.05);

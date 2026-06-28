@@ -1,6 +1,6 @@
 import React, { type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import PremiumCrimsonBackdrop from './PremiumCrimsonBackdrop';
+import PremiumChromeBackdrop from './PremiumChromeBackdrop';
 
 interface ParentHubLayoutProps {
   readonly stepLabel: string;
@@ -24,11 +24,11 @@ export default function ParentHubLayout({
   const navigate = useNavigate();
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden overflow-y-auto bg-[#0a0406] font-sans text-white selection:bg-red-900/40">
-      <PremiumCrimsonBackdrop />
+    <div className="relative min-h-screen overflow-x-hidden overflow-y-auto bg-[#050508] font-sans text-white selection:bg-zinc-800/60">
+      <PremiumChromeBackdrop />
 
       <div className="relative z-10 flex min-h-screen flex-col">
-        <header className="sticky top-0 z-50 flex justify-center border-b border-white/[0.06] bg-[#0a0406]/55 px-4 py-4 backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.55)]">
+        <header className="sticky top-0 z-50 flex justify-center border-b border-white/[0.06] bg-[#050508]/60 px-4 py-4 backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.55)]">
           <div className="flex w-full max-w-md items-center justify-between sm:max-w-xl">
             <button
               type="button"
@@ -52,7 +52,7 @@ export default function ParentHubLayout({
               {titleLine1}{' '}
               <span
                 className="bg-gradient-to-r from-red-800 via-red-700 to-red-900 bg-clip-text text-transparent"
-                style={{ filter: 'drop-shadow(0 2px 6px rgba(127,29,29,0.4))' }}
+                style={{ filter: 'drop-shadow(0 2px 6px rgba(127,29,29,0.35))' }}
               >
                 {titleAccent}
               </span>
