@@ -80,19 +80,19 @@ export default function TheaterPage(): React.JSX.Element {
   }
 
   return (
-    <div className="fixed inset-0 h-[100dvh] w-screen overflow-hidden bg-[#030308] text-white">
+    <div className="fixed inset-0 h-[100dvh] w-screen overflow-hidden bg-[#0a0a14] text-white">
       <div className="pointer-events-auto absolute inset-0 z-10 h-full w-full">
         {!loading && videoUrls.length > 0 ? (
           <Canvas
             shadows
             dpr={[1, 1.5]}
-            camera={{ position: [0, 0.12, 4.85], fov: 48 }}
+            camera={{ position: [0, 0.35, 5.2], fov: 46 }}
             gl={{
               antialias: true,
               alpha: false,
               powerPreference: 'high-performance',
               toneMapping: THREE.ACESFilmicToneMapping,
-              toneMappingExposure: 0.95,
+              toneMappingExposure: 1.28,
             }}
           >
             <CinemaRoom
@@ -100,19 +100,29 @@ export default function TheaterPage(): React.JSX.Element {
               isPlaying={isPlaying}
               isMuted={isMuted}
             />
-            <OrbitControls enableZoom enablePan={false} minDistance={2.2} maxDistance={7.5} target={[0, -0.2, -2]} />
+            <OrbitControls
+              enableZoom
+              enablePan={false}
+              minDistance={3.8}
+              maxDistance={8}
+              target={[0, -0.15, -2.5]}
+              minAzimuthAngle={-Math.PI / 5}
+              maxAzimuthAngle={Math.PI / 5}
+              minPolarAngle={Math.PI / 3.2}
+              maxPolarAngle={Math.PI / 2.05}
+            />
           </Canvas>
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <span className="text-[10px] font-mono uppercase tracking-[0.35em] text-zinc-600">
+            <span className="text-[10px] font-mono uppercase tracking-[0.35em] text-zinc-500">
               {loading ? 'Loading Theater Archive…' : 'No videos in theater folder'}
             </span>
           </div>
         )}
       </div>
 
-      {/* Cinematic vignette overlay — dark theater, not crimson premium */}
-      <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between bg-[radial-gradient(ellipse_80%_70%_at_50%_45%,rgba(0,0,0,0)_30%,rgba(3,3,8,0.55)_65%,rgba(2,2,6,0.92)_100%)] p-6">
+      {/* Cinematic vignette overlay — lighter so scene stays visible */}
+      <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between bg-[radial-gradient(ellipse_85%_75%_at_50%_45%,rgba(0,0,0,0)_40%,rgba(10,10,20,0.35)_70%,rgba(8,8,16,0.65)_100%)] p-6">
         <div className="z-30 flex w-full items-center justify-between">
           <Link
             to="/gallery"
@@ -120,14 +130,14 @@ export default function TheaterPage(): React.JSX.Element {
           >
             ← Exit Suite
           </Link>
-          <div className="rounded-xl border border-white/[0.06] bg-zinc-950/40 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-600 backdrop-blur-sm">
+          <div className="rounded-xl border border-white/[0.06] bg-zinc-950/40 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 backdrop-blur-sm">
             Studio Room Mode
           </div>
         </div>
 
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-36 bg-gradient-to-r from-[#030308]/95 to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-36 bg-gradient-to-l from-[#030308]/95 to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#030308]/80 to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-28 bg-gradient-to-r from-[#0a0a14]/70 to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-28 bg-gradient-to-l from-[#0a0a14]/70 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#0a0a14]/50 to-transparent" />
 
         <div className="z-30 mb-6 flex w-full justify-center">
           <div className="pointer-events-auto flex items-center gap-6 rounded-2xl border border-white/[0.08] bg-[#0a0a12]/75 px-8 py-3.5 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95),inset_0_1px_1px_rgba(255,255,255,0.04)] backdrop-blur-xl transition-all">

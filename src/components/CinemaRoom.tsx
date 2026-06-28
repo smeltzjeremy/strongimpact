@@ -8,21 +8,21 @@ interface CinemaRoomProps {
   isMuted: boolean;
 }
 
-const VELVET_DEEP = '#2a0810';
-const VELVET_MID = '#4a0e1c';
-const VELVET_HIGH = '#6b1830';
+const VELVET_DEEP = '#3a0c18';
+const VELVET_MID = '#5c1428';
+const VELVET_HIGH = '#7a2040';
 
-function useVelvetMaterial(color: string, sheen = 0.35): THREE.MeshPhysicalMaterial {
+function useVelvetMaterial(color: string): THREE.MeshPhysicalMaterial {
   return useMemo(
     () =>
       new THREE.MeshPhysicalMaterial({
         color,
-        roughness: 0.92,
+        roughness: 0.88,
         metalness: 0.0,
         sheen: 1.0,
-        sheenRoughness: 0.55,
-        sheenColor: new THREE.Color('#8b2040'),
-        envMapIntensity: 0.35,
+        sheenRoughness: 0.5,
+        sheenColor: new THREE.Color('#a03050'),
+        envMapIntensity: 0.55,
       }),
     [color],
   );
@@ -36,19 +36,20 @@ interface CurtainWingProps {
 function CurtainWing({ side, material }: CurtainWingProps): React.JSX.Element {
   const foldCount = 16;
   const sign = side === 'left' ? 1 : -1;
+  const wallX = 5.85;
 
   const folds = useMemo(() => {
     return Array.from({ length: foldCount }, (_, i) => {
       const t = i / (foldCount - 1);
       const z = -4.85 + t * 5.6;
-      const waveA = Math.sin(i * 0.72 + 0.4) * 0.22;
-      const waveB = Math.sin(i * 0.28) * 0.1;
+      const waveA = Math.sin(i * 0.72 + 0.4) * 0.14;
+      const waveB = Math.sin(i * 0.28) * 0.06;
       const bulge = waveA + waveB;
-      const x = sign * (4.55 - bulge * sign);
-      const rotY = sign * (0.22 + Math.sin(i * 0.55) * 0.14);
-      const rotZ = Math.sin(i * 0.4) * 0.04;
-      const depth = 0.07 + Math.abs(Math.sin(i * 0.65)) * 0.05;
-      const width = 0.26 + Math.abs(Math.cos(i * 0.5)) * 0.06;
+      const x = sign * (wallX - bulge * sign);
+      const rotY = sign * (0.18 + Math.sin(i * 0.55) * 0.1);
+      const rotZ = Math.sin(i * 0.4) * 0.03;
+      const depth = 0.07 + Math.abs(Math.sin(i * 0.65)) * 0.04;
+      const width = 0.24 + Math.abs(Math.cos(i * 0.5)) * 0.05;
       return { x, z, rotY, rotZ, depth, width };
     });
   }, [sign]);
@@ -72,15 +73,15 @@ function CurtainWing({ side, material }: CurtainWingProps): React.JSX.Element {
       {Array.from({ length: 6 }).map((_, i) => {
         const t = i / 5;
         const z = -4.7 + t * 1.4;
-        const sag = Math.sin(t * Math.PI) * 0.35;
+        const sag = Math.sin(t * Math.PI) * 0.28;
         return (
           <mesh
             key={`${side}-swag-${i}`}
-            position={[sign * (3.85 + sag), 3.55, z]}
-            rotation={[0.35 * sign, sign * 0.35, 0]}
+            position={[sign * (5.15 + sag), 3.55, z]}
+            rotation={[0.3 * sign, sign * 0.28, 0]}
             material={material}
           >
-            <boxGeometry args={[0.5, 0.18, 0.22]} />
+            <boxGeometry args={[0.48, 0.18, 0.2]} />
           </mesh>
         );
       })}
@@ -97,7 +98,7 @@ interface CinemaSeatProps {
 
 function CinemaSeat({ x, fabricMat, leatherMat, plasticMat }: CinemaSeatProps): React.JSX.Element {
   return (
-    <group position={[x, 0, 0]}>
+    <group position={[x, 0, 0]} rotation={[0, Math.PI, 0]}>
       {/* Seat base / riser block */}
       <RoundedBox args={[0.68, 0.14, 0.62]} radius={0.04} smoothness={4} position={[0, -1.28, 0.04]} castShadow receiveShadow>
         <primitive object={plasticMat} attach="material" />
@@ -117,11 +118,11 @@ function CinemaSeat({ x, fabricMat, leatherMat, plasticMat }: CinemaSeatProps): 
       {[-0.18, 0, 0.18].map((tx) => (
         <mesh key={`tuft-seat-${tx}`} position={[tx, -0.94, 0.22]} rotation={[0.15, 0, 0]}>
           <boxGeometry args={[0.04, 0.02, 0.18]} />
-          <meshStandardMaterial color="#3a0a14" roughness={0.95} />
+          <meshStandardMaterial color="#4a1020" roughness={0.95} />
         </mesh>
       ))}
 
-      {/* Backrest */}
+      {/* Backrest — faces rear of auditorium (+Z) */}
       <RoundedBox args={[0.64, 0.88, 0.16]} radius={0.07} smoothness={5} position={[0, -0.55, -0.2]} rotation={[-0.12, 0, 0]} castShadow receiveShadow>
         <primitive object={fabricMat} attach="material" />
       </RoundedBox>
@@ -135,7 +136,7 @@ function CinemaSeat({ x, fabricMat, leatherMat, plasticMat }: CinemaSeatProps): 
       {[-0.16, 0, 0.16].map((tx, i) => (
         <mesh key={`tuft-back-${i}`} position={[tx, -0.35 - i * 0.22, -0.1]} rotation={[-0.12, 0, 0]}>
           <sphereGeometry args={[0.035, 10, 10]} />
-          <meshStandardMaterial color="#5c1428" roughness={0.88} />
+          <meshStandardMaterial color="#6c1830" roughness={0.88} />
         </mesh>
       ))}
 
@@ -168,18 +169,19 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
   });
 
   const velvetMat = useVelvetMaterial(VELVET_MID);
-  const velvetDarkMat = useVelvetMaterial(VELVET_DEEP, 0.25);
-  const velvetLightMat = useVelvetMaterial(VELVET_HIGH, 0.45);
+  const velvetDarkMat = useVelvetMaterial(VELVET_DEEP);
+  const velvetLightMat = useVelvetMaterial(VELVET_HIGH);
 
   const seatFabricMat = useMemo(
     () =>
       new THREE.MeshPhysicalMaterial({
-        color: '#5c1228',
-        roughness: 0.88,
+        color: '#6c1830',
+        roughness: 0.84,
         metalness: 0.0,
-        sheen: 0.8,
-        sheenRoughness: 0.6,
-        sheenColor: new THREE.Color('#9a3050'),
+        sheen: 0.85,
+        sheenRoughness: 0.55,
+        sheenColor: new THREE.Color('#b04060'),
+        envMapIntensity: 0.5,
       }),
     [],
   );
@@ -187,9 +189,9 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
   const leatherMat = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
-        color: '#141214',
-        roughness: 0.55,
-        metalness: 0.08,
+        color: '#1e1a22',
+        roughness: 0.5,
+        metalness: 0.1,
       }),
     [],
   );
@@ -197,8 +199,8 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
   const plasticMat = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
-        color: '#0c0b0e',
-        roughness: 0.7,
+        color: '#16141a',
+        roughness: 0.65,
         metalness: 0.15,
       }),
     [],
@@ -207,8 +209,8 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
   const carpetMat = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
-        color: '#120c10',
-        roughness: 0.98,
+        color: '#1a1218',
+        roughness: 0.96,
         metalness: 0.0,
       }),
     [],
@@ -217,8 +219,8 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
   const wallMat = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
-        color: '#0a0c12',
-        roughness: 0.92,
+        color: '#141820',
+        roughness: 0.9,
         metalness: 0.02,
       }),
     [],
@@ -227,8 +229,8 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
   const woodMat = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
-        color: '#3d1a0c',
-        roughness: 0.45,
+        color: '#4d2210',
+        roughness: 0.42,
         metalness: 0.05,
       }),
     [],
@@ -237,8 +239,8 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
   const frameMat = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
-        color: '#0b0f18',
-        roughness: 0.35,
+        color: '#141a28',
+        roughness: 0.32,
         metalness: 0.4,
       }),
     [],
@@ -273,43 +275,47 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
 
   return (
     <>
-      <color attach="background" args={['#030308']} />
-      <fog attach="fog" args={['#030308', 6, 18]} />
-      <Environment preset="night" environmentIntensity={0.22} />
+      <color attach="background" args={['#0a0a14']} />
+      <fog attach="fog" args={['#0a0a14', 12, 24]} />
+      <Environment preset="night" environmentIntensity={0.48} />
 
-      {/* Cinematic lighting rig */}
-      <ambientLight intensity={0.18} color="#1a1520" />
-      <hemisphereLight intensity={0.12} color="#2a2030" groundColor="#08060a" />
+      {/* Cinematic lighting rig — brighter but still moody */}
+      <ambientLight intensity={0.42} color="#2a2430" />
+      <hemisphereLight intensity={0.3} color="#3a3048" groundColor="#141018" />
 
-      {/* Overhead house lights (dim) */}
+      {/* Overhead house lights */}
       <spotLight
         position={[0, 5.5, 1]}
-        angle={0.55}
-        penumbra={0.85}
-        intensity={0.35}
-        color="#ffe8d0"
+        angle={0.6}
+        penumbra={0.8}
+        intensity={0.7}
+        color="#fff0e0"
         castShadow
         shadow-mapSize={[512, 512]}
       />
 
+      {/* Aisle wash lights */}
+      <pointLight position={[0, 2.8, 1.5]} intensity={0.55} color="#ffe8d8" distance={10} decay={2} />
+      <pointLight position={[0, 1.5, -0.5]} intensity={0.4} color="#e8e0f0" distance={8} decay={2} />
+
       {/* Screen spill — key light from projection */}
-      <pointLight position={[0, 1.2, -3.8]} intensity={1.8} color="#dfe8ff" distance={9} decay={2} />
+      <pointLight position={[0, 1.2, -3.8]} intensity={3.2} color="#e8eeff" distance={11} decay={2} />
       <rectAreaLight
         position={[0, 1.0, -4.85]}
         width={6.8}
         height={3.8}
-        intensity={2.5}
-        color="#c8d8ff"
+        intensity={4.8}
+        color="#d0e0ff"
         onUpdate={(self) => self.lookAt(0, 1, 0)}
       />
 
       {/* Curtain accent — warm footlights */}
-      <pointLight position={[-3.8, -0.6, -3.2]} intensity={0.9} color="#8b2038" distance={5.5} decay={2} />
-      <pointLight position={[3.8, -0.6, -3.2]} intensity={0.9} color="#8b2038" distance={5.5} decay={2} />
+      <pointLight position={[-4.2, -0.4, -3.2]} intensity={1.5} color="#a02848" distance={6.5} decay={2} />
+      <pointLight position={[4.2, -0.4, -3.2]} intensity={1.5} color="#a02848" distance={6.5} decay={2} />
 
       {/* Side wall sconces */}
-      <pointLight position={[-5.2, 1.8, -2]} intensity={0.25} color="#ffeedd" distance={4} />
-      <pointLight position={[5.2, 1.8, -2]} intensity={0.25} color="#ffeedd" distance={4} />
+      <pointLight position={[-6.0, 1.8, -2]} intensity={0.55} color="#ffeedd" distance={5} />
+      <pointLight position={[6.0, 1.8, -2]} intensity={0.55} color="#ffeedd" distance={5} />
 
       <group>
         {/* SCREEN */}
@@ -326,39 +332,39 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
         {/* Screen glow halo */}
         <mesh position={[0, 1.0, -4.98]}>
           <planeGeometry args={[7.5, 4.4]} />
-          <meshBasicMaterial color="#88aaff" transparent opacity={0.04} />
+          <meshBasicMaterial color="#88aaff" transparent opacity={0.07} />
         </mesh>
 
         {/* FLOOR — carpeted auditorium */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.82, -0.5]} receiveShadow>
-          <planeGeometry args={[14, 14]} />
+          <planeGeometry args={[16, 14]} />
           <primitive object={carpetMat} attach="material" />
         </mesh>
 
         {/* Raked seating platform */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.45, -2.1]} receiveShadow>
           <planeGeometry args={[7.2, 2.2]} />
-          <meshStandardMaterial color="#0e0a0e" roughness={0.95} />
+          <meshStandardMaterial color="#1a1418" roughness={0.94} />
         </mesh>
 
         {/* CEILING */}
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 3.35, -1]}>
-          <planeGeometry args={[14, 14]} />
-          <meshStandardMaterial color="#06060c" roughness={0.95} />
+          <planeGeometry args={[16, 14]} />
+          <meshStandardMaterial color="#101018" roughness={0.94} />
         </mesh>
 
         {/* Back wall behind screen */}
         <mesh position={[0, 0.8, -5.35]} receiveShadow>
-          <planeGeometry args={[14, 7]} />
+          <planeGeometry args={[16, 7]} />
           <primitive object={wallMat} attach="material" />
         </mesh>
 
-        {/* Side walls */}
-        <mesh position={[-5.6, 0.7, -1]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+        {/* Side walls — pushed outward past curtains */}
+        <mesh position={[-6.4, 0.7, -1]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
           <planeGeometry args={[14, 6.8]} />
           <primitive object={wallMat} attach="material" />
         </mesh>
-        <mesh position={[5.6, 0.7, -1]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
+        <mesh position={[6.4, 0.7, -1]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
           <planeGeometry args={[14, 6.8]} />
           <primitive object={wallMat} attach="material" />
         </mesh>
@@ -373,21 +379,21 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
           <primitive object={velvetLightMat} attach="material" />
         </mesh>
 
-        {/* Realistic draped velvet curtains */}
+        {/* Realistic draped velvet curtains — hugging side walls */}
         <CurtainWing side="left" material={velvetMat} />
         <CurtainWing side="right" material={velvetMat} />
 
-        {/* Outer curtain leading edge — thicker border panels */}
-        <mesh position={[-3.2, 0.72, -4.6]} rotation={[0, 0.35, 0]} castShadow>
-          <boxGeometry args={[0.35, 6.8, 0.12]} />
+        {/* Inner curtain leading edges — frame the screen opening */}
+        <mesh position={[-3.35, 0.72, -4.55]} rotation={[0, 0.28, 0]} castShadow>
+          <boxGeometry args={[0.32, 6.8, 0.1]} />
           <primitive object={velvetDarkMat} attach="material" />
         </mesh>
-        <mesh position={[3.2, 0.72, -4.6]} rotation={[0, -0.35, 0]} castShadow>
-          <boxGeometry args={[0.35, 6.8, 0.12]} />
+        <mesh position={[3.35, 0.72, -4.55]} rotation={[0, -0.28, 0]} castShadow>
+          <boxGeometry args={[0.32, 6.8, 0.1]} />
           <primitive object={velvetDarkMat} attach="material" />
         </mesh>
 
-        {/* PLUSH CINEMA SEATING ROW */}
+        {/* PLUSH CINEMA SEATING ROW — faces screen (-Z) */}
         <group position={[0, -0.35, -2.35]} rotation={[-0.1, 0, 0]}>
           {seatPositions.map((x) => (
             <CinemaSeat
@@ -401,11 +407,11 @@ export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomP
         </group>
 
         {/* Wood aisle trim */}
-        <mesh position={[-5.5, -1.72, -1]} castShadow receiveShadow>
+        <mesh position={[-6.2, -1.72, -1]} castShadow receiveShadow>
           <boxGeometry args={[0.1, 0.18, 14]} />
           <primitive object={woodMat} attach="material" />
         </mesh>
-        <mesh position={[5.5, -1.72, -1]} castShadow receiveShadow>
+        <mesh position={[6.2, -1.72, -1]} castShadow receiveShadow>
           <boxGeometry args={[0.1, 0.18, 14]} />
           <primitive object={woodMat} attach="material" />
         </mesh>
