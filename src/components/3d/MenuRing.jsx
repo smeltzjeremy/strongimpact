@@ -12,8 +12,8 @@ const MENU_ITEMS = [
   { id: 5, label: 'GET INVOLVED', path: '/get-involved', color: '#b833ff' },
 ];
 
-function MenuPanel({ item, angle, radius, ringRotationRef, isMobile }) {
-  const panelGroupRef = useRef(); // Changed from meshRef to rotate the entire group container
+function MenuPanel({ item, angle, radius, isMobile }) {
+  const meshRef = useRef();
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const [time, setTime] = useState(0);
@@ -25,14 +25,11 @@ function MenuPanel({ item, angle, radius, ringRotationRef, isMobile }) {
   useFrame((state) => {
     const elapsed = state.clock.getElapsedTime();
 
-    if (panelGroupRef.current) {
-      panelGroupRef.current.position.y = hovered
+    if (meshRef.current) {
+      // Handles only the hover lift effect
+      meshRef.current.position.y = hovered
         ? Math.sin(elapsed * 4) * 0.12 + 0.05
         : 0;
-
-      // This now rotates everything inside the group together (mesh + HTML elements)
-      const absoluteAngle = angle + ringRotationRef.current;
-      panelGroupRef.current.rotation.set(0, -absoluteAngle + Math.PI / 2, 0);
     }
 
     frameTick.current += 1;
@@ -51,8 +48,9 @@ function MenuPanel({ item, angle, radius, ringRotationRef, isMobile }) {
   const slowPulseScale = hovered ? 1.12 : 1 + Math.sin(time * 1.8) * 0.035;
 
   return (
-    <group position={[x, 0, z]} ref={panelGroupRef}>
+    <group position={[x, 0, z]} rotation={[0, -angle + Math.PI / 2, 0]}>
       <mesh
+        ref={meshRef}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
         onPointerOut={() => setHovered(false)}
       >
@@ -140,7 +138,6 @@ function MenuPanel({ item, angle, radius, ringRotationRef, isMobile }) {
 
 export default function MenuRing({ paused = false }) {
   const ringRef = useRef();
-  const rotationRef = useRef(0);
   const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
   const isMobile = width < 768;
 
@@ -158,8 +155,6 @@ export default function MenuRing({ paused = false }) {
     if (!paused) {
       ringRef.current.rotation.y += delta * 0.08;
     }
-
-    rotationRef.current = ringRef.current.rotation.y;
   });
 
   return (
@@ -172,7 +167,6 @@ export default function MenuRing({ paused = false }) {
             item={item}
             angle={angle}
             radius={activeRadius}
-            ringRotationRef={rotationRef}
             isMobile={isMobile}
           />
         );
