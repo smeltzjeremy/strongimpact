@@ -87,67 +87,68 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex h-[100dvh] justify-end select-none">
+    <div className="fixed inset-0 z-[100] flex justify-end">
       <div
         className="absolute inset-0 bg-[#050508]/75 backdrop-blur-md"
         onClick={onClose}
         aria-hidden
       />
 
-      <div className="relative z-10 flex h-[100dvh] w-full max-w-md shrink-0 flex-col p-2 sm:p-3">
+      <aside className="relative z-10 flex h-[100dvh] max-h-[100dvh] w-full max-w-md shrink-0 flex-col p-2 sm:p-3">
         <SmokyGlassSurface
           tone="neutral"
           enableTilt={false}
-          className="flex h-full min-h-0 flex-1 flex-col"
-          innerClassName="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-[24px] p-0"
+          className="flex h-full min-h-0 w-full flex-col"
+          innerClassName="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[24px] p-0"
         >
-          {/* Single scroll container — header sticky, full list + footer reachable */}
-          <div
-            className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch]"
-            style={{ touchAction: 'pan-y' }}
-          >
-            <div className="sticky top-0 z-20 border-b border-white/[0.06] bg-[#0c0e14]/80 px-4 py-3 backdrop-blur-xl sm:px-5">
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <Link
-                  to="/"
-                  onClick={onClose}
-                  className="group/home inline-flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.04] px-3.5 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-zinc-300 backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/[0.07] hover:text-white active:scale-95"
-                  style={{ boxShadow: NEUTRAL_CARD_SHELL_SHADOW }}
-                >
-                  <span className="text-sm leading-none opacity-80 transition-transform duration-300 group-hover/home:-translate-x-0.5">
-                    ⌂
-                  </span>
-                  Home
-                </Link>
-
-                <button
-                  onClick={onClose}
-                  className="rounded-full border border-white/[0.1] bg-white/[0.04] px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/[0.07] hover:text-white active:scale-95"
-                  style={{ boxShadow: NEUTRAL_CARD_SHELL_SHADOW }}
-                >
-                  ✕ Close
-                </button>
-              </div>
-
-              <div className="flex items-end justify-between gap-2">
-                <div>
-                  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500">Navigation</p>
-                  <h2 className="mt-0.5 text-base font-black uppercase tracking-tight text-white/95 sm:text-lg">
-                    Suite Directory
-                  </h2>
-                </div>
-                <span className="rounded-full border border-white/[0.06] bg-black/20 px-2 py-0.5 text-[8px] font-bold uppercase tracking-widest text-zinc-600">
-                  2026
+          {/* Fixed header — never scrolls away */}
+          <header className="shrink-0 border-b border-white/[0.06] px-4 py-3 sm:px-5">
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <Link
+                to="/"
+                onClick={onClose}
+                className="group/home inline-flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.04] px-3.5 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-zinc-300 backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/[0.07] hover:text-white active:scale-95"
+                style={{ boxShadow: NEUTRAL_CARD_SHELL_SHADOW }}
+              >
+                <span className="text-sm leading-none opacity-80 transition-transform duration-300 group-hover/home:-translate-x-0.5">
+                  ⌂
                 </span>
-              </div>
+                Home
+              </Link>
+
+              <button
+                onClick={onClose}
+                className="rounded-full border border-white/[0.1] bg-white/[0.04] px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/[0.07] hover:text-white active:scale-95"
+                style={{ boxShadow: NEUTRAL_CARD_SHELL_SHADOW }}
+              >
+                ✕ Close
+              </button>
             </div>
 
-            <div className="space-y-3 px-3 py-3 sm:px-4 sm:py-4">
+            <div className="flex items-end justify-between gap-2">
+              <div>
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500">Navigation</p>
+                <h2 className="mt-0.5 text-base font-black uppercase tracking-tight text-white/95 sm:text-lg">
+                  Suite Directory
+                </h2>
+              </div>
+              <span className="rounded-full border border-white/[0.06] bg-black/20 px-2 py-0.5 text-[8px] font-bold uppercase tracking-widest text-zinc-600">
+                2026
+              </span>
+            </div>
+          </header>
+
+          {/* Scroll region — h-0 + flex-1 is the reliable flex scroll pattern */}
+          <div
+            className="h-0 min-h-0 flex-1 overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch] [scrollbar-gutter:stable]"
+            style={{ touchAction: 'pan-y' }}
+          >
+            <div className="space-y-3 px-3 py-3 pb-6 sm:px-4 sm:py-4 sm:pb-8">
               {categories.map((cat) => (
                 <SmokyGlassSurface
                   key={cat.parent}
                   tone="neutral"
-                  enableTilt
+                  enableTilt={false}
                   innerClassName="p-3 sm:p-4"
                 >
                   <Link
@@ -180,16 +181,16 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
                   </div>
                 </SmokyGlassSurface>
               ))}
-            </div>
 
-            <div className="border-t border-white/[0.06] px-4 py-4 text-center sm:px-5">
-              <span className="text-[9px] font-black uppercase tracking-[0.22em] text-zinc-600">
-                Strong Impact Portfolio System © 2026
-              </span>
+              <div className="border-t border-white/[0.06] pt-4 text-center">
+                <span className="text-[9px] font-black uppercase tracking-[0.22em] text-zinc-600">
+                  Strong Impact Portfolio System © 2026
+                </span>
+              </div>
             </div>
           </div>
         </SmokyGlassSurface>
-      </div>
+      </aside>
     </div>
   );
 }
