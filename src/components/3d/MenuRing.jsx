@@ -12,7 +12,7 @@ const MENU_ITEMS = [
   { id: 5, label: 'GET INVOLVED', path: '/get-involved', color: '#b833ff' },
 ];
 
-function MenuPanel({ item, angle, radius, ringRotationRef, isMobile }) {
+function MenuPanel({ item, angle, radius, isMobile }) {
   const meshRef = useRef();
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
@@ -29,8 +29,8 @@ function MenuPanel({ item, angle, radius, ringRotationRef, isMobile }) {
         ? Math.sin(state.clock.getElapsedTime() * 4) * 0.12 + 0.05
         : Math.sin(state.clock.getElapsedTime() * 1.5) * 0.02;
 
-      const absoluteAngle = angle + ringRotationRef.current;
-      meshRef.current.rotation.y = -absoluteAngle + Math.PI / 2;
+      // Keep panels facing forward (no tilting)
+      meshRef.current.rotation.y = 0;
     }
   });
 
@@ -134,7 +134,6 @@ function MenuPanel({ item, angle, radius, ringRotationRef, isMobile }) {
 
 export default function MenuRing({ paused = false }) {
   const ringRef = useRef();
-  const rotationRef = useRef(0);
   const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
   const isMobile = width < 768;
 
@@ -144,12 +143,6 @@ export default function MenuRing({ paused = false }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  useEffect(() => {
-    if (!paused && ringRef.current) {
-      rotationRef.current = ringRef.current.rotation.y;
-    }
-  }, [paused]);
-
   const activeRadius = isMobile ? 2.3 : 2.6;
 
   useFrame((state, delta) => {
@@ -158,8 +151,6 @@ export default function MenuRing({ paused = false }) {
     if (!paused) {
       ringRef.current.rotation.y += delta * 0.08;
     }
-
-    rotationRef.current = ringRef.current.rotation.y;
   });
 
   return (
@@ -172,7 +163,6 @@ export default function MenuRing({ paused = false }) {
             item={item}
             angle={angle}
             radius={activeRadius}
-            ringRotationRef={rotationRef}
             isMobile={isMobile}
           />
         );

@@ -101,7 +101,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
           className="flex h-full min-h-0 w-full flex-col"
           innerClassName="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[24px] p-0"
         >
-          {/* Fixed header — never scrolls away */}
+          {/* Fixed header */}
           <header className="shrink-0 border-b border-white/[0.06] px-4 py-3 sm:px-5">
             <div className="mb-3 flex items-center justify-between gap-2">
               <Link
@@ -138,11 +138,8 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
             </div>
           </header>
 
-          {/* Scroll region — h-0 + flex-1 is the reliable flex scroll pattern */}
-          <div
-            className="h-0 min-h-0 flex-1 overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch] [scrollbar-gutter:stable]"
-            style={{ touchAction: 'pan-y' }}
-          >
+          {/* Scroll region - FIXED */}
+          <div className="h-0 min-h-0 flex-1 overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch] [scrollbar-gutter:stable] pb-20" style={{ touchAction: 'pan-y' }}>
             <div className="space-y-3 px-3 py-3 pb-6 sm:px-4 sm:py-4 sm:pb-8">
               {categories.map((cat) => (
                 <SmokyGlassSurface
