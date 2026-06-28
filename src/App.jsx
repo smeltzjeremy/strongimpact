@@ -28,12 +28,25 @@ export default function App() {
         <div className="fixed top-4 right-4 z-50">
           <button
             onClick={() => setMenuOpen(true)}
-            className="px-5 py-3 bg-zinc-900/60 backdrop-blur-md border border-white/5 hover:border-red-600/40 text-white font-black text-[10px] uppercase tracking-widest rounded-full shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95"
+            aria-label="Open navigation menu"
+            className="group relative overflow-hidden rounded-full border border-white/[0.1] bg-white/[0.05] px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300 backdrop-blur-[28px] backdrop-saturate-[145%] transition-all duration-300 hover:scale-105 hover:border-white/20 hover:text-white active:scale-95"
             style={{
-              boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.7), inset 0 1px 1px 0 rgba(255, 255, 255, 0.05)'
+              boxShadow:
+                '0 24px 48px -12px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.06), 0 12px 36px -10px rgba(18,20,28,0.45), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -3px 12px rgba(0,0,0,0.5)',
             }}
           >
-            ☰ Menu
+            <span
+              className="pointer-events-none absolute inset-0 opacity-60"
+              style={{
+                background:
+                  'radial-gradient(ellipse 120% 90% at 30% 20%, rgba(28,32,42,0.5) 0%, transparent 55%), linear-gradient(160deg, rgba(22,26,36,0.35) 0%, rgba(8,10,16,0.15) 100%)',
+              }}
+            />
+            <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+            <span className="relative z-10 flex items-center gap-2">
+              <span className="text-sm leading-none opacity-75">☰</span>
+              Menu
+            </span>
           </button>
         </div>
 
