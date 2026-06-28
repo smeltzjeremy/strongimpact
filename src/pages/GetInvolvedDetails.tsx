@@ -108,7 +108,7 @@ function FloatingGlassCard({
     '--rx': DEFAULT_LIGHT.rx,
     '--ry': DEFAULT_LIGHT.ry,
     boxShadow:
-      '0 40px 80px -20px rgba(0,0,0,0.95), 0 0 0 1px rgba(255,255,255,0.06), 0 16px 48px -12px rgba(60,5,10,0.55), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -4px 16px rgba(0,0,0,0.7)',
+      '0 48px 96px -24px rgba(0,0,0,0.98), 0 0 0 1px rgba(255,255,255,0.1), 0 0 48px -8px rgba(255,255,255,0.04), 0 20px 56px -14px rgba(40,4,8,0.65), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -6px 20px rgba(0,0,0,0.75)',
     transform: 'perspective(900px) rotateX(var(--rx)) rotateY(var(--ry))',
   };
 
@@ -135,49 +135,68 @@ function FloatingGlassCard({
       className={`group block text-white transition-[transform,box-shadow] duration-700 ease-out hover:-translate-y-1.5 hover:scale-[1.02] active:scale-[0.99] ${className}`}
       style={cardStyle}
     >
-      <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.04] p-4 backdrop-blur-[28px] backdrop-saturate-[140%] transition-[border-color,box-shadow] duration-700 group-hover:border-red-900/40 group-hover:shadow-[0_0_40px_-8px_rgba(127,29,29,0.45)] sm:p-[18px]">
+      <div className="relative overflow-hidden rounded-3xl border border-white/[0.11] bg-white/[0.06] p-4 backdrop-blur-[36px] backdrop-saturate-[150%] transition-[border-color,box-shadow] duration-700 group-hover:border-red-900/50 group-hover:shadow-[0_0_52px_-6px_rgba(127,29,29,0.5),0_0_24px_-4px_rgba(255,255,255,0.06)] sm:p-[18px]">
         {/* Deep smoke / haze body */}
         <div
           className="pointer-events-none absolute inset-0 rounded-3xl"
           style={{
             background:
-              'radial-gradient(ellipse 120% 90% at 30% 20%, rgba(40,8,12,0.55) 0%, transparent 55%), radial-gradient(ellipse 100% 80% at 75% 85%, rgba(20,4,6,0.65) 0%, transparent 60%), linear-gradient(160deg, rgba(30,6,10,0.45) 0%, rgba(8,2,4,0.25) 50%, rgba(15,4,8,0.5) 100%)',
+              'radial-gradient(ellipse 130% 95% at 25% 15%, rgba(50,8,14,0.62) 0%, transparent 52%), radial-gradient(ellipse 110% 85% at 80% 90%, rgba(18,3,6,0.72) 0%, transparent 58%), radial-gradient(ellipse 80% 60% at 50% 50%, rgba(12,2,4,0.4) 0%, transparent 70%), linear-gradient(155deg, rgba(35,6,10,0.5) 0%, rgba(6,1,3,0.3) 48%, rgba(20,4,8,0.55) 100%)',
           }}
         />
 
         {/* Frosted glass veil */}
         <div
-          className="pointer-events-none absolute inset-0 rounded-3xl opacity-70"
+          className="pointer-events-none absolute inset-0 rounded-3xl opacity-80"
           style={{
             background:
-              'linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 45%, rgba(80,20,25,0.06) 70%, transparent 100%)',
+              'linear-gradient(135deg, rgba(255,255,255,0.09) 0%, transparent 42%, rgba(70,15,20,0.07) 68%, transparent 100%)',
           }}
         />
 
-        {/* Internal smoky depth layer */}
+        {/* Internal cavity — deep smoky depth */}
         <div
-          className="pointer-events-none absolute inset-[6px] rounded-[20px] opacity-50"
+          className="pointer-events-none absolute inset-[5px] rounded-[22px]"
           style={{
             background:
-              'radial-gradient(ellipse at center, rgba(60,10,15,0.35) 0%, rgba(10,2,4,0.15) 55%, transparent 80%)',
-            boxShadow: 'inset 0 8px 24px rgba(0,0,0,0.55), inset 0 -6px 18px rgba(0,0,0,0.4)',
+              'radial-gradient(ellipse 90% 70% at 50% 55%, rgba(8,1,3,0.55) 0%, rgba(45,8,14,0.28) 45%, rgba(12,2,4,0.18) 72%, transparent 100%)',
+            boxShadow:
+              'inset 0 12px 32px rgba(0,0,0,0.65), inset 0 -10px 28px rgba(0,0,0,0.5), inset 0 0 20px rgba(30,5,8,0.35)',
           }}
         />
 
-        {/* Mouse-responsive blood-red glow (subtle) */}
+        {/* Subtle internal reflection band */}
         <div
-          className="pointer-events-none absolute inset-0 rounded-3xl opacity-20 mix-blend-screen transition-opacity duration-300 group-hover:opacity-45"
+          className="pointer-events-none absolute inset-[8px] rounded-[20px] opacity-30"
           style={{
-            background: `radial-gradient(140px circle at var(--mx) var(--my), ${glowColor}, transparent 70%)`,
+            background:
+              'linear-gradient(168deg, transparent 30%, rgba(200,205,212,0.06) 46%, rgba(255,255,255,0.04) 50%, rgba(200,205,212,0.05) 54%, transparent 70%)',
+          }}
+        />
+
+        {/* Lower internal reflection (glass floor bounce) */}
+        <div
+          className="pointer-events-none absolute inset-x-4 bottom-[10px] h-[28%] rounded-b-[18px] opacity-25"
+          style={{
+            background:
+              'linear-gradient(0deg, rgba(160,165,175,0.07) 0%, rgba(127,29,29,0.04) 40%, transparent 100%)',
+          }}
+        />
+
+        {/* Mouse-responsive blood-red glow */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-3xl opacity-22 mix-blend-screen transition-opacity duration-300 group-hover:opacity-50"
+          style={{
+            background: `radial-gradient(150px circle at var(--mx) var(--my), ${glowColor}, transparent 68%)`,
           }}
         />
 
         {/* Mouse-responsive dark silver glint */}
         <div
-          className="pointer-events-none absolute inset-0 rounded-3xl opacity-15 transition-opacity duration-300 group-hover:opacity-35"
+          className="pointer-events-none absolute inset-0 rounded-3xl opacity-18 transition-opacity duration-300 group-hover:opacity-42"
           style={{
             background:
-              'radial-gradient(70px circle at var(--mx) var(--my), rgba(180,185,195,0.12), transparent 65%)',
+              'radial-gradient(80px circle at var(--mx) var(--my), rgba(195,200,210,0.14), transparent 60%)',
           }}
         />
 
@@ -185,32 +204,40 @@ function FloatingGlassCard({
         <div
           className="pointer-events-none absolute inset-x-0 top-0 h-px"
           style={{
-            background: `linear-gradient(90deg, transparent 8%, rgba(200,205,210,0.25) 35%, ${edgeAccent} 50%, rgba(200,205,210,0.25) 65%, transparent 92%)`,
+            background: `linear-gradient(90deg, transparent 6%, rgba(215,220,225,0.32) 32%, ${edgeAccent} 50%, rgba(215,220,225,0.32) 68%, transparent 94%)`,
           }}
         />
 
         {/* Soft left edge highlight */}
         <div
-          className="pointer-events-none absolute inset-y-3 left-0 w-px opacity-60"
+          className="pointer-events-none absolute inset-y-3 left-0 w-px opacity-70"
           style={{
             background:
-              'linear-gradient(180deg, rgba(210,215,220,0.15) 0%, transparent 60%)',
+              'linear-gradient(180deg, rgba(220,225,230,0.2) 0%, rgba(220,225,230,0.05) 45%, transparent 80%)',
           }}
         />
 
-        {/* Bottom blood reflection (faint) */}
+        {/* Right edge shadow (depth cue) */}
         <div
-          className="pointer-events-none absolute inset-x-6 bottom-0 h-px opacity-40"
+          className="pointer-events-none absolute inset-y-2 right-0 w-px opacity-40"
+          style={{
+            background: 'linear-gradient(180deg, transparent, rgba(0,0,0,0.35) 50%, transparent)',
+          }}
+        />
+
+        {/* Bottom blood reflection */}
+        <div
+          className="pointer-events-none absolute inset-x-5 bottom-0 h-px opacity-45"
           style={{
             background:
-              'linear-gradient(90deg, transparent, rgba(127,29,29,0.35) 50%, transparent)',
+              'linear-gradient(90deg, transparent, rgba(127,29,29,0.4) 50%, transparent)',
           }}
         />
 
         <div className="relative z-10">
           <div className="mb-2 flex items-center justify-between gap-2">{label}</div>
-          <h3 className="text-left text-sm font-black uppercase tracking-tight text-white/95">{title}</h3>
-          <p className="mt-1.5 text-left text-[10px] font-medium leading-snug text-zinc-500 transition-colors duration-500 group-hover:text-zinc-400">
+          <h3 className="text-left text-sm font-black uppercase tracking-tight text-white">{title}</h3>
+          <p className="mt-1.5 text-left text-[10px] font-medium leading-snug text-zinc-500 transition-colors duration-500 group-hover:text-zinc-300">
             {description}
           </p>
         </div>
@@ -255,7 +282,7 @@ export default function GetInvolvedDetails(): React.JSX.Element {
     '--rx': '0deg',
     '--ry': '0deg',
     boxShadow:
-      '0 50px 100px -20px rgba(0,0,0,0.95), 0 0 0 1px rgba(255,255,255,0.04), 0 12px 40px -12px rgba(60,5,10,0.4), inset 0 1px 1px 0 rgba(255,255,255,0.12), inset 0 -2px 14px 0 rgba(0,0,0,0.65)',
+      '0 56px 112px -24px rgba(0,0,0,0.98), 0 0 0 1px rgba(255,255,255,0.07), 0 0 40px -6px rgba(255,255,255,0.03), 0 16px 48px -12px rgba(40,4,8,0.45), inset 0 1px 1px 0 rgba(255,255,255,0.14), inset 0 -2px 16px 0 rgba(0,0,0,0.7)',
   };
 
   const handleBasePlateMove = useCallback((e: MouseEvent<HTMLDivElement>) => {
@@ -274,36 +301,36 @@ export default function GetInvolvedDetails(): React.JSX.Element {
   }, []);
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden overflow-y-auto bg-[#060103] font-sans text-white selection:bg-red-900/40">
+    <div className="relative min-h-screen overflow-x-hidden overflow-y-auto bg-[#040001] font-sans text-white selection:bg-red-900/40">
       {/* PROCEDURAL LIQUID CHROME BACKGROUND */}
       <div className="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
         <Canvas
           dpr={[1, 1.5]}
           camera={{ position: [0, 0, 5], fov: 60 }}
           gl={{ antialias: false, alpha: false, powerPreference: 'high-performance' }}
-          style={{ width: '100%', height: '100%', background: '#060103' }}
+          style={{ width: '100%', height: '100%', background: '#040001' }}
         >
-          <ProceduralChromeBackground variant="crimson-iridescent" intensity={1.1} />
+          <ProceduralChromeBackground variant="crimson-iridescent" intensity={1.2} />
         </Canvas>
       </div>
 
-      {/* ATMOSPHERE + VIGNETTE */}
+      {/* ATMOSPHERE + VIGNETTE — darker edges for card contrast */}
       <div className="pointer-events-none fixed inset-0 z-[1]" aria-hidden="true">
         <div
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(ellipse 90% 70% at 50% 42%, transparent 15%, rgba(6,1,3,0.6) 58%, rgba(3,0,1,0.96) 100%)',
+              'radial-gradient(ellipse 80% 62% at 50% 42%, transparent 10%, rgba(4,0,1,0.72) 52%, rgba(2,0,0,0.98) 100%)',
           }}
         />
         <div
-          className="absolute inset-0 opacity-40 mix-blend-screen"
+          className="absolute inset-0 opacity-35 mix-blend-screen"
           style={{
             background:
-              'radial-gradient(ellipse 50% 35% at 82% 14%, rgba(127,29,29,0.18) 0%, transparent 68%), radial-gradient(ellipse 45% 30% at 10% 88%, rgba(90,10,18,0.16) 0%, transparent 62%)',
+              'radial-gradient(ellipse 50% 35% at 82% 14%, rgba(127,29,29,0.16) 0%, transparent 68%), radial-gradient(ellipse 45% 30% at 10% 88%, rgba(90,10,18,0.14) 0%, transparent 62%)',
           }}
         />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:40px_40px] mix-blend-overlay opacity-30" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:40px_40px] mix-blend-overlay opacity-25" />
       </div>
 
       {/* CONTENT */}
@@ -311,9 +338,9 @@ export default function GetInvolvedDetails(): React.JSX.Element {
         {/* HEADER */}
         <header className="mx-auto mt-2 flex w-full max-w-xl items-center justify-between">
           <span
-            className="rounded-full border border-white/[0.08] bg-zinc-950/55 px-3.5 py-1.5 text-[9px] font-black uppercase tracking-[0.25em] text-zinc-500 backdrop-blur-md"
+            className="rounded-full border border-white/[0.1] bg-zinc-950/60 px-3.5 py-1.5 text-[9px] font-black uppercase tracking-[0.25em] text-zinc-400 backdrop-blur-md"
             style={{
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 20px rgba(0,0,0,0.6)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 4px 24px rgba(0,0,0,0.65)',
             }}
           >
             Portal Gateway Active
@@ -328,41 +355,41 @@ export default function GetInvolvedDetails(): React.JSX.Element {
               ref={basePlateRef}
               onMouseMove={handleBasePlateMove}
               onMouseLeave={handleBasePlateLeave}
-              className="relative z-20 mx-auto w-full max-w-lg overflow-hidden rounded-[40px] border border-white/[0.07] bg-zinc-950/35 p-6 backdrop-blur-2xl backdrop-saturate-[160%] sm:p-7"
+              className="relative z-20 mx-auto w-full max-w-lg overflow-hidden rounded-[40px] border border-white/[0.09] bg-zinc-950/45 p-6 backdrop-blur-2xl backdrop-saturate-[170%] sm:p-7"
               style={basePlateStyle}
             >
               <div
-                className="pointer-events-none absolute inset-0 rounded-[40px] opacity-65"
+                className="pointer-events-none absolute inset-0 rounded-[40px] opacity-70"
                 style={{
                   background:
-                    'linear-gradient(148deg, rgba(255,255,255,0.08) 0%, transparent 36%, rgba(127,29,29,0.07) 54%, transparent 70%, rgba(100,105,115,0.05) 100%)',
+                    'linear-gradient(148deg, rgba(255,255,255,0.1) 0%, transparent 36%, rgba(127,29,29,0.08) 54%, transparent 70%, rgba(100,105,115,0.06) 100%)',
                 }}
               />
               <div
-                className="pointer-events-none absolute inset-0 rounded-[40px] opacity-30"
+                className="pointer-events-none absolute inset-0 rounded-[40px] opacity-35"
                 style={{
                   background:
-                    'radial-gradient(280px circle at var(--mx) var(--my), rgba(180,185,195,0.07), transparent 62%)',
+                    'radial-gradient(280px circle at var(--mx) var(--my), rgba(190,195,200,0.09), transparent 62%)',
                 }}
               />
               <div
                 className="pointer-events-none absolute inset-x-5 top-0 h-px"
                 style={{
                   background:
-                    'linear-gradient(90deg, transparent, rgba(190,195,200,0.3) 25%, rgba(127,29,29,0.4) 50%, rgba(190,195,200,0.3) 75%, transparent)',
+                    'linear-gradient(90deg, transparent, rgba(200,205,210,0.35) 25%, rgba(127,29,29,0.45) 50%, rgba(200,205,210,0.35) 75%, transparent)',
                 }}
               />
               <div
-                className="pointer-events-none absolute inset-x-8 bottom-0 h-px opacity-40"
+                className="pointer-events-none absolute inset-x-8 bottom-0 h-px opacity-45"
                 style={{
                   background:
-                    'linear-gradient(90deg, transparent, rgba(127,29,29,0.28) 50%, transparent)',
+                    'linear-gradient(90deg, transparent, rgba(127,29,29,0.32) 50%, transparent)',
                 }}
               />
 
               <div className="relative z-10">
                 <div className="mb-6 text-center">
-                  <span className="bg-gradient-to-r from-zinc-400 via-zinc-200 to-zinc-500 bg-clip-text text-[8px] font-black uppercase tracking-[0.4em] text-transparent opacity-70">
+                  <span className="bg-gradient-to-r from-zinc-400 via-zinc-200 to-zinc-500 bg-clip-text text-[8px] font-black uppercase tracking-[0.4em] text-transparent opacity-75">
                     {donation.subLabel}
                   </span>
                 </div>
@@ -380,9 +407,9 @@ export default function GetInvolvedDetails(): React.JSX.Element {
                 </div>
 
                 <div
-                  className="flex w-full items-center justify-between rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3 text-[9px] font-black uppercase tracking-widest text-zinc-500"
+                  className="flex w-full items-center justify-between rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3 text-[9px] font-black uppercase tracking-widest text-zinc-500"
                   style={{
-                    boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)',
+                    boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)',
                   }}
                 >
                   <span>Secure Terminal</span>
@@ -396,7 +423,7 @@ export default function GetInvolvedDetails(): React.JSX.Element {
                     rel="noreferrer"
                     className="group/donate relative block w-full overflow-hidden rounded-2xl border border-white/10 py-3 text-center text-[9px] font-black uppercase tracking-widest text-zinc-500 transition-all duration-300 hover:border-red-900/50 hover:text-zinc-200"
                     style={{
-                      boxShadow: '0 8px 28px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)',
+                      boxShadow: '0 8px 28px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.07)',
                     }}
                   >
                     <span
@@ -441,7 +468,7 @@ export default function GetInvolvedDetails(): React.JSX.Element {
                   <span className="text-[8px] font-black uppercase tracking-widest text-zinc-600 transition-colors duration-500 group-hover:text-red-800">
                     {sponsor.label}
                   </span>
-                  <span className="shrink-0 rounded border border-white/[0.06] bg-black/60 px-1.5 py-0.5 font-mono text-[8px] text-zinc-600">
+                  <span className="shrink-0 rounded border border-white/[0.08] bg-black/60 px-1.5 py-0.5 font-mono text-[8px] text-zinc-600">
                     TIERS
                   </span>
                 </>
