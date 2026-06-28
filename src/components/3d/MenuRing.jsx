@@ -13,7 +13,7 @@ const MENU_ITEMS = [
 ];
 
 function MenuPanel({ item, angle, radius, ringRotationRef, isMobile }) {
-  const meshRef = useRef();
+  const panelGroupRef = useRef(); // Changed from meshRef to rotate the entire group container
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const [time, setTime] = useState(0);
@@ -25,13 +25,14 @@ function MenuPanel({ item, angle, radius, ringRotationRef, isMobile }) {
   useFrame((state) => {
     const elapsed = state.clock.getElapsedTime();
 
-    if (meshRef.current) {
-      meshRef.current.position.y = hovered
+    if (panelGroupRef.current) {
+      panelGroupRef.current.position.y = hovered
         ? Math.sin(elapsed * 4) * 0.12 + 0.05
         : 0;
 
+      // This now rotates everything inside the group together (mesh + HTML elements)
       const absoluteAngle = angle + ringRotationRef.current;
-      meshRef.current.rotation.set(0, -absoluteAngle + Math.PI / 2, 0);
+      panelGroupRef.current.rotation.set(0, -absoluteAngle + Math.PI / 2, 0);
     }
 
     frameTick.current += 1;
@@ -50,9 +51,8 @@ function MenuPanel({ item, angle, radius, ringRotationRef, isMobile }) {
   const slowPulseScale = hovered ? 1.12 : 1 + Math.sin(time * 1.8) * 0.035;
 
   return (
-    <group position={[x, 0, z]}>
+    <group position={[x, 0, z]} ref={panelGroupRef}>
       <mesh
-        ref={meshRef}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
         onPointerOut={() => setHovered(false)}
       >
