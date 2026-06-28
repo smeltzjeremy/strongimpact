@@ -149,15 +149,15 @@ export default function ProceduralChromeBackground({
             uCrimsonMix
           );
 
-          vec3 base = mix(vec3(0.0), voidBlack + deepCrimson * 0.8 + darkSilver * 0.08, uCrimsonMix);
-          base += mix(vec3(0.0), bloodRed * 0.04 + deepCrimson * 0.06, abs(topo) * 0.5 * uCrimsonMix);
+          vec3 base = mix(vec3(0.0), voidBlack + deepCrimson * 0.75 + darkSilver * 0.1, uCrimsonMix);
+          base += mix(vec3(0.0), bloodRed * 0.04 + deepCrimson * 0.05, abs(topo) * 0.5 * uCrimsonMix);
 
           vec3 color = base + specular + rim;
           color += darkWave * abs(topo) * 0.05 * uCrimsonMix * uCrimsonIntensity;
           color += bloodRed * smoothstep(0.35, 0.95, abs(topo)) * 0.025 * uCrimsonMix * uCrimsonIntensity;
 
-          color = smoothstep(0.06, 0.62, color);
-          color = pow(color, vec3(1.12));
+          color = smoothstep(0.08, 0.66, color);
+          color = pow(color, vec3(1.08));
 
           gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
         }
