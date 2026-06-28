@@ -75,7 +75,7 @@ export default function App() {
               </div>
 
               {/* 3D SCENE ROOT CANVAS LAYER */}
-              <SceneContainer />
+              <SceneContainer menuOpen={menuOpen} />
 
               {/* DOCK BAR CAPSULES NAVIGATION SLAT */}
               <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-45 flex items-center gap-3 w-full max-w-sm sm:max-w-md px-4">

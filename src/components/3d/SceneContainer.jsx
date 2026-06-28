@@ -1,40 +1,62 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Environment, OrbitControls } from '@react-three/drei';
 import MenuRing from './MenuRing';
 
-export default function SceneContainer() {
+const DEFAULT_CAMERA = { position: [0, -0.4, 7.5], fov: 45 };
+const DEFAULT_TARGET = [0, -1.2, 0];
+
+export default function SceneContainer({ menuOpen = false }) {
+  const controlsRef = useRef(null);
+  const wasMenuOpenRef = useRef(false);
+
+  useEffect(() => {
+    if (wasMenuOpenRef.current && !menuOpen) {
+      const controls = controlsRef.current;
+      if (controls) {
+        controls.reset();
+        controls.update();
+      }
+    }
+    wasMenuOpenRef.current = menuOpen;
+  }, [menuOpen]);
+
   return (
-    <div style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}>
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        pointerEvents: menuOpen ? 'none' : 'auto',
+      }}
+    >
       <Canvas
-        camera={{ position: [0, -0.4, 7.5], fov: 45 }}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+        camera={DEFAULT_CAMERA}
+        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       >
         <Environment preset="studio" />
 
         <ambientLight intensity={0.35} />
 
-        {/* Sharp overhead directional lights */}
         <directionalLight position={[6, 12, 5]} intensity={2.5} color="#ffffff" />
         <directionalLight position={[-5, 8, 4]} intensity={1.5} color="#e0f0ff" />
-
-        {/* TUNED: Front Key Fill Light raised to a 2.2 intensity multiplier.
-            Forces the high-metalness panels to reflect an authoritative, premium face glint. */}
         <directionalLight position={[0, 0, 8]} intensity={2.2} color="#f0f5ff" />
-
-        {/* Back point light for deep translucency pass-through illumination */}
         <pointLight position={[0, -1.2, -4]} intensity={2.4} color="#a0c0ff" />
 
         <group position={[0, -1.2, 0]}>
-          <MenuRing />
+          <MenuRing paused={menuOpen} />
         </group>
 
         <OrbitControls
+          ref={controlsRef}
+          enabled={!menuOpen}
           enableZoom={true}
           enablePan={false}
           minDistance={5}
           maxDistance={12}
-          target={[0, -1.2, 0]} 
+          target={DEFAULT_TARGET}
         />
       </Canvas>
     </div>

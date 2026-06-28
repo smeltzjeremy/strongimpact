@@ -4,38 +4,44 @@ import { Html } from '@react-three/drei';
 import { useNavigate } from 'react-router-dom';
 import * as THREE from 'three';
 
-// UPDATED BRAND CONFIGURATION DATA LAYER WITH CORRECT ACTIVE ROUTES
 const MENU_ITEMS = [
   { id: 1, label: 'ABOUT US', path: '/about', color: '#00ffcc' },
   { id: 2, label: 'PROGRAMS', path: '/programs', color: '#3399ff' },
   { id: 3, label: 'EVENTS', path: '/events', color: '#ff3366' },
-  { id: 4, label: 'GALLERY', path: '/gallery', color: '#ff3344' }, 
-  { id: 5, label: 'GET INVOLVED', path: '/get-involved', color: '#b833ff' }
+  { id: 4, label: 'GALLERY', path: '/gallery', color: '#ff3344' },
+  { id: 5, label: 'GET INVOLVED', path: '/get-involved', color: '#b833ff' },
 ];
 
-function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
+function MenuPanel({ item, angle, radius, ringRotationRef, isMobile, paused }) {
   const meshRef = useRef();
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const [time, setTime] = useState(0);
+  const frameTick = useRef(0);
 
   const x = radius * Math.cos(angle);
   const z = radius * Math.sin(angle);
 
   useFrame((state) => {
-    setTime(state.clock.getElapsedTime());
+    const elapsed = state.clock.getElapsedTime();
 
     if (meshRef.current) {
       meshRef.current.position.y = hovered
-        ? Math.sin(state.clock.getElapsedTime() * 4) * 0.12 + 0.05
-        : Math.sin(state.clock.getElapsedTime() * 1.5) * 0.02;
-      
-      const absoluteAngle = angle + currentRingRotation;
+        ? Math.sin(elapsed * 4) * 0.12 + 0.05
+        : Math.sin(elapsed * 1.5) * 0.02;
+
+      const absoluteAngle = angle + ringRotationRef.current;
       meshRef.current.rotation.y = -absoluteAngle + Math.PI / 2;
+    }
+
+    if (!paused) {
+      frameTick.current += 1;
+      if (frameTick.current % 2 === 0) {
+        setTime(elapsed);
+      }
     }
   });
 
-  // SURGICAL INTERACTION OVERRIDE: Routes flawlessly to each matching category sub-page
   const handlePipelineLaunch = (e) => {
     e.stopPropagation();
     if (item.path) {
@@ -47,7 +53,6 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
 
   return (
     <group position={[x, 0, z]}>
-      {/* 🔮 THE VISUAL DRAG CARD */}
       <mesh
         ref={meshRef}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
@@ -70,79 +75,72 @@ function MenuPanel({ item, angle, radius, currentRingRotation, isMobile }) {
         />
       </mesh>
 
-      {/* 🏷️ LABEL ON CARD */}
       <Html position={[0, 0, 0.06]} center style={{ pointerEvents: 'none' }}>
-        <span 
-          className="font-black text-xs tracking-widest uppercase select-none bg-black/70 px-4 py-1.5 rounded-full backdrop-blur-md border transition-all duration-300 shadow whitespace-nowrap" 
-          style={{ 
+        <span
+          className="font-black text-xs tracking-widest uppercase select-none bg-black/70 px-4 py-1.5 rounded-full backdrop-blur-md border transition-all duration-300 shadow whitespace-nowrap"
+          style={{
             color: hovered ? item.color : '#ffffff',
-            borderColor: hovered ? `${item.color}44` : 'rgba(255,255,255,0.1)'
+            borderColor: hovered ? `${item.color}44` : 'rgba(255,255,255,0.1)',
           }}
         >
           {item.label}
         </span>
       </Html>
 
-      {/* 🏈 HOLOGRAPHIC LAUNCH BUTTON TARGET */}
       <Html position={[0, 0.65, 0]} center style={{ pointerEvents: 'auto' }}>
         <div className="flex flex-col items-center gap-1.5 select-none">
-          
-          <button 
+          <button
             onClick={handlePipelineLaunch}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             className="rounded-full border bg-zinc-950/90 backdrop-blur-2xl flex items-center justify-center cursor-pointer transition-all duration-500 group relative shadow-2xl"
-            style={{ 
+            style={{
               width: isMobile ? '4.6rem' : '4rem',
               height: isMobile ? '2.3rem' : '2rem',
               transform: `scale(${slowPulseScale})`,
               borderColor: hovered ? item.color : 'rgba(255,255,255,0.25)',
-              boxShadow: hovered 
-                ? `0 0 35px ${item.color}bb, inset 0 0 10px ${item.color}44` 
-                : '0 0 20px rgba(0,0,0,0.8)'
+              boxShadow: hovered
+                ? `0 0 35px ${item.color}bb, inset 0 0 10px ${item.color}44`
+                : '0 0 20px rgba(0,0,0,0.8)',
             }}
           >
-            {/* 🌌 SOFT OUTSIDE HOLOGRAPHIC GLOW RING */}
-            <div 
+            <div
               className="absolute inset-[-5px] rounded-full border transition-all duration-700 opacity-40 mix-blend-screen"
-              style={{ 
+              style={{
                 borderColor: item.color,
                 boxShadow: `0 0 12px ${item.color}33`,
-                transform: hovered ? 'scale(1.1)' : `scale(${1 + Math.sin(time * 1.8) * 0.04})`
+                transform: hovered ? 'scale(1.1)' : `scale(${1 + Math.sin(time * 1.8) * 0.04})`,
               }}
             />
 
-            {/* Glowing Internal Core Element */}
-            <div 
-              className="w-3 h-3 rounded-full transition-transform duration-500 group-hover:scale-110" 
-              style={{ 
-                backgroundColor: item.color, 
-                boxShadow: `0 0 15px ${item.color}, inset 0 1px 2px rgba(255,255,255,0.5)` 
-              }} 
+            <div
+              className="w-3 h-3 rounded-full transition-transform duration-500 group-hover:scale-110"
+              style={{
+                backgroundColor: item.color,
+                boxShadow: `0 0 15px ${item.color}, inset 0 1px 2px rgba(255,255,255,0.5)`,
+              }}
             />
           </button>
 
-          {/* Contextual Hover Label */}
-          <div 
+          <div
             className={`transition-all duration-300 transform pointer-events-none ${
               hovered ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-1 scale-95'
             }`}
           >
-            <span 
+            <span
               className="text-[9px] font-black tracking-[0.25em] px-2 py-0.5 rounded bg-zinc-950/95 border text-white shadow-xl"
               style={{ borderColor: `${item.color}33` }}
             >
               LAUNCH
             </span>
           </div>
-
         </div>
       </Html>
     </group>
   );
 }
 
-export default function MenuRing() {
+export default function MenuRing({ paused = false }) {
   const ringRef = useRef();
   const rotationRef = useRef(0);
   const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
@@ -157,11 +155,17 @@ export default function MenuRing() {
   const activeRadius = isMobile ? 2.3 : 2.6;
 
   useFrame((state, delta) => {
-    if (ringRef.current) {
-      ringRef.current.rotation.y += delta * 0.08;
+    if (paused || !ringRef.current) return;
+
+    ringRef.current.rotation.y += delta * 0.08;
+    rotationRef.current = ringRef.current.rotation.y;
+  });
+
+  useEffect(() => {
+    if (!paused && ringRef.current) {
       rotationRef.current = ringRef.current.rotation.y;
     }
-  });
+  }, [paused]);
 
   return (
     <group ref={ringRef}>
@@ -173,8 +177,9 @@ export default function MenuRing() {
             item={item}
             angle={angle}
             radius={activeRadius}
-            currentRingRotation={rotationRef.current}
+            ringRotationRef={rotationRef}
             isMobile={isMobile}
+            paused={paused}
           />
         );
       })}
