@@ -90,15 +90,13 @@ export default function ProceduralChromeBackground({
           return value;
         }
 
-        vec3 iridescentCrimson(float phase) {
-          vec3 crimson = vec3(0.95, 0.12, 0.22);
-          vec3 rose     = vec3(1.00, 0.38, 0.48);
-          vec3 silver   = vec3(0.72, 0.76, 0.82);
-          vec3 deepRed  = vec3(0.55, 0.04, 0.10);
-          float w = 0.5 + 0.5 * sin(phase);
-          vec3 a = mix(crimson, rose, w);
-          vec3 b = mix(silver, deepRed, 1.0 - w);
-          return mix(a, b, 0.5 + 0.5 * cos(phase * 1.7));
+        vec3 darkMetallicWave(float phase) {
+          vec3 bloodRed    = vec3(0.62, 0.04, 0.08);
+          vec3 deepCrimson = vec3(0.28, 0.02, 0.05);
+          vec3 darkSilver  = vec3(0.22, 0.24, 0.28);
+          vec3 voidBlack   = vec3(0.04, 0.01, 0.02);
+          float w = 0.5 + 0.5 * sin(phase * 0.9);
+          return mix(mix(deepCrimson, bloodRed, w), mix(darkSilver, voidBlack, 1.0 - w), 0.5 + 0.5 * cos(phase * 1.3));
         }
 
         void main() {
@@ -125,41 +123,41 @@ export default function ProceduralChromeBackground({
           vec3 lightDir2 = normalize(vec3(-1.1, -0.6, 0.32));
           vec3 viewDir = vec3(0.0, 0.0, 1.0);
 
-          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 200.0);
-          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 130.0);
+          float spec1 = pow(max(dot(normal, lightDir1), 0.0), 260.0);
+          float spec2 = pow(max(dot(normal, lightDir2), 0.0), 180.0);
 
-          vec3 silverSpec = vec3(0.78, 0.82, 0.88);
-          vec3 crimsonSpec = vec3(1.0, 0.35, 0.42);
-          vec3 roseSpec    = vec3(1.0, 0.55, 0.62);
+          vec3 darkSilverSpec = vec3(0.55, 0.58, 0.64);
+          vec3 bloodSpec      = vec3(0.75, 0.08, 0.12);
+          vec3 steelGlint     = vec3(0.68, 0.71, 0.76);
 
-          vec3 specular = silverSpec * spec1 * 18.0 + silverSpec * spec2 * 8.0;
-          specular = mix(specular, mix(crimsonSpec, roseSpec, 0.45 + topo * 0.3) * (spec1 * 20.0 + spec2 * 9.0), uCrimsonMix * 0.85);
+          vec3 specular = steelGlint * spec1 * 20.0 + darkSilverSpec * spec2 * 9.0;
+          specular = mix(specular, mix(bloodSpec, darkSilverSpec, 0.35 + topo * 0.2) * (spec1 * 22.0 + spec2 * 8.0), uCrimsonMix * 0.9);
 
-          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.6);
+          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 4.2);
 
-          vec3 crimsonTint = vec3(0.92, 0.14, 0.24);
-          vec3 roseTint    = vec3(0.98, 0.40, 0.50);
-          vec3 darkSilver  = vec3(0.18, 0.20, 0.24);
-          vec3 deepCrimson = vec3(0.12, 0.02, 0.04);
+          vec3 bloodRed    = vec3(0.55, 0.05, 0.09);
+          vec3 deepCrimson = vec3(0.14, 0.01, 0.03);
+          vec3 darkSilver  = vec3(0.14, 0.16, 0.19);
+          vec3 voidBlack   = vec3(0.02, 0.005, 0.01);
 
-          float iridPhase = topo * 0.65 + fresnel * 0.9 + uTime * 0.07;
-          vec3 iridescent = iridescentCrimson(iridPhase);
+          float wavePhase = topo * 0.5 + fresnel * 0.45 + uTime * 0.05;
+          vec3 darkWave = darkMetallicWave(wavePhase);
 
           vec3 rim = mix(
-            vec3(0.88, 0.92, 0.96) * fresnel * 0.42,
-            (iridescent * 0.55 + roseTint * 0.25) * fresnel * 0.75,
+            darkSilverSpec * fresnel * 0.28,
+            (darkWave * 0.35 + bloodRed * 0.15) * fresnel * 0.38,
             uCrimsonMix
           );
 
-          vec3 base = mix(vec3(0.0, 0.0, 0.002), deepCrimson + darkSilver * 0.15, uCrimsonMix * 0.7);
-          base += mix(vec3(0.0), crimsonTint * 0.12 + roseTint * 0.06, abs(topo) * uCrimsonMix);
+          vec3 base = mix(vec3(0.0), voidBlack + deepCrimson * 0.8 + darkSilver * 0.08, uCrimsonMix);
+          base += mix(vec3(0.0), bloodRed * 0.04 + deepCrimson * 0.06, abs(topo) * 0.5 * uCrimsonMix);
 
           vec3 color = base + specular + rim;
-          color += iridescent * abs(topo) * 0.18 * uCrimsonMix * uCrimsonIntensity;
-          color += crimsonTint * smoothstep(0.3, 0.9, abs(topo)) * 0.06 * uCrimsonMix * uCrimsonIntensity;
+          color += darkWave * abs(topo) * 0.05 * uCrimsonMix * uCrimsonIntensity;
+          color += bloodRed * smoothstep(0.35, 0.95, abs(topo)) * 0.025 * uCrimsonMix * uCrimsonIntensity;
 
-          color = smoothstep(0.10, 0.78, color);
-          color = pow(color, vec3(1.05));
+          color = smoothstep(0.06, 0.62, color);
+          color = pow(color, vec3(1.12));
 
           gl_FragColor = vec4(pow(color, vec3(1.0 / 2.2)), 1.0);
         }
