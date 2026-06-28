@@ -12,25 +12,31 @@ const MENU_ITEMS = [
   { id: 5, label: 'GET INVOLVED', path: '/get-involved', color: '#b833ff' },
 ];
 
-function MenuPanel({ item, angle, radius, isMobile }) {
+function MenuPanel({ item, angle, radius, ringRotationRef, isMobile }) {
   const meshRef = useRef();
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const [time, setTime] = useState(0);
+  const frameTick = useRef(0);
 
   const x = radius * Math.cos(angle);
   const z = radius * Math.sin(angle);
 
   useFrame((state) => {
-    setTime(state.clock.getElapsedTime());
+    const elapsed = state.clock.getElapsedTime();
 
     if (meshRef.current) {
       meshRef.current.position.y = hovered
-        ? Math.sin(state.clock.getElapsedTime() * 4) * 0.12 + 0.05
-        : Math.sin(state.clock.getElapsedTime() * 1.5) * 0.02;
+        ? Math.sin(elapsed * 4) * 0.12 + 0.05
+        : 0;
 
-      // Keep panels facing forward (no tilting)
-      meshRef.current.rotation.y = 0;
+      const absoluteAngle = angle + ringRotationRef.current;
+      meshRef.current.rotation.set(0, -absoluteAngle + Math.PI / 2, 0);
+    }
+
+    frameTick.current += 1;
+    if (frameTick.current % 2 === 0) {
+      setTime(elapsed);
     }
   });
 
@@ -134,6 +140,7 @@ function MenuPanel({ item, angle, radius, isMobile }) {
 
 export default function MenuRing({ paused = false }) {
   const ringRef = useRef();
+  const rotationRef = useRef(0);
   const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
   const isMobile = width < 768;
 
@@ -151,6 +158,8 @@ export default function MenuRing({ paused = false }) {
     if (!paused) {
       ringRef.current.rotation.y += delta * 0.08;
     }
+
+    rotationRef.current = ringRef.current.rotation.y;
   });
 
   return (
@@ -163,6 +172,7 @@ export default function MenuRing({ paused = false }) {
             item={item}
             angle={angle}
             radius={activeRadius}
+            ringRotationRef={rotationRef}
             isMobile={isMobile}
           />
         );

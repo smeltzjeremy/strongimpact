@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Environment, OrbitControls } from '@react-three/drei';
 import MenuRing from './MenuRing';
@@ -7,20 +7,6 @@ const DEFAULT_CAMERA = { position: [0, -0.4, 7.5], fov: 45 };
 const DEFAULT_TARGET = [0, -1.2, 0];
 
 export default function SceneContainer({ menuOpen = false }) {
-  const controlsRef = useRef(null);
-  const wasMenuOpenRef = useRef(false);
-
-  useEffect(() => {
-    if (wasMenuOpenRef.current && !menuOpen) {
-      const controls = controlsRef.current;
-      if (controls) {
-        controls.reset();
-        controls.update();
-      }
-    }
-    wasMenuOpenRef.current = menuOpen;
-  }, [menuOpen]);
-
   return (
     <div
       style={{
@@ -50,7 +36,6 @@ export default function SceneContainer({ menuOpen = false }) {
         </group>
 
         <OrbitControls
-          ref={controlsRef}
           enabled={!menuOpen}
           enableZoom={true}
           enablePan={false}

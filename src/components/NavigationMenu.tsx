@@ -19,6 +19,12 @@ interface NavigationMenuProps {
   onClose: () => void;
 }
 
+const PANEL_SHELL_STYLE: React.CSSProperties = {
+  boxShadow: NEUTRAL_CARD_SHELL_SHADOW,
+  background:
+    'radial-gradient(ellipse 120% 90% at 30% 20%, rgba(28,32,42,0.55) 0%, transparent 55%), radial-gradient(ellipse 100% 80% at 75% 85%, rgba(12,14,20,0.6) 0%, transparent 60%), linear-gradient(160deg, rgba(22,26,36,0.42) 0%, rgba(8,10,16,0.22) 50%, rgba(16,18,26,0.45) 100%)',
+};
+
 export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps): React.JSX.Element | null {
   const categories: MenuCategory[] = [
     {
@@ -94,15 +100,20 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
         aria-hidden
       />
 
-      <aside className="relative z-10 flex h-[100dvh] max-h-[100dvh] w-full max-w-md shrink-0 flex-col p-2 sm:p-3">
-        <SmokyGlassSurface
-          tone="neutral"
-          enableTilt={false}
-          className="flex h-full min-h-0 w-full flex-col"
-          innerClassName="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[24px] p-0"
+      <aside className="relative z-10 h-[100dvh] w-full max-w-md shrink-0 p-2 sm:p-3">
+        <div
+          className="relative flex h-full flex-col overflow-hidden rounded-[24px] border border-white/[0.1] bg-white/[0.05] backdrop-blur-[28px] backdrop-saturate-[145%]"
+          style={PANEL_SHELL_STYLE}
         >
-          {/* Fixed header */}
-          <header className="shrink-0 border-b border-white/[0.06] px-4 py-3 sm:px-5">
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 h-px"
+            style={{
+              background:
+                'linear-gradient(90deg, transparent 8%, rgba(200,205,210,0.28) 35%, rgba(190,200,220,0.38) 50%, rgba(200,205,210,0.28) 65%, transparent 92%)',
+            }}
+          />
+
+          <header className="relative z-10 shrink-0 border-b border-white/[0.06] px-4 py-3 sm:px-5">
             <div className="mb-3 flex items-center justify-between gap-2">
               <Link
                 to="/"
@@ -117,6 +128,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
               </Link>
 
               <button
+                type="button"
                 onClick={onClose}
                 className="rounded-full border border-white/[0.1] bg-white/[0.04] px-3.5 py-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/[0.07] hover:text-white active:scale-95"
                 style={{ boxShadow: NEUTRAL_CARD_SHELL_SHADOW }}
@@ -138,9 +150,11 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
             </div>
           </header>
 
-          {/* Scroll region - FIXED */}
-          <div className="h-0 min-h-0 flex-1 overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch] [scrollbar-gutter:stable] pb-20" style={{ touchAction: 'pan-y' }}>
-            <div className="space-y-3 px-3 py-3 pb-6 sm:px-4 sm:py-4 sm:pb-8">
+          <div
+            className="relative z-10 flex-1 overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch]"
+            style={{ minHeight: 0, touchAction: 'pan-y' }}
+          >
+            <div className="space-y-3 px-3 py-3 pb-8 sm:px-4 sm:py-4">
               {categories.map((cat) => (
                 <SmokyGlassSurface
                   key={cat.parent}
@@ -186,7 +200,7 @@ export default function NavigationMenu({ isOpen, onClose }: NavigationMenuProps)
               </div>
             </div>
           </div>
-        </SmokyGlassSurface>
+        </div>
       </aside>
     </div>
   );
