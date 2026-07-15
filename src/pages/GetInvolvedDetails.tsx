@@ -90,13 +90,14 @@ export default function GetInvolvedDetails(): React.JSX.Element {
             </p>
           </header>
 
-          {/* Same vertical spread as AboutDetails: space-y-14 / sm:space-y-20 + alternating offsets */}
-          <div className="relative space-y-28 pb-16 sm:space-y-36">
+          {/* Flex gap is more reliable than space-y on mobile; larger base gap for touch layouts */}
+          <div className="relative flex flex-col gap-24 pb-20 sm:gap-32 md:gap-36">
             {/* Card 1: Volunteer Portal — offset right */}
-            <div className="sm:ml-auto sm:max-w-[94%] md:-mr-6 lg:-mr-10">
+            <div className="relative z-0 shrink-0 sm:ml-auto sm:max-w-[94%] md:-mr-6 lg:-mr-10">
               <SmokyGlassSurface
                 glowColor="rgba(127, 29, 29, 0.3)"
                 edgeAccent="rgba(153, 27, 27, 0.48)"
+                enableTilt={false}
                 innerClassName="p-6 sm:p-7"
               >
                 <span className="mb-2 block text-[8px] font-black uppercase tracking-[0.35em] text-red-800">
@@ -123,10 +124,11 @@ export default function GetInvolvedDetails(): React.JSX.Element {
             </div>
 
             {/* Card 2: Sponsorship Tiers — offset left */}
-            <div className="sm:mr-auto sm:max-w-[94%] md:-ml-6 lg:-ml-10">
+            <div className="relative z-0 shrink-0 sm:mr-auto sm:max-w-[94%] md:-ml-6 lg:-ml-10">
               <SmokyGlassSurface
                 glowColor="rgba(90, 10, 18, 0.3)"
                 edgeAccent="rgba(127, 29, 29, 0.42)"
+                enableTilt={false}
                 innerClassName="p-6 sm:p-7"
               >
                 <span className="mb-2 block text-[8px] font-black uppercase tracking-[0.35em] text-red-800">
@@ -155,10 +157,11 @@ export default function GetInvolvedDetails(): React.JSX.Element {
             </div>
 
             {/* Card 3: Donation Processor — offset right */}
-            <div className="sm:ml-auto sm:max-w-[94%] md:-mr-6 lg:-mr-10">
+            <div className="relative z-0 shrink-0 sm:ml-auto sm:max-w-[94%] md:-mr-6 lg:-mr-10">
               <SmokyGlassSurface
                 glowColor="rgba(127, 29, 29, 0.28)"
                 edgeAccent="rgba(153, 27, 27, 0.45)"
+                enableTilt={false}
                 innerClassName="p-6 sm:p-7"
               >
                 <span className="mb-2 block text-[8px] font-black uppercase tracking-[0.35em] text-red-800">
