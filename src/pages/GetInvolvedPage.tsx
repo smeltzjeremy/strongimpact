@@ -7,7 +7,8 @@ const hubs: ParentHubItem[] = [
     name: 'Volunteer Portal',
     description: 'Sign up to assist on-field camp logistics or local food drives.',
     path: '/get-involved/details',
-    gridSpan: 'col-span-1 h-[130px]',
+    // Horizontal + vertical gap (same as Programs top pair)
+    gridSpan: 'col-span-1 h-[130px] mr-3 mb-10',
     icon: '🤝',
     pillarLabel: 'Volunteer',
   },
@@ -15,7 +16,8 @@ const hubs: ParentHubItem[] = [
     name: 'Sponsorship Tiers',
     description: 'Review corporate backing pathways and community tiers.',
     path: '/get-involved/details',
-    gridSpan: 'col-span-1 h-[130px]',
+    // Horizontal + vertical gap (same as Programs top pair)
+    gridSpan: 'col-span-1 h-[130px] ml-3 mb-10',
     icon: '🏢',
     pillarLabel: 'Sponsor',
   },
@@ -23,7 +25,8 @@ const hubs: ParentHubItem[] = [
     name: 'Donation Processor',
     description: 'Secure digital portal to fuel foundation resource networks directly.',
     path: '/get-involved/details',
-    gridSpan: 'col-span-2 h-[125px]',
+    // Nudge down so it sits clear of the top pair
+    gridSpan: 'col-span-2 h-[125px] mt-2',
     icon: '💳',
     pillarLabel: 'Donate',
   },
