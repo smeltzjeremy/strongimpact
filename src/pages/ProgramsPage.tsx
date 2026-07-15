@@ -1,46 +1,42 @@
 import React from 'react';
-import ParentHubLayout from '../components/premium/ParentHubLayout';
-import ParentHubCard, { type ParentHubItem } from '../components/premium/ParentHubCard';
+import ParentHubLayout from '../components/layout/ParentHubLayout';
+import ParentHubCard from '../components/ui/ParentHubCard';
 
-const hubs: ParentHubItem[] = [
-  {
-    name: 'Youth Development',
-    description: 'Football camps, athletic training, and leadership workshops.',
-    path: '/programs/details',
-    gridSpan: 'col-span-1 h-[130px]',
-    icon: '🏈',
-    pillarLabel: 'Pillar One',
-  },
-  {
-    name: 'Education & Mentorship',
-    description: 'Academic tracking, college readiness, and guest speakers.',
-    path: '/programs/details',
-    gridSpan: 'col-span-1 h-[130px]',
-    icon: '🎓',
-    pillarLabel: 'Pillar Two',
-  },
-  {
-    name: 'Community Outreach',
-    description: 'Holiday givebacks, school supply drives, and family support.',
-    path: '/programs/details',
-    gridSpan: 'col-span-2 h-[125px]',
-    icon: '🤝',
-    pillarLabel: 'Pillar Three',
-  },
-];
-
-export default function ProgramsPage(): React.JSX.Element {
+export default function ProgramsPage() {
   return (
     <ParentHubLayout
-      stepLabel="Stepping Stone 03"
-      eyebrow="Core Framework Pillars"
-      titleLine1="OUR"
-      titleAccent="PROGRAMS"
-      subtitle="Empowerment Pillars"
+      title="PROGRAMS"
+      subtitle="Building stronger foundations through structured growth"
+      stepLabel="02 — PROGRAMS"
     >
-      {hubs.map((hub) => (
-        <ParentHubCard key={hub.name} hub={hub} />
-      ))}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+        gap: '2.25rem',           // ← This gives nice separation
+        width: '100%',
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '0 1rem'
+      }}>
+        <ParentHubCard
+          icon="🎯"
+          title="Leadership Academy"
+          description="Develop confident, values-driven leaders equipped to serve their communities."
+          gridSpan={1}
+        />
+        <ParentHubCard
+          icon="🌱"
+          title="Youth Mentorship"
+          description="Personalized guidance and skill-building for the next generation of change-makers."
+          gridSpan={1}
+        />
+        <ParentHubCard
+          icon="🤝"
+          title="Community Impact"
+          description="Real-world projects that strengthen neighborhoods and create lasting positive change."
+          gridSpan={1}
+        />
+      </div>
     </ParentHubLayout>
   );
 }
