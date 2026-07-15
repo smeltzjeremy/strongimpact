@@ -9,6 +9,8 @@ interface ParentHubLayoutProps {
   readonly titleAccent: string;
   readonly subtitle: string;
   readonly footerText?: string;
+  /** Override the hub card grid classes (default: 2-col with modest gap). */
+  readonly gridClassName?: string;
   readonly children: ReactNode;
 }
 
@@ -19,6 +21,7 @@ export default function ParentHubLayout({
   titleAccent,
   subtitle,
   footerText = 'Building Stronger Foundations © 2026',
+  gridClassName = 'grid grid-cols-2 gap-4',
   children,
 }: ParentHubLayoutProps): React.JSX.Element {
   const navigate = useNavigate();
@@ -65,7 +68,7 @@ export default function ParentHubLayout({
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">{children}</div>
+          <div className={gridClassName}>{children}</div>
         </main>
 
         <footer className="relative z-10 pb-6 text-center">

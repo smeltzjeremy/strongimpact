@@ -1,13 +1,13 @@
 import React from 'react';
 import ParentHubLayout from '../components/premium/ParentHubLayout';
 import ParentHubCard, { type ParentHubItem } from '../components/premium/ParentHubCard';
+
 const hubs: ParentHubItem[] = [
   {
     name: 'Youth Development',
     description: 'Football camps, athletic training, and leadership workshops.',
     path: '/programs/details',
-    // Horizontal gap like About; extra bottom margin keeps pair clear of Community
-    gridSpan: 'col-span-1 h-[130px] mr-3 mb-10',
+    gridSpan: 'col-span-1 h-[130px]',
     icon: '🏈',
     pillarLabel: 'Pillar One',
   },
@@ -15,8 +15,7 @@ const hubs: ParentHubItem[] = [
     name: 'Education & Mentorship',
     description: 'Academic tracking, college readiness, and guest speakers.',
     path: '/programs/details',
-    // Horizontal gap like About; extra bottom margin keeps pair clear of Community
-    gridSpan: 'col-span-1 h-[130px] ml-3 mb-10',
+    gridSpan: 'col-span-1 h-[130px]',
     icon: '🎓',
     pillarLabel: 'Pillar Two',
   },
@@ -24,12 +23,12 @@ const hubs: ParentHubItem[] = [
     name: 'Community Outreach',
     description: 'Holiday givebacks, school supply drives, and family support.',
     path: '/programs/details',
-    // Nudge down so it sits clearly separate from the top pair
-    gridSpan: 'col-span-2 h-[125px] mt-2',
+    gridSpan: 'col-span-2 h-[125px]',
     icon: '🤝',
     pillarLabel: 'Pillar Three',
   },
 ];
+
 export default function ProgramsPage(): React.JSX.Element {
   return (
     <ParentHubLayout
@@ -38,6 +37,8 @@ export default function ProgramsPage(): React.JSX.Element {
       titleLine1="OUR"
       titleAccent="PROGRAMS"
       subtitle="Empowerment Pillars"
+      // Wide horizontal + vertical gaps so the 3 cards never touch (mobile + desktop)
+      gridClassName="grid grid-cols-2 gap-x-5 gap-y-8 sm:gap-x-6 sm:gap-y-10"
     >
       {hubs.map((hub) => (
         <ParentHubCard key={hub.name} hub={hub} />
