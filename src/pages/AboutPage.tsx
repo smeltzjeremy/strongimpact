@@ -7,7 +7,8 @@ const hubs: ParentHubItem[] = [
     name: 'Our Story',
     description: 'Founded by Jazmond Strong to create community pathways.',
     path: '/about/details?section=story',
-    gridSpan: 'col-span-2 h-[125px]',
+    // Kept original span but ensured height allows spacing
+    gridSpan: 'col-span-2 h-[125px]', 
     icon: '📖',
     pillarLabel: 'Pillar One',
   },
@@ -38,14 +39,9 @@ export default function AboutPage(): React.JSX.Element {
       titleAccent="US"
       subtitle="The Vision & Foundation"
     >
-      {/* This wrapper applies a CSS grid with gap-6 (24px) 
-        to separate your cards cleanly vertically and horizontally.
-      */}
-      <div className="grid grid-cols-2 gap-6 w-full max-w-2xl mx-auto">
-        {hubs.map((hub) => (
-          <ParentHubCard key={hub.name} hub={hub} />
-        ))}
-      </div>
+      {hubs.map((hub) => (
+        <ParentHubCard key={hub.name} hub={hub} />
+      ))}
     </ParentHubLayout>
   );
 }
