@@ -7,7 +7,8 @@ const hubs: ParentHubItem[] = [
     name: 'Upcoming Calendar',
     description: 'Track live administrative community camps and schedule blocks.',
     path: '/events/details',
-    gridSpan: 'col-span-2 h-[125px]',
+    // Lift clear of the bottom pair (same vertical gap pattern as Programs)
+    gridSpan: 'col-span-2 h-[125px] mb-10',
     icon: '📅',
     pillarLabel: 'Schedule Hub',
   },
@@ -15,7 +16,8 @@ const hubs: ParentHubItem[] = [
     name: 'Special Guests',
     description: 'Collegiate and professional consulting rosters.',
     path: '/events/details',
-    gridSpan: 'col-span-1 h-[130px]',
+    // Horizontal gap like About's paired cards
+    gridSpan: 'col-span-1 h-[130px] mr-3',
     icon: '👤',
     pillarLabel: 'Guest Roster',
   },
@@ -23,7 +25,8 @@ const hubs: ParentHubItem[] = [
     name: 'Registration Hub',
     description: 'Secure baseline processing portal options.',
     path: '/events/details',
-    gridSpan: 'col-span-1 h-[130px]',
+    // Horizontal gap like About's paired cards
+    gridSpan: 'col-span-1 h-[130px] ml-3',
     icon: '📝',
     pillarLabel: 'Action Portal',
   },
