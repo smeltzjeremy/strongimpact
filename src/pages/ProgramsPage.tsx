@@ -6,7 +6,8 @@ const hubs: ParentHubItem[] = [
     name: 'Youth Development',
     description: 'Football camps, athletic training, and leadership workshops.',
     path: '/programs/details',
-    gridSpan: 'col-span-1 h-[130px] mr-2.5',
+    // Same horizontal gap as About's paired cards (mr-3 / ml-3)
+    gridSpan: 'col-span-1 h-[130px] mr-3 mb-6',
     icon: '🏈',
     pillarLabel: 'Pillar One',
   },
@@ -14,7 +15,8 @@ const hubs: ParentHubItem[] = [
     name: 'Education & Mentorship',
     description: 'Academic tracking, college readiness, and guest speakers.',
     path: '/programs/details',
-    gridSpan: 'col-span-1 h-[130px] ml-2.5',
+    // Same horizontal gap as About's paired cards (mr-3 / ml-3)
+    gridSpan: 'col-span-1 h-[130px] ml-3 mb-6',
     icon: '🎓',
     pillarLabel: 'Pillar Two',
   },
@@ -22,7 +24,8 @@ const hubs: ParentHubItem[] = [
     name: 'Community Outreach',
     description: 'Holiday givebacks, school supply drives, and family support.',
     path: '/programs/details',
-    gridSpan: 'col-span-2 h-[125px] mt-2.5',
+    // Full-width bottom row; vertical gap comes from mb-6 on the pair above
+    gridSpan: 'col-span-2 h-[125px]',
     icon: '🤝',
     pillarLabel: 'Pillar Three',
   },
