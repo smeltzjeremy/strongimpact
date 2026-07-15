@@ -61,7 +61,7 @@ export default function ProgramDetails(): React.JSX.Element {
         </header>
 
         <main className="relative z-10 mx-auto my-auto w-full max-w-xl px-2 py-12 sm:px-10 sm:py-20 md:max-w-2xl md:px-14 md:py-24">
-          <div className="relative min-h-[560px] sm:min-h-[520px]">
+          <div className="relative flex flex-col items-center gap-10 sm:gap-12">
             <GlassBasePlate className="max-w-lg">
               <div className="mb-4 text-center">
                 <span className="bg-gradient-to-r from-zinc-400 via-zinc-200 to-zinc-500 bg-clip-text text-[8px] font-black uppercase tracking-[0.4em] text-transparent opacity-72">
@@ -103,8 +103,8 @@ export default function ProgramDetails(): React.JSX.Element {
               </div>
             </GlassBasePlate>
 
-            {/* Outreach — floating bottom-left */}
-            <div className="relative z-30 mt-10 w-full sm:absolute sm:-bottom-20 sm:-left-10 sm:mt-0 sm:w-[200px] md:-bottom-24 md:-left-16 md:w-[220px] lg:-bottom-28 lg:-left-24 lg:w-[230px]">
+            {/* Outreach — stacked below main plate (no absolute overlap) */}
+            <div className="relative z-20 w-full max-w-lg">
               <SmokyGlassSurface
                 glowColor="rgba(90, 10, 18, 0.34)"
                 edgeAccent="rgba(127, 29, 29, 0.42)"
@@ -125,9 +125,9 @@ export default function ProgramDetails(): React.JSX.Element {
                 </div>
 
                 <div className="text-left">
-                  <div className="mb-1 flex items-center justify-between">
+                  <div className="mb-1 flex items-center justify-between gap-2">
                     <h3 className="text-sm font-black uppercase tracking-tight text-white">{outreach.title}</h3>
-                    <span className="text-[7px] font-black uppercase tracking-widest text-red-800">
+                    <span className="shrink-0 text-[7px] font-black uppercase tracking-widest text-red-800">
                       {outreach.subtitle}
                     </span>
                   </div>
