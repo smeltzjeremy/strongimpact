@@ -38,9 +38,14 @@ export default function AboutPage(): React.JSX.Element {
       titleAccent="US"
       subtitle="The Vision & Foundation"
     >
-      {hubs.map((hub) => (
-        <ParentHubCard key={hub.name} hub={hub} />
-      ))}
+      {/* This wrapper applies a CSS grid with gap-6 (24px) 
+        to separate your cards cleanly vertically and horizontally.
+      */}
+      <div className="grid grid-cols-2 gap-6 w-full max-w-2xl mx-auto">
+        {hubs.map((hub) => (
+          <ParentHubCard key={hub.name} hub={hub} />
+        ))}
+      </div>
     </ParentHubLayout>
   );
 }
