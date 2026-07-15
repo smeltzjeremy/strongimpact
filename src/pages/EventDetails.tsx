@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PremiumCrimsonBackdrop from '../components/premium/PremiumCrimsonBackdrop';
-import GlassBasePlate from '../components/premium/GlassBasePlate';
-import FloatingGlassCard from '../components/premium/FloatingGlassCard';
 import SmokyGlassSurface from '../components/premium/SmokyGlassSurface';
 
 interface PromotionalFlyer {
@@ -131,29 +129,61 @@ export default function EventDetails(): React.JSX.Element {
     <div className="relative min-h-screen overflow-x-hidden overflow-y-auto bg-[#0a0406] font-sans text-white selection:bg-red-900/40">
       <PremiumCrimsonBackdrop />
 
-      <div className="relative z-10 flex min-h-screen flex-col justify-between p-4 sm:p-6">
-        <header className="mx-auto mt-2 flex w-full max-w-xl items-center justify-between md:max-w-2xl">
-          <button
-            onClick={() => navigate(-1)}
-            className="rounded-full border border-white/[0.09] bg-zinc-950/50 px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-zinc-400 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:text-white active:scale-95"
-          >
-            ← Back
-          </button>
-          <span className="rounded-full border border-white/[0.07] bg-zinc-950/45 px-3.5 py-1.5 text-[9px] font-black uppercase tracking-widest text-zinc-500 backdrop-blur-md">
-            Portal System v3.2
-          </span>
-        </header>
+      <div className="relative z-10 flex min-h-screen flex-col">
+        {/* Sticky nav — same pattern as AboutDetails / ProgramDetails */}
+        <div className="sticky top-0 z-50 flex justify-center border-b border-white/[0.06] bg-[#0a0406]/55 px-4 py-4 backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.55)]">
+          <div className="flex w-full max-w-xl items-center justify-between">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="rounded-full border border-white/[0.09] bg-zinc-950/50 px-5 py-2.5 text-[9px] font-black uppercase tracking-widest text-zinc-400 backdrop-blur-xl transition-all hover:scale-105 hover:text-white active:scale-95"
+            >
+              ← Back
+            </button>
+            <span className="rounded-full border border-white/[0.07] bg-zinc-950/45 px-3.5 py-1.5 text-[9px] font-black uppercase tracking-[0.25em] text-zinc-500 backdrop-blur-md">
+              Portal System v3.2
+            </span>
+          </div>
+        </div>
 
-        <main className="relative z-10 mx-auto w-full max-w-xl px-2 py-10 sm:px-10 sm:py-16 md:max-w-2xl md:px-14 md:py-20">
-          <div className="relative min-h-[640px] pb-8 sm:min-h-[600px]">
-            {/* Flyer — floating top-right */}
-            <div className="relative z-30 mb-8 w-full sm:absolute sm:-right-8 sm:-top-4 sm:mb-0 sm:w-[190px] md:-right-14 md:-top-6 md:w-[200px] lg:-right-20 lg:-top-8 lg:w-[210px]">
+        <main className="relative z-10 mx-auto w-full max-w-xl px-4 py-10 sm:px-8 sm:py-14 md:max-w-2xl">
+          <header className="mb-10 text-center">
+            <span className="bg-gradient-to-r from-zinc-400 via-zinc-200 to-zinc-500 bg-clip-text text-[8px] font-black uppercase tracking-[0.4em] text-transparent opacity-72">
+              Schedules & Action
+            </span>
+            <h1 className="mt-3 bg-gradient-to-b from-white via-zinc-200 to-zinc-600 bg-clip-text text-4xl font-black uppercase leading-none tracking-tighter text-transparent drop-shadow-[0_4px_16px_rgba(0,0,0,0.75)]">
+              FOUNDATION
+            </h1>
+            <p
+              className="mt-3 bg-gradient-to-r from-red-800 via-red-700 to-red-900 bg-clip-text text-[10px] font-black uppercase tracking-[0.35em] text-transparent"
+              style={{ filter: 'drop-shadow(0 2px 6px rgba(127,29,29,0.4))' }}
+            >
+              EVENTS
+            </p>
+          </header>
+
+          {/* Same vertical spread as AboutDetails: space-y-14 / sm:space-y-20 + alternating offsets */}
+          <div className="relative space-y-14 pb-16 sm:space-y-20">
+            {/* Card 1: Featured Flyer — offset right */}
+            <div className="sm:ml-auto sm:max-w-[94%] md:-mr-6 lg:-mr-10">
               <SmokyGlassSurface
-                glowColor="rgba(127, 29, 29, 0.32)"
-                edgeAccent="rgba(153, 27, 27, 0.5)"
-                innerClassName="p-4"
+                glowColor="rgba(127, 29, 29, 0.3)"
+                edgeAccent="rgba(153, 27, 27, 0.48)"
+                innerClassName="p-6 sm:p-7"
               >
-                <div className="relative mb-3 flex h-24 w-full items-center justify-center overflow-hidden rounded-xl border border-white/[0.06] bg-gradient-to-b from-zinc-800 to-zinc-950 shadow-inner">
+                <span className="mb-2 block text-[8px] font-black uppercase tracking-[0.35em] text-red-800">
+                  Featured Track
+                </span>
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-3xl font-black uppercase tracking-tighter text-transparent">
+                    {promotionalFlyer.title}
+                  </h2>
+                  <span className="rounded-md border border-white/[0.06] bg-zinc-950/60 px-2.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-red-800 shadow-inner">
+                    Next Track
+                  </span>
+                </div>
+
+                <div className="relative mb-4 flex h-28 w-full flex-col items-center justify-center overflow-hidden rounded-xl border border-white/[0.06] bg-gradient-to-b from-zinc-900 to-zinc-950 shadow-inner">
                   {promotionalFlyer.imageUrl ? (
                     <img
                       src={promotionalFlyer.imageUrl}
@@ -161,57 +191,47 @@ export default function EventDetails(): React.JSX.Element {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex flex-col items-center gap-1 opacity-30">
-                      <span className="text-xl">🖼️</span>
-                      <span className="text-[7px] font-black uppercase tracking-[0.2em] text-zinc-500">
+                    <div className="flex flex-col items-center gap-1 opacity-25">
+                      <span className="text-lg">🖼️</span>
+                      <span className="text-[7px] font-black uppercase tracking-widest text-zinc-500">
                         Featured Promotional Flyer Slot
                       </span>
                     </div>
                   )}
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10" />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.01] to-white/[0.05]" />
                 </div>
 
-                <div className="mb-2 flex items-start justify-between gap-2">
-                  <h2 className="text-sm font-black uppercase tracking-tight text-white">
-                    {promotionalFlyer.title}
-                  </h2>
-                  <span className="shrink-0 rounded-full border border-white/[0.06] bg-zinc-950/70 px-2 py-0.5 text-[7px] font-black uppercase tracking-widest text-red-800">
-                    Next Track
-                  </span>
-                </div>
-                <span className="mb-1 block text-[8px] font-extrabold uppercase tracking-wider text-zinc-600">
+                <span className="mb-2 block text-[8px] font-extrabold uppercase tracking-wider text-zinc-600">
                   {promotionalFlyer.subtitle}
                 </span>
-                <p className="mb-3 text-[9px] font-medium leading-relaxed tracking-wide text-zinc-500">
+                <p className="mb-5 text-left text-xs font-medium leading-relaxed tracking-wide text-zinc-400 sm:text-sm">
                   {promotionalFlyer.description}
                 </p>
                 <a
                   href={registrationLink.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="block w-full rounded-xl bg-white py-2.5 text-center text-[8px] font-black uppercase tracking-widest text-black shadow-xl shadow-black/40 transition-all duration-300 hover:bg-zinc-200 active:scale-[0.98]"
+                  className="block w-full rounded-xl bg-white py-3 text-center text-[9px] font-black uppercase tracking-widest text-black shadow-xl shadow-black/40 transition-all duration-300 hover:bg-zinc-200 active:scale-[0.98]"
                 >
                   {promotionalFlyer.actionText}
                 </a>
               </SmokyGlassSurface>
             </div>
 
-            <GlassBasePlate className="max-w-lg">
-              <div className="mb-6 text-left">
-                <span className="mb-2 block text-[9px] font-black uppercase tracking-[0.35em] text-red-800">
-                  Schedules & Action
+            {/* Card 2: Upcoming Calendar — offset left */}
+            <div className="sm:mr-auto sm:max-w-[94%] md:-ml-6 lg:-ml-10">
+              <SmokyGlassSurface
+                glowColor="rgba(90, 10, 18, 0.3)"
+                edgeAccent="rgba(127, 29, 29, 0.42)"
+                innerClassName="p-6 sm:p-7"
+              >
+                <span className="mb-2 block text-[8px] font-black uppercase tracking-[0.35em] text-red-800">
+                  Schedule Hub
                 </span>
-                <h1 className="bg-gradient-to-b from-white via-zinc-200 to-zinc-600 bg-clip-text text-4xl font-black uppercase leading-none tracking-tighter text-transparent drop-shadow-[0_4px_16px_rgba(0,0,0,0.75)]">
-                  FOUNDATION
-                  <br />
-                  <span className="bg-gradient-to-r from-red-800 via-red-700 to-red-900 bg-clip-text text-transparent">
-                    EVENTS
-                  </span>
-                </h1>
-              </div>
+                <h2 className="mb-4 bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-3xl font-black uppercase tracking-tighter text-transparent">
+                  Upcoming Calendar
+                </h2>
 
-              {/* Calendar */}
-              <div className="text-left">
                 <div className="mb-4 flex items-center justify-between border-b border-white/[0.06] pb-3">
                   <div className="flex items-center gap-3">
                     <h3 className="min-w-[110px] text-sm font-black uppercase tracking-widest text-zinc-200">
@@ -219,12 +239,14 @@ export default function EventDetails(): React.JSX.Element {
                     </h3>
                     <div className="flex gap-1">
                       <button
+                        type="button"
                         onClick={handlePrevMonth}
                         className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black transition-all hover:bg-white/10 active:scale-90"
                       >
                         ◀
                       </button>
                       <button
+                        type="button"
                         onClick={handleNextMonth}
                         className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black transition-all hover:bg-white/10 active:scale-90"
                       >
@@ -289,6 +311,7 @@ export default function EventDetails(): React.JSX.Element {
                 {selectedEvent ? (
                   <div className="relative mt-4 overflow-hidden rounded-2xl border border-red-900/25 bg-zinc-950/55 p-4">
                     <button
+                      type="button"
                       onClick={() => setSelectedEvent(null)}
                       className="absolute right-3 top-3 text-[9px] font-black uppercase tracking-widest text-zinc-600 transition-colors hover:text-white"
                     >
@@ -312,77 +335,107 @@ export default function EventDetails(): React.JSX.Element {
                     </span>
                   </div>
                 )}
-              </div>
+              </SmokyGlassSurface>
+            </div>
 
-              {/* Special Guests */}
-              <div className="mt-8 space-y-3">
-                <h3 className="text-xs font-black uppercase tracking-[0.25em] text-zinc-600">
-                  Special Guest Roster
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
+            {/* Card 3: Special Guests — offset right */}
+            <div className="sm:ml-auto sm:max-w-[94%] md:-mr-6 lg:-mr-10">
+              <SmokyGlassSurface
+                glowColor="rgba(127, 29, 29, 0.28)"
+                edgeAccent="rgba(153, 27, 27, 0.45)"
+                innerClassName="p-6 sm:p-7"
+              >
+                <span className="mb-2 block text-[8px] font-black uppercase tracking-[0.35em] text-red-800">
+                  Guest Roster
+                </span>
+                <h2 className="mb-6 bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-3xl font-black uppercase tracking-tighter text-transparent">
+                  Special Guests
+                </h2>
+
+                <div className="space-y-6">
                   {specialGuests.map((guest) => (
                     <div
                       key={guest.id}
-                      className="group/guest flex h-[175px] flex-col justify-between rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 text-left backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-white/10"
+                      className="group/guest flex flex-col items-center gap-5 border-t border-white/10 pt-6 text-left first:border-0 first:pt-0 sm:flex-row sm:items-start"
                     >
-                      <div>
-                        <div className="mb-3 flex items-center justify-between">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-zinc-950 shadow-inner">
-                            {guest.imageUrl ? (
-                              <img
-                                src={guest.imageUrl}
-                                alt={guest.name}
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <span className="text-xs opacity-40 transition-opacity group-hover/guest:opacity-70">
-                                👤
-                              </span>
-                            )}
+                      <div
+                        className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-zinc-800 via-zinc-950 to-zinc-900 shadow-2xl transition-colors duration-300 group-hover/guest:border-white/20"
+                        style={{ boxShadow: 'inset 0 4px 12px rgba(0,0,0,0.8)' }}
+                      >
+                        {guest.imageUrl ? (
+                          <img
+                            src={guest.imageUrl}
+                            alt={guest.name}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover/guest:scale-105"
+                          />
+                        ) : (
+                          <div className="flex flex-col items-center gap-1 opacity-30 transition-opacity group-hover/guest:opacity-60">
+                            <span className="text-lg">👤</span>
+                            <span className="text-[7px] font-black uppercase tracking-widest text-zinc-500">
+                              Photo Slot
+                            </span>
                           </div>
-                          <span className="rounded border border-white/[0.06] bg-zinc-950 px-2 py-0.5 text-[7px] font-black uppercase tracking-widest text-zinc-600 transition-colors group-hover/guest:text-red-800">
+                        )}
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.02] to-white/[0.08]" />
+                      </div>
+
+                      <div className="min-w-0 flex-1 text-center sm:text-left">
+                        <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                          <h3 className="text-sm font-black uppercase tracking-wide text-white transition-colors group-hover/guest:text-red-800">
+                            {guest.name}
+                          </h3>
+                          <span className="rounded border border-white/[0.06] bg-zinc-950 px-2 py-0.5 text-[7px] font-black uppercase tracking-widest text-zinc-600">
                             {guest.metric}
                           </span>
                         </div>
-                        <h3 className="text-xs font-black uppercase tracking-wide text-zinc-200 group-hover/guest:text-white">
-                          {guest.name}
-                        </h3>
-                        <span className="mt-0.5 block text-[8px] font-black uppercase tracking-wide text-red-800/80">
+                        <span className="mt-1 inline-block rounded-full border border-red-900/30 bg-red-900/15 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-red-800 sm:text-[10px]">
                           {guest.background}
                         </span>
-                        <p className="mt-2 line-clamp-3 text-[10px] font-medium leading-snug tracking-wide text-zinc-500">
+                        <p className="pt-2 text-xs font-semibold leading-relaxed tracking-wide text-zinc-500">
                           {guest.bio}
                         </p>
                       </div>
                     </div>
                   ))}
                 </div>
-              </div>
-            </GlassBasePlate>
+              </SmokyGlassSurface>
+            </div>
 
-            {/* Registration — floating bottom-left */}
-            <FloatingGlassCard
-              href={registrationLink.url}
-              glowColor="rgba(90, 10, 18, 0.34)"
-              edgeAccent="rgba(127, 29, 29, 0.42)"
-              className="relative z-30 mt-8 w-full sm:absolute sm:-bottom-16 sm:-left-10 sm:mt-0 sm:w-[200px] md:-bottom-20 md:-left-16 md:w-[210px] lg:-bottom-24 lg:-left-24"
-              label={
-                <>
-                  <span className="text-[8px] font-black uppercase tracking-widest text-zinc-600 transition-colors duration-500 group-hover:text-red-800">
-                    Registration
-                  </span>
-                  <span className="text-xs">📝</span>
-                </>
-              }
-              title="Register Now"
-              description={registrationLink.label}
-            />
+            {/* Card 4: Registration Hub — offset left */}
+            <div className="sm:mr-auto sm:max-w-[94%] md:-ml-6 lg:-ml-10">
+              <SmokyGlassSurface
+                glowColor="rgba(90, 10, 18, 0.34)"
+                edgeAccent="rgba(127, 29, 29, 0.42)"
+                innerClassName="p-6 sm:p-7"
+              >
+                <span className="mb-2 block text-[8px] font-black uppercase tracking-[0.35em] text-red-800">
+                  Action Portal
+                </span>
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-3xl font-black uppercase tracking-tighter text-transparent">
+                    Registration Hub
+                  </h2>
+                  <span className="text-lg">📝</span>
+                </div>
+                <p className="mb-5 text-left text-xs font-medium leading-relaxed tracking-wide text-zinc-400 sm:text-sm">
+                  {registrationLink.label}
+                </p>
+                <a
+                  href={registrationLink.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block w-full rounded-xl bg-white py-3 text-center text-[9px] font-black uppercase tracking-widest text-black shadow-xl shadow-black/40 transition-all duration-300 hover:bg-zinc-200 active:scale-[0.98]"
+                >
+                  Register Now
+                </a>
+              </SmokyGlassSurface>
+            </div>
           </div>
         </main>
 
-        <footer className="relative z-10 mt-6 pb-2 text-center">
+        <footer className="relative z-10 pb-6 text-center">
           <span className="text-[9px] font-black uppercase tracking-widest text-zinc-700 opacity-50">
-            Strong Impact Core Framework • 2026
+            Building Stronger Foundations © 2026
           </span>
         </footer>
       </div>
