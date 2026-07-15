@@ -7,8 +7,8 @@ const hubs: ParentHubItem[] = [
     name: 'Our Story',
     description: 'Founded by Jazmond Strong to create community pathways.',
     path: '/about/details?section=story',
-    // Kept original span but ensured height allows spacing
-    gridSpan: 'col-span-2 h-[125px]', 
+    // Added mb-6 to push the two bottom cards down cleanly
+    gridSpan: 'col-span-2 h-[125px] mb-6',
     icon: '📖',
     pillarLabel: 'Pillar One',
   },
@@ -16,7 +16,8 @@ const hubs: ParentHubItem[] = [
     name: 'Core Values',
     description: 'Leadership, Accountability, Service, Discipline, Excellence.',
     path: '/about/details?section=values',
-    gridSpan: 'col-span-1 h-[130px]',
+    // Added mr-3 to push it away from "Meet Our Team" horizontally
+    gridSpan: 'col-span-1 h-[130px] mr-3',
     icon: '🛡️',
     pillarLabel: 'Pillar Two',
   },
@@ -24,7 +25,8 @@ const hubs: ParentHubItem[] = [
     name: 'Meet Our Team',
     description: 'Connect with our directors, board members, and volunteers.',
     path: '/about/details?section=team',
-    gridSpan: 'col-span-1 h-[130px]',
+    // Added ml-3 to push it away from "Core Values" horizontally
+    gridSpan: 'col-span-1 h-[130px] ml-3',
     icon: '👥',
     pillarLabel: 'Pillar Three',
   },
