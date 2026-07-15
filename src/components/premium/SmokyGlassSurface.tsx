@@ -36,12 +36,18 @@ export default function SmokyGlassSurface({
 
   const shellRef = useRef<HTMLDivElement>(null);
 
+  // When tilt is off (stacked detail pages), use a tighter shadow so cards
+  // don't visually bleed into each other on mobile.
+  const resolvedShadow = enableTilt
+    ? shellShadow
+    : '0 16px 32px -12px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -2px 10px rgba(0,0,0,0.5)';
+
   const shellStyle: CSSCustomProperties = {
     '--mx': DEFAULT_LIGHT.mx,
     '--my': DEFAULT_LIGHT.my,
     '--rx': DEFAULT_LIGHT.rx,
     '--ry': DEFAULT_LIGHT.ry,
-    boxShadow: shellShadow,
+    boxShadow: resolvedShadow,
     transform: enableTilt ? 'perspective(900px) rotateX(var(--rx)) rotateY(var(--ry))' : undefined,
   };
 

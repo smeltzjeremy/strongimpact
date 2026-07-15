@@ -162,13 +162,18 @@ export default function EventDetails(): React.JSX.Element {
             </p>
           </header>
 
-          {/* Same vertical spread as AboutDetails: space-y-14 / sm:space-y-20 + alternating offsets */}
-          <div className="relative space-y-20 pb-16 sm:space-y-28">
+          {/* Hard-coded stack spacing so mobile cards cannot collapse together */}
+          <div
+            className="relative w-full"
+            style={{ display: 'flex', flexDirection: 'column', gap: '6.5rem', paddingBottom: '5rem' }}
+          >
             {/* Card 1: Featured Flyer — offset right */}
-            <div className="sm:ml-auto sm:max-w-[94%] md:-mr-6 lg:-mr-10">
+            <div className="relative w-full sm:ml-auto sm:max-w-[94%] md:-mr-6 lg:-mr-10" style={{ flexShrink: 0 }}>
               <SmokyGlassSurface
                 glowColor="rgba(127, 29, 29, 0.3)"
                 edgeAccent="rgba(153, 27, 27, 0.48)"
+                enableTilt={false}
+                className="w-full"
                 innerClassName="p-6 sm:p-7"
               >
                 <span className="mb-2 block text-[8px] font-black uppercase tracking-[0.35em] text-red-800">
@@ -219,10 +224,12 @@ export default function EventDetails(): React.JSX.Element {
             </div>
 
             {/* Card 2: Upcoming Calendar — offset left */}
-            <div className="sm:mr-auto sm:max-w-[94%] md:-ml-6 lg:-ml-10">
+            <div className="relative w-full sm:mr-auto sm:max-w-[94%] md:-ml-6 lg:-ml-10" style={{ flexShrink: 0 }}>
               <SmokyGlassSurface
                 glowColor="rgba(90, 10, 18, 0.3)"
                 edgeAccent="rgba(127, 29, 29, 0.42)"
+                enableTilt={false}
+                className="w-full"
                 innerClassName="p-6 sm:p-7"
               >
                 <span className="mb-2 block text-[8px] font-black uppercase tracking-[0.35em] text-red-800">
@@ -339,10 +346,12 @@ export default function EventDetails(): React.JSX.Element {
             </div>
 
             {/* Card 3: Special Guests — offset right */}
-            <div className="sm:ml-auto sm:max-w-[94%] md:-mr-6 lg:-mr-10">
+            <div className="relative w-full sm:ml-auto sm:max-w-[94%] md:-mr-6 lg:-mr-10" style={{ flexShrink: 0 }}>
               <SmokyGlassSurface
                 glowColor="rgba(127, 29, 29, 0.28)"
                 edgeAccent="rgba(153, 27, 27, 0.45)"
+                enableTilt={false}
+                className="w-full"
                 innerClassName="p-6 sm:p-7"
               >
                 <span className="mb-2 block text-[8px] font-black uppercase tracking-[0.35em] text-red-800">
@@ -402,10 +411,12 @@ export default function EventDetails(): React.JSX.Element {
             </div>
 
             {/* Card 4: Registration Hub — offset left */}
-            <div className="sm:mr-auto sm:max-w-[94%] md:-ml-6 lg:-ml-10">
+            <div className="relative w-full sm:mr-auto sm:max-w-[94%] md:-ml-6 lg:-ml-10" style={{ flexShrink: 0 }}>
               <SmokyGlassSurface
                 glowColor="rgba(90, 10, 18, 0.34)"
                 edgeAccent="rgba(127, 29, 29, 0.42)"
+                enableTilt={false}
+                className="w-full"
                 innerClassName="p-6 sm:p-7"
               >
                 <span className="mb-2 block text-[8px] font-black uppercase tracking-[0.35em] text-red-800">
