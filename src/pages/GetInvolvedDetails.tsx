@@ -91,7 +91,7 @@ export default function GetInvolvedDetails(): React.JSX.Element {
           </header>
 
           {/* Same vertical spread as AboutDetails: space-y-14 / sm:space-y-20 + alternating offsets */}
-          <div className="relative space-y-20 pb-16 sm:space-y-28">
+          <div className="relative space-y-28 pb-16 sm:space-y-36">
             {/* Card 1: Volunteer Portal — offset right */}
             <div className="sm:ml-auto sm:max-w-[94%] md:-mr-6 lg:-mr-10">
               <SmokyGlassSurface
