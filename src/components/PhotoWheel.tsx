@@ -33,7 +33,7 @@ const PhotoWheel: React.FC<PhotoWheelProps> = ({ onUrlsLoaded, onActiveIndexChan
       const timestamp = Date.now();
 
       data?.forEach((file) => {
-        const match = file.name.match(/slot-(\\d{2})/);
+        const match = file.name.match(/slot-(\d{2})/);
         if (match) {
           const slotIndex = parseInt(match[1]) - 1;
           if (slotIndex >= 0 && slotIndex < 6) {
@@ -43,7 +43,6 @@ const PhotoWheel: React.FC<PhotoWheelProps> = ({ onUrlsLoaded, onActiveIndexChan
         }
       });
 
-      // Pass the URLs up to the parent page safely
       if (onUrlsLoaded) onUrlsLoaded(urls);
 
       const loader = new THREE.TextureLoader();
@@ -121,7 +120,7 @@ const PhotoWheel: React.FC<PhotoWheelProps> = ({ onUrlsLoaded, onActiveIndexChan
     const continuousIndex = targetStepRef.current % 6;
     let rawIndex = Math.round(continuousIndex) % 6;
     if (rawIndex < 0) rawIndex += 6;
-    const finalActiveIndex = rawIndex;  // FIXED: removed the (6 - rawIndex) flip that caused desync
+    const finalActiveIndex = (6 - rawIndex) % 6;  // kept original line here
 
     if (finalActiveIndex !== lastReportedIndex.current) {
       lastReportedIndex.current = finalActiveIndex;
