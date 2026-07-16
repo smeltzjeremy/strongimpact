@@ -116,11 +116,11 @@ const PhotoWheel: React.FC<PhotoWheelProps> = ({ onUrlsLoaded, onActiveIndexChan
 
     if (wheelGroupRef.current) wheelGroupRef.current.rotation.z = rotationRef.current;
 
-    // Math calculation for finding which slot is directly in front
+    // FIXED index calculation for your clockwise sequence
     const continuousIndex = targetStepRef.current % 6;
     let rawIndex = Math.round(continuousIndex) % 6;
     if (rawIndex < 0) rawIndex += 6;
-    const finalActiveIndex = (6 - rawIndex) % 6;  // kept original line here
+    const finalActiveIndex = (rawIndex + 3) % 6;  // adjusted offset to fix your described sequence
 
     if (finalActiveIndex !== lastReportedIndex.current) {
       lastReportedIndex.current = finalActiveIndex;
