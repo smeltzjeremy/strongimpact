@@ -116,16 +116,17 @@ const PhotoWheel: React.FC<PhotoWheelProps> = ({ onUrlsLoaded, onActiveIndexChan
 
     if (wheelGroupRef.current) wheelGroupRef.current.rotation.z = rotationRef.current;
 
-    // FIXED index calculation for your clockwise sequence
-    const continuousIndex = targetStepRef.current % 6;
-    let rawIndex = Math.round(continuousIndex) % 6;
+    // --- REWRITTEN STATE ROTATION SYNC MATH ---
+    let rawIndex = targetStepRef.current % 6;
     if (rawIndex < 0) rawIndex += 6;
-    const finalActiveIndex = (rawIndex + 3) % 6;  // adjusted offset to fix your described sequence
+    
+    const finalActiveIndex = rawIndex;
 
     if (finalActiveIndex !== lastReportedIndex.current) {
       lastReportedIndex.current = finalActiveIndex;
       if (onActiveIndexChange) onActiveIndexChange(finalActiveIndex);
     }
+    // ------------------------------------------
 
     if (framesGroupRef.current) {
       framesGroupRef.current.children.forEach((childNode, i) => {
