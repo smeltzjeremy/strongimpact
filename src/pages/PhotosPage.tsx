@@ -49,11 +49,6 @@ export default function PhotosPage() {
         </Canvas>
       </div>
 
-      {/* Title */}
-      <div className="absolute top-8 left-1/2 -translate-x-1/2 z-40 pointer-events-none text-center">
-        <h1 className="text-6xl font-bold tracking-tighter text-white">PHOTOS</h1>
-      </div>
-
       {/* Enlarge Button - lower on mobile only */}
       <div className="fixed bottom-8 md:bottom-16 left-1/2 -translate-x-1/2 z-50">
         <button
