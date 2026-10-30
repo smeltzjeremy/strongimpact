@@ -130,7 +130,7 @@ export default function TheaterPage(): React.JSX.Element {
           >
             ← Exit Suite
           </Link>
-          <div className="rounded-xl border border-white/[0.06] bg-zinc-950/40 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 backdrop-blur-sm">
+          <div className="mr-28 sm:mr-32 rounded-xl border border-white/[0.06] bg-zinc-950/40 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 backdrop-blur-sm">
             Studio Room Mode
           </div>
         </div>
