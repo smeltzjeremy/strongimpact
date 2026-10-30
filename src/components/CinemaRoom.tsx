@@ -161,7 +161,6 @@ function CinemaSeat({ x, fabricMat, leatherMat, plasticMat }: CinemaSeatProps): 
 
 export default function CinemaRoom({ videoUrl, isPlaying, isMuted }: CinemaRoomProps): React.JSX.Element {
   const texture = useVideoTexture(videoUrl, {
-    unsuspended: 'canplay',
     crossOrigin: 'anonymous',
     muted: isMuted,
     loop: true,

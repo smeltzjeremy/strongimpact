@@ -49,10 +49,9 @@ const PhotoWheel: React.FC<PhotoWheelProps> = ({ onUrlsLoaded, onActiveIndexChan
       loader.setCrossOrigin('anonymous');
 
       const textures = await Promise.all(
-        urls.map(url => url ? new Promise((resolve) => {
+        urls.map(url => url ? new Promise<THREE.Texture | null>((resolve) => {
           loader.load(url, (texture) => {
             texture.flipY = true;
-            texture.flipX = false;
             texture.needsUpdate = true;
             resolve(texture);
           }, undefined, () => resolve(null));
